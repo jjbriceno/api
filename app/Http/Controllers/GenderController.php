@@ -15,7 +15,7 @@ class GenderController extends Controller
      */
     public function index()
     {
-        return response()->json(['Gender' => Gender::all()]);
+        return response()->json(['genders' => Gender::all()]);
     }
 
     /**
@@ -76,7 +76,7 @@ class GenderController extends Controller
     public function update(Request $request, Gender $gender)
     {
         $gender->name = $request->name;
-  
+
         $gender->save();
 
         return response($gender, Response::HTTP_OK);

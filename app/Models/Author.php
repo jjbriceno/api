@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Author extends Model
@@ -17,4 +18,9 @@ class Author extends Model
      * @var array<int, string>
      */
     protected $fillable = ['full_name'];
+
+    public function musicSheets()
+    {
+        return $this->HasMany(MusicSheet::class);
+    }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\MusicSheet;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Gender extends Model
 {
@@ -16,9 +16,11 @@ class Gender extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['name',];
+    protected $fillable = ['name'];
 
-    
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
+
     /**
      * Get the musicSheets that owns the Gender
      *
@@ -26,6 +28,6 @@ class Gender extends Model
      */
     public function musicSheets()
     {
-        return $this->belongsTo(\App\Models\MusicSheet::class);
+        return $this->hasMany(MusicSheet::class);
     }
 }

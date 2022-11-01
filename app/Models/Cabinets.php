@@ -8,13 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Cabinets extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'name' 
+        'name'
     ];
+
     public function locations()
     {
-       return $this->hasMany(
-        Locations::class,'cabinet_id','id'
-       );
+        return $this->hasMany(
+            Locations::class,
+            'cabinet_id',
+            'id'
+        );
     }
 }

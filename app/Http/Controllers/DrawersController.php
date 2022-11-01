@@ -14,7 +14,7 @@ class DrawersController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['drawers' => Drawers::all()]);
     }
 
     /**

@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Imports\AuthorsImport;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
+    use ValidatesRequests;
     /**
      * Display a listing of the resource.
      *
@@ -36,12 +38,20 @@ class AuthorController extends Controller
      */
     public function store(Request $request)
     {
-        $crud = new Author();
-        $crud->full_name = $request->full_name;
+        $this->validate(
+            $request,
+            [
+                'author' => ['required'],
+            ]
+        );
 
-        $crud->save();
+        $author = new Author();
 
-        return response($crud->jsonSerialize(), Response::HTTP_CREATED);
+        $author->full_name = $request->full_name;
+
+        $author->save();
+
+        return response($author->jsonSerialize(), Response::HTTP_CREATED);
     }
 
     /**

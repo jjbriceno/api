@@ -15,7 +15,7 @@ class LendersController extends Controller
      */
     public function index()
     {
-        return response()->json(['Lenders' => Lenders::all()]);
+        return response()->json(['lenders' => Lenders::all()]);
     }
 
     /**

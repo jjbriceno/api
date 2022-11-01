@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
+use App\Models\Gender;
+use App\Models\Cabinets;
+use App\Models\Drawers;
+use App\Models\Locations;
 use App\Models\MusicSheet;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class MusicSheetController extends Controller
 {
@@ -15,7 +20,7 @@ class MusicSheetController extends Controller
      */
     public function index()
     {
-        return response()->json(['MusicSheet' => MusicSheet::all()]);
+        return response()->json(['music_sheet' => MusicSheet::all()]);
     }
 
     /**
@@ -36,18 +41,34 @@ class MusicSheetController extends Controller
      */
     public function store(Request $request)
     {
-        $crud = new MusicSheet();
-     
-        $crud->author_id = $request->author_id;
-        $crud->gender_id = $request->gender_id;
-        $crud->location_id = $request->location_id;
-        $crud->title = $request->title;
-        $crud->cuantity = $request->cuantity;
-      
+        $this->validate(
+            $request,
+            [
+                'title'         => ['required'],
+                'authorId'    => ['required'],
+                'genderId'    => ['required'],
+                'drawerId'    => ['required'],
+                'cabinetId'   => ['required'],
+                'cuantity'      => ['required']
+            ]
+        );
 
-        $crud->save();
+        $musicSheet = new MusicSheet();
+        $musicSheet->title = $request->title;
+        $musicSheet->author_id = $request->authorId;
+        $musicSheet->gender_id = $request->genderId;
+        $musicSheet->title = $request->title;
+        $musicSheet->cuantity = $request->cuantity;
 
-        return response($crud->jsonSerialize(), Response::HTTP_CREATED);
+        $location = new Locations();
+        $location->cabinet_id = $request->cabinetId;
+        $location->drawer_id = $request->drawerId;
+        $location->save();
+
+        $musicSheet->location_id = $location->id;
+        $musicSheet->save();
+
+        return response()->json(['item' => MusicSheet::find($musicSheet->id), 'message' => 'success']);
     }
 
     /**
@@ -86,11 +107,11 @@ class MusicSheetController extends Controller
         $musicSheet->location_id = $request->location_id;
         $musicSheet->title = $request->title;
         $musicSheet->cuantity = $request->cuantity;
-      
+
 
         $musicSheet->save();
-  
- 
+
+
 
         return response($musicSheet, Response::HTTP_OK);
     }

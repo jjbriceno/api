@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cabinets;
- 
+
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 
@@ -16,7 +16,7 @@ class CabinetsController extends Controller
      */
     public function index()
     {
-        return response()->json(['Cabinets' =>Cabinets::all()]);
+        return response()->json(['cabinets' => Cabinets::all()]);
     }
 
     /**
@@ -77,7 +77,7 @@ class CabinetsController extends Controller
     public function update(Request $request, Cabinets $cabinets)
     {
         $cabinets->name = $request->full_name;
-  
+
         $cabinets->save();
 
         return response($cabinets, Response::HTTP_OK);

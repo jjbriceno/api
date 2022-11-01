@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\CabinetsController;
+use App\Http\Controllers\DrawersController;
+use App\Http\Controllers\GenderController;
+use App\Http\Controllers\MusicSheetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,5 +26,33 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $request->user();
     });
 
+    /**
+     * Routes that allow authors management
+     */
     Route::get('/authors', [AuthorController::class, 'index'])->name('authors');
+
+
+    /**
+     * Routes that allow music sheets management
+     */
+
+    Route::get('/music-sheets', [MusicSheetController::class, 'index'])->name('music-sheets');
+
+    Route::post('/music-sheets/store', [MusicSheetController::class, 'store'])->name('music-sheets.store');
+
+    /**
+     * Routes that allow gender management
+     */
+    Route::get('/genders', [GenderController::class, 'index'])->name('genders');
+
+    /**
+     * Routes that allow drawers management
+     */
+    Route::get('/drawers', [DrawersController::class, 'index'])->name('drawers');
+
+    /**
+     * Routes that allow cabinets management
+     */
+
+    Route::get('/cabinets', [CabinetsController::class, 'index'])->name('cabinets');
 });
