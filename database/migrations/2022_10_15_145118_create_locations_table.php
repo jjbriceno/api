@@ -17,8 +17,7 @@ class CreateLocationsTable extends Migration
             $table->id();
             $table->string('cabinet_id', 100)->comment('Identificador de la gaveta en el archivador');
             $table->string('drawer_id', 100)->comment('Identificador del archivador');
-           
-            
+            $table->softDeletes();
             $table->timestamps();
         });
     }

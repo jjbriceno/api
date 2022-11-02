@@ -4,16 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Locations extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'cabinet_id', 'drawer_id'
     ];
 
-    protected $hidden = ['created_at', 'updated_at', 'cabinet_id', 'drawer_id'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     protected $appends = ["cabinet_name", "drawer_name"];
 

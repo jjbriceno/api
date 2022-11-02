@@ -16,7 +16,6 @@ class CreateGendersTable extends Migration
         Schema::create('genders', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable()->comment('Nombre del género músical');
-
             $table->softDeletes();
             $table->timestamps();
         });

@@ -45,10 +45,10 @@ class MusicSheetController extends Controller
             $request,
             [
                 'title'         => ['required'],
-                'authorId'    => ['required'],
-                'genderId'    => ['required'],
-                'drawerId'    => ['required'],
-                'cabinetId'   => ['required'],
+                'authorId'      => ['required'],
+                'genderId'      => ['required'],
+                'drawerId'      => ['required'],
+                'cabinetId'     => ['required'],
                 'cuantity'      => ['required']
             ]
         );
@@ -57,7 +57,6 @@ class MusicSheetController extends Controller
         $musicSheet->title = $request->title;
         $musicSheet->author_id = $request->authorId;
         $musicSheet->gender_id = $request->genderId;
-        $musicSheet->title = $request->title;
         $musicSheet->cuantity = $request->cuantity;
 
         $location = new Locations();
@@ -88,9 +87,37 @@ class MusicSheetController extends Controller
      * @param  \App\Models\MusicSheet  $musicSheet
      * @return \Illuminate\Http\Response
      */
-    public function edit(MusicSheet $musicSheet)
+    public function edit(Request $request)
     {
-        //
+        $this->validate(
+            $request,
+            [
+                'id'            => ['required'],
+                'title'         => ['required'],
+                'authorId'      => ['required'],
+                'genderId'      => ['required'],
+                'locationId'    => ['required'],
+                'drawerId'      => ['required'],
+                'cabinetId'     => ['required'],
+                'cuantity'      => ['required']
+            ]
+        );
+
+        $musicSheet = MusicSheet::find($request->id);
+        if ($musicSheet) {
+            $musicSheet->title = $request->title;
+            $musicSheet->author_id = $request->authorId;
+            $musicSheet->gender_id = $request->genderId;
+            $musicSheet->cuantity = $request->cuantity;
+
+            $location = Locations::find($request->locationId);
+            $location->cabinet_id = $request->cabinetId;
+            $location->drawer_id = $request->drawerId;
+            $location->save();
+            $musicSheet->save();
+        }
+
+        return response()->json(['item' => MusicSheet::find($musicSheet->id), 'message' => 'success']);
     }
 
     /**
@@ -102,18 +129,6 @@ class MusicSheetController extends Controller
      */
     public function update(Request $request, MusicSheet $musicSheet)
     {
-        $musicSheet->author_id = $request->author_id;
-        $musicSheet->gender_id = $request->gender_id;
-        $musicSheet->location_id = $request->location_id;
-        $musicSheet->title = $request->title;
-        $musicSheet->cuantity = $request->cuantity;
-
-
-        $musicSheet->save();
-
-
-
-        return response($musicSheet, Response::HTTP_OK);
     }
 
     /**
@@ -124,8 +139,12 @@ class MusicSheetController extends Controller
      */
     public function destroy($id)
     {
-        MusicSheet::destroy($id);
+        $musicSheet = MusicSheet::find($id);
+        $location = Locations::find($musicSheet->location_id);
 
-        return response(null, Response::HTTP_OK);
+        $musicSheet->delete();
+        $location->delete();
+
+        return response()->json(['message' => 'success']);
     }
 }

@@ -15,13 +15,11 @@ class CreateMusicSheetsTable extends Migration
     {
         Schema::create('music_sheets', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('author_id')->nullable()->constrained()->onUpdate('cascade');
-            $table->foreignId('gender_id')->nullable()->constrained()->onUpdate('cascade');
-            $table->foreignId('location_id')->nullable()->constrained()->onUpdate('cascade');
+            $table->foreignId('author_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('gender_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('location_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->string('title')->nullable()->comment('Título de la partitura');
             $table->integer('cuantity')->comment('Cantidad de partituras existentes');
-
             $table->softDeletes();
             $table->timestamps();
         });
