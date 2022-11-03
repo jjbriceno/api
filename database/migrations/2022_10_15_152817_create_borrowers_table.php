@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLendersTable extends Migration
+class CreateBorrowersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateLendersTable extends Migration
      */
     public function up()
     {
-        Schema::create('lenders', function (Blueprint $table) {
+        Schema::create('borrowers', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('phone', 100);
-            $table->string('email', 100);
-            $table->string('address');
+            $table->string('name', 50);
+            $table->string('phone', 11);
+            $table->string('email', 50)->nullable();
+            $table->string('address', 50)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ class CreateLendersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lenders');
+        Schema::dropIfExists('borrowers');
     }
 }

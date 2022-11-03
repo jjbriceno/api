@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\BorrowersController;
 use App\Http\Controllers\CabinetsController;
 use App\Http\Controllers\DrawersController;
 use App\Http\Controllers\GenderController;
@@ -59,4 +60,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
 
     Route::get('/cabinets', [CabinetsController::class, 'index'])->name('cabinets');
+
+    /**
+     * Routes that allow borrowers management
+     */
+
+    Route::post('/borrowers/store', [BorrowersController::class, 'store'])->name('borrowers.store');
+    
+    Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
 });
