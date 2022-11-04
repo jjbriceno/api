@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Loans;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class LoansController extends Controller
 {
+    use ValidatesRequests;
+
     /**
      * Display a listing of the resource.
      *
@@ -36,26 +40,29 @@ class LoansController extends Controller
      */
     public function store(Request $request)
     {
-        $crud = new Loans();
-     
-        $crud->lender_id = $request->lender_id;
-        $crud->status = $request->status;
-        $crud->loan_date = $request->loan_date;
-        $crud->delivery_date = $request->delivery_date;
-        $crud->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
-        $crud->cuantity = $request->cuantity;
-        $crud->status = $request->status;
-     
-        $crud->loan_date = $request->loan_date;
-     
-        $crud->delivery_date = $request->delivery_date;
-     
-        $crud->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
-     
 
-        $crud->save();
+        $this->validate($request, [
+            'id'            => ['required'],
+            'title'         => ['required'],
+            'authorId'      => ['required'],
+            'genderId'      => ['required'],
+            'locationId'    => ['required'],
+            'drawerId'      => ['required'],
+            'cabinetId'     => ['required'],
+            'cuantity'      => ['required'],
+            'borrowerId'    => ['required']
+        ]);
 
-        return response($crud->jsonSerialize(), Response::HTTP_CREATED);
+        $loan = new Loans();
+        $loan->borrower_id = $request->borrowerId;
+        $loan->status = 'abierto';
+        $loan->loan_date = \Carbon\Carbon::now('utc')->format('m d Y');
+        $loan->delivery_date = \Carbon\Carbon::now('utc')->addDay()->format('m d Y');
+        $loan->music_sheets_borrowed_amount = json_encode([$request->id => $request->cuantity]);
+        $loan->cuantity = $request->cuantity;
+        $loan->save();
+
+        return response($loan->jsonSerialize(), Response::HTTP_CREATED);
     }
 
     /**
@@ -89,7 +96,7 @@ class LoansController extends Controller
      */
     public function update(Request $request, Loans $loans)
     {
-        
+
         $loans->lender_id = $request->lender_id;
         $loans->status = $request->status;
         $loans->loan_date = $request->loan_date;
@@ -97,13 +104,13 @@ class LoansController extends Controller
         $loans->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
         $loans->cuantity = $request->cuantity;
         $loans->status = $request->status;
-     
+
         $loans->loan_date = $request->loan_date;
-     
+
         $loans->delivery_date = $request->delivery_date;
-     
+
         $loans->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
-     
+
 
         $loans->save();
         return response($loans, Response::HTTP_OK);

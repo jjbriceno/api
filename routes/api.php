@@ -5,6 +5,7 @@ use App\Http\Controllers\BorrowersController;
 use App\Http\Controllers\CabinetsController;
 use App\Http\Controllers\DrawersController;
 use App\Http\Controllers\GenderController;
+use App\Http\Controllers\LoansController;
 use App\Http\Controllers\MusicSheetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow authors management
      */
+
     Route::get('/authors', [AuthorController::class, 'index'])->name('authors');
 
 
@@ -48,11 +50,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow gender management
      */
+
     Route::get('/genders', [GenderController::class, 'index'])->name('genders');
 
     /**
      * Routes that allow drawers management
      */
+
     Route::get('/drawers', [DrawersController::class, 'index'])->name('drawers');
 
     /**
@@ -66,6 +70,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
 
     Route::post('/borrowers/store', [BorrowersController::class, 'store'])->name('borrowers.store');
-    
+
     Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
+
+    /**
+     * Routes that allow loans management
+     */
+
+    Route::post('/loan/store', [LoansController::class, 'store'])->name('loans.store');
 });
