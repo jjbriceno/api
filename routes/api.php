@@ -34,6 +34,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/authors', [AuthorController::class, 'index'])->name('authors');
 
+    Route::post('/authors/store', [AuthorController::class, 'store'])->name('authors.store');
+
+    Route::post('/authors/edit', [AuthorController::class, 'edit'])->name('authors.edit');
+
+    Route::post('/authors/destroy/{id}', [AuthorController::class, 'destroy'])->name('authors.destroy');
+
 
     /**
      * Routes that allow music sheets management

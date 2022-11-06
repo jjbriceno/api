@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
-use App\Imports\AuthorsImport;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 
@@ -41,13 +39,13 @@ class AuthorController extends Controller
         $this->validate(
             $request,
             [
-                'author' => ['required'],
+                'fullName' => ['required'],
             ]
         );
 
         $author = new Author();
 
-        $author->full_name = $request->full_name;
+        $author->full_name = $request->fullName;
 
         $author->save();
 
@@ -71,9 +69,18 @@ class AuthorController extends Controller
      * @param  \App\Models\Author  $author
      * @return \Illuminate\Http\Response
      */
-    public function edit(Author $author)
+    public function edit(Request $request)
     {
-        //
+        $this->validate($request, [
+            'id' => ['required'],
+            'fullName' => ['required']
+        ]);
+
+        $author = Author::find($request->id);
+        $author->full_name = $request->fullName;
+        $author->save();
+
+        return response(['author' => $author->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**

@@ -50,14 +50,15 @@ class LoansController extends Controller
             'drawerId'      => ['required'],
             'cabinetId'     => ['required'],
             'cuantity'      => ['required'],
-            'borrowerId'    => ['required']
+            'borrowerId'    => ['required'],
+            'deliveryDate'  => ['required']
         ]);
 
         $loan = new Loans();
         $loan->borrower_id = $request->borrowerId;
         $loan->status = 'abierto';
         $loan->loan_date = \Carbon\Carbon::now('utc')->format('m d Y');
-        $loan->delivery_date = \Carbon\Carbon::now('utc')->addDay()->format('m d Y');
+        $loan->delivery_date = $request->deliveryDate;
         $loan->music_sheets_borrowed_amount = json_encode([$request->id => $request->cuantity]);
         $loan->cuantity = $request->cuantity;
         $loan->save();
