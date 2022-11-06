@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Loans;
 use App\Models\Borrowers;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Response;
+use App\Models\MusicSheet;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class BorrowersController extends Controller
 {
@@ -123,6 +125,24 @@ class BorrowersController extends Controller
      */
     public function destroy($id)
     {
+
+        $loans = Loans::where('borrower_id', $id);
+        $loansArray = $loans->get()->all();
+
+        if ($loansArray) {
+            $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
+            foreach ($musicSheetsJson as $key) {
+                $keyArray = (array) $key;
+                foreach ($keyArray as $key => $value) {
+                    $musicSheet = MusicSheet::find($key);
+                    $musicSheet->available += $value;
+                    $musicSheet->save();
+                }
+            }
+        }
+
+        $loans->delete();
+
         Borrowers::destroy($id);
 
         return response(null, Response::HTTP_OK);
