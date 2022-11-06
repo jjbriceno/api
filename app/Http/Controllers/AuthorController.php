@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
+use App\Models\MusicSheet;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
@@ -107,6 +108,8 @@ class AuthorController extends Controller
      */
     public function destroy($id)
     {
+        MusicSheet::where('author_id', $id)->delete();
+
         Author::destroy($id);
 
         return response(null, Response::HTTP_OK);

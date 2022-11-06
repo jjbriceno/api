@@ -36,12 +36,15 @@ class GenderController extends Controller
      */
     public function store(Request $request)
     {
-        $crud = new Gender();
-        $crud->name = $request->name;
+        $this->validate($request, [
+            'genderName' => ['required']
+        ]);
 
-        $crud->save();
+        $gender = new Gender();
+        $gender->name = $request->genderName;
+        $gender->save();
 
-        return response($crud->jsonSerialize(), Response::HTTP_CREATED);
+        return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**
@@ -61,9 +64,17 @@ class GenderController extends Controller
      * @param  \App\Models\Gender  $gender
      * @return \Illuminate\Http\Response
      */
-    public function edit(Gender $gender)
+    public function edit(Request $request)
     {
-        //
+        $this->validate($request, [
+            'genderName' => ['required']
+        ]);
+
+        $gender = Gender::find($request->id);
+        $gender->name = $request->genderName;
+        $gender->save();
+
+        return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**

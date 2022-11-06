@@ -54,7 +54,7 @@ class BorrowersController extends Controller
         $borrower->address  = $request->address;
         $borrower->save();
 
-        return response($borrower->jsonSerialize(), Response::HTTP_CREATED);
+        return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**
@@ -63,9 +63,8 @@ class BorrowersController extends Controller
      * @param  \App\Models\borrower  $borrower
      * @return \Illuminate\Http\Response
      */
-    public function show(Borrowers $borrower)
+    public function show(Request $request)
     {
-        //
     }
 
     /**
@@ -74,9 +73,25 @@ class BorrowersController extends Controller
      * @param  \App\Models\borrower  $borrower
      * @return \Illuminate\Http\Response
      */
-    public function edit(Borrowers $borrower)
+    public function edit(Request $request)
     {
-        //
+        $this->validate($request, [
+            'id'        => ['required'],
+            'name'      => ['required'],
+            'lastName'  => ['required'],
+            'email'     => ['nullable', 'unique:borrowers,email,' . $request->id],
+            'phone'     => ['required', 'unique:borrowers,phone,' . $request->id],
+            'address'   => ['nullable']
+        ]);
+
+        $borrower = Borrowers::find($request->id);
+        $borrower->name = $request->name . ' ' . $request->lastName;
+        $borrower->email = $request->email;
+        $borrower->phone = $request->phone;
+        $borrower->address = $request->address;
+        $borrower->save();
+
+        return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**

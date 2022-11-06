@@ -58,6 +58,7 @@ class MusicSheetController extends Controller
         $musicSheet->author_id = $request->authorId;
         $musicSheet->gender_id = $request->genderId;
         $musicSheet->cuantity = $request->cuantity;
+        $musicSheet->available = $request->cuantity;
 
         $location = new Locations();
         $location->cabinet_id = $request->cabinetId;
@@ -127,8 +128,13 @@ class MusicSheetController extends Controller
      * @param  \App\Models\MusicSheet  $musicSheet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, MusicSheet $musicSheet)
+    public function update(Request $request)
     {
+        $musicSheet = MusicSheet::find($request->id);
+        $musicSheet->available -= $request->cuantity;
+        $musicSheet->save();
+
+        var_dump($request->toArray());
     }
 
     /**

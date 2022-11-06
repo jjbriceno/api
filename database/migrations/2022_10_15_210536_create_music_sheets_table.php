@@ -20,6 +20,7 @@ class CreateMusicSheetsTable extends Migration
             $table->foreignId('location_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->string('title')->nullable()->comment('Título de la partitura');
             $table->integer('cuantity')->comment('Cantidad de partituras existentes');
+            $table->integer('available')->comment('Cantidad de partituras disponibles');
             $table->softDeletes();
             $table->timestamps();
         });

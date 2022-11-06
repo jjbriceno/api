@@ -53,11 +53,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('/music-sheets/destroy/{id}', [MusicSheetController::class, 'destroy'])->name('music-sheets.destroy');
 
+    Route::post('/music-sheets/update', [MusicSheetController::class, 'update'])->name('music-sheets.update');
+
     /**
      * Routes that allow gender management
      */
 
     Route::get('/genders', [GenderController::class, 'index'])->name('genders');
+
+    Route::post('/genders/store', [GenderController::class, 'store'])->name('genders.store');
+
+    Route::post('/genders/edit', [GenderController::class, 'edit'])->name('genders.edit');
 
     /**
      * Routes that allow drawers management
@@ -75,9 +81,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow borrowers management
      */
 
+    Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
+
     Route::post('/borrowers/store', [BorrowersController::class, 'store'])->name('borrowers.store');
 
-    Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
+    Route::post('/borrowers/edit', [BorrowersController::class, 'edit'])->name('borrowers.edit');
+
 
     /**
      * Routes that allow loans management
