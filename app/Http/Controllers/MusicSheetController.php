@@ -13,6 +13,29 @@ use Illuminate\Http\Response;
 
 class MusicSheetController extends Controller
 {
+    protected array $rules;
+    protected array $messages;
+
+    public function __construct() {
+       $this->rules = [
+                        'title'         => ['required', 'unique_with:music_sheets, authorId = author_id'],
+                        'authorId'      => ['required'],
+                        'genderId'      => ['required'],
+                        'drawerId'      => ['required'],
+                        'cabinetId'     => ['required'],
+                        'cuantity'      => ['required']
+       ];
+
+       $this->messages = [
+                            'title.required'         => "El 'Título' es obligatorio",
+                            'title.unique_with'      => "Este Título ya ha sido registrado con este autor",
+                            'authorId.required'      => "El 'Autor' es obligatorio",
+                            'genderId.required'      => "El 'Género musical' es obligatorio",
+                            'drawerId.required'      => "El 'Estante' es obligatorio",
+                            'cabinetId.required'     => "La 'Gaveta' es obligatoria",
+                            'cuantity.required'      => "La 'Cantidad de partiruras' debe ser de al menos uno"
+       ];
+    }
     /**
      * Display a listing of the resource.
      *
@@ -43,14 +66,7 @@ class MusicSheetController extends Controller
     {
         $this->validate(
             $request,
-            [
-                'title'         => ['required'],
-                'authorId'      => ['required'],
-                'genderId'      => ['required'],
-                'drawerId'      => ['required'],
-                'cabinetId'     => ['required'],
-                'cuantity'      => ['required']
-            ]
+            $this->rules, $this->messages
         );
 
         $musicSheet = new MusicSheet();
@@ -90,18 +106,11 @@ class MusicSheetController extends Controller
      */
     public function edit(Request $request)
     {
+        $this->rules = array_merge($this->rules, ['title' => ['required', 'unique_with:music_sheets, authorId = author_id,'.$request->id]]);
         $this->validate(
             $request,
-            [
-                'id'            => ['required'],
-                'title'         => ['required'],
-                'authorId'      => ['required'],
-                'genderId'      => ['required'],
-                'locationId'    => ['required'],
-                'drawerId'      => ['required'],
-                'cabinetId'     => ['required'],
-                'cuantity'      => ['required']
-            ]
+            $this->rules,
+            $this->messages
         );
 
         $musicSheet = MusicSheet::find($request->id);
@@ -133,8 +142,6 @@ class MusicSheetController extends Controller
         $musicSheet = MusicSheet::find($request->id);
         $musicSheet->available -= $request->cuantity;
         $musicSheet->save();
-
-        var_dump($request->toArray());
     }
 
     /**
