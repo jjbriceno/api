@@ -133,9 +133,9 @@ class BorrowersController extends Controller
             $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
             foreach ($musicSheetsJson as $key) {
                 $keyArray = (array) $key;
-                foreach ($keyArray as $key => $value) {
-                    $musicSheet = MusicSheet::find($key);
-                    $musicSheet->available += $value;
+                foreach ($keyArray as $id => $cuantity) {
+                    $musicSheet = MusicSheet::find($id);
+                    $musicSheet->available += $cuantity;
                     $musicSheet->save();
                 }
             }
