@@ -16,25 +16,26 @@ class MusicSheetController extends Controller
     protected array $rules;
     protected array $messages;
 
-    public function __construct() {
-       $this->rules = [
-                        'title'         => ['required', 'unique_with:music_sheets, authorId = author_id'],
-                        'authorId'      => ['required'],
-                        'genderId'      => ['required'],
-                        'drawerId'      => ['required'],
-                        'cabinetId'     => ['required'],
-                        'cuantity'      => ['required']
-       ];
+    public function __construct()
+    {
+        $this->rules = [
+            'title'         => ['required', 'unique_with:music_sheets, authorId = author_id'],
+            'authorId'      => ['required'],
+            'genderId'      => ['required'],
+            'drawerId'      => ['required'],
+            'cabinetId'     => ['required'],
+            'cuantity'      => ['required']
+        ];
 
-       $this->messages = [
-                            'title.required'         => "El 'Título' es obligatorio",
-                            'title.unique_with'      => "Este Título ya ha sido registrado con este autor",
-                            'authorId.required'      => "El 'Autor' es obligatorio",
-                            'genderId.required'      => "El 'Género musical' es obligatorio",
-                            'drawerId.required'      => "El 'Estante' es obligatorio",
-                            'cabinetId.required'     => "La 'Gaveta' es obligatoria",
-                            'cuantity.required'      => "La 'Cantidad de partiruras' debe ser de al menos uno"
-       ];
+        $this->messages = [
+            'title.required'         => "El 'Título' es obligatorio",
+            'title.unique_with'      => "Este Título ya ha sido registrado con este autor",
+            'authorId.required'      => "El 'Autor' es obligatorio",
+            'genderId.required'      => "El 'Género musical' es obligatorio",
+            'drawerId.required'      => "El 'Estante' es obligatorio",
+            'cabinetId.required'     => "La 'Gaveta' es obligatoria",
+            'cuantity.required'      => "La 'Cantidad de partiruras' debe ser de al menos uno"
+        ];
     }
     /**
      * Display a listing of the resource.
@@ -66,7 +67,8 @@ class MusicSheetController extends Controller
     {
         $this->validate(
             $request,
-            $this->rules, $this->messages
+            $this->rules,
+            $this->messages
         );
 
         $musicSheet = new MusicSheet();
@@ -106,7 +108,7 @@ class MusicSheetController extends Controller
      */
     public function edit(Request $request)
     {
-        $this->rules = array_merge($this->rules, ['title' => ['required', 'unique_with:music_sheets, authorId = author_id,'.$request->id]]);
+        $this->rules = array_merge($this->rules, ['title' => ['required', 'unique_with:music_sheets, authorId = author_id,' . $request->id]]);
         $this->validate(
             $request,
             $this->rules,
@@ -127,7 +129,7 @@ class MusicSheetController extends Controller
             $musicSheet->save();
         }
 
-        return response()->json(['item' => MusicSheet::find($musicSheet->id), 'message' => 'success']);
+        return response()->json(['item' => $musicSheet->jsonSerialize(), 'message' => 'success']);
     }
 
     /**

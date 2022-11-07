@@ -11,6 +11,11 @@ class MusicSheet extends Model
 
     use HasFactory, SoftDeletes;
 
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     protected $with = ['author', 'gender', 'location'];
 
     /**
@@ -47,6 +52,11 @@ class MusicSheet extends Model
         return $this->belongsTo(Gender::class);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function location()
     {
         return $this->belongsTo(Locations::class);

@@ -15,4 +15,9 @@ class Borrowers extends Model
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
+    public function loans()
+    {
+        return $this->hasMany(Loans::class, 'borrower_id');
+    }
 }

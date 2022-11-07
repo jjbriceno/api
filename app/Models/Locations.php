@@ -14,7 +14,7 @@ class Locations extends Model
         'cabinet_id', 'drawer_id'
     ];
 
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
     protected $appends = ["cabinet_name", "drawer_name"];
 

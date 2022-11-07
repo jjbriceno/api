@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Loans;
+use App\Models\Borrowers;
+use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class LoansController extends Controller
@@ -19,7 +20,16 @@ class LoansController extends Controller
      */
     public function index()
     {
-        return response()->json(['loans' => Loans::all()]);
+        // $loans = Loans::all()->where('status', 'abierto')->groupBy(function ($item) {
+        //     return Borrowers::where('id', $item->borrower_id)->first()->name;
+        // });
+
+        $borrowers = Borrowers::with('loans')->whereHas('loans')->get();
+
+        foreach ($borrowers as $borrower) {
+            $borrower['total_music_sheets'] = array_sum(array_column($borrower->loans->all(), 'cuantity'));
+        }
+        return response()->json(['loans' => $borrowers->jsonSerialize()]);
     }
 
     /**
@@ -57,7 +67,7 @@ class LoansController extends Controller
         $loan = new Loans();
         $loan->borrower_id = $request->borrowerId;
         $loan->status = 'abierto';
-        $loan->loan_date = \Carbon\Carbon::now('utc')->format('m d Y');
+        $loan->loan_date = \Carbon\Carbon::now('utc')->format('m-d-Y');
         $loan->delivery_date = $request->deliveryDate;
         $loan->music_sheets_borrowed_amount = json_encode([$request->id => $request->cuantity]);
         $loan->cuantity = $request->cuantity;
@@ -125,8 +135,27 @@ class LoansController extends Controller
      */
     public function destroy($id)
     {
-        Loans::destroy($id);
 
-        return response(null, Response::HTTP_OK);
+        $loans = Loans::where('borrower_id', $id);
+
+        $loansArray = $loans->get()->all();
+
+        if ($loansArray) {
+            $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
+            foreach ($musicSheetsJson as $key) {
+                $keyArray = (array) $key;
+                foreach ($keyArray as $id => $cuantity) {
+                    $musicSheet = MusicSheet::find($id);
+                    $musicSheet->available += $cuantity;
+                    $musicSheet->save();
+                }
+            }
+        }
+
+        $loans->delete();
+
+        $borrowers = Borrowers::with('loans')->whereHas('loans')->get();
+
+        return response(['loans' => $borrowers->jsonSerialize()], Response::HTTP_OK);
     }
 }

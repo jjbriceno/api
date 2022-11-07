@@ -127,6 +127,7 @@ class BorrowersController extends Controller
     {
 
         $loans = Loans::where('borrower_id', $id);
+
         $loansArray = $loans->get()->all();
 
         if ($loansArray) {

@@ -94,5 +94,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow loans management
      */
 
+    Route::get('/loan', [LoansController::class, 'index'])->name('loans');
+
     Route::post('/loan/store', [LoansController::class, 'store'])->name('loans.store');
+
+    Route::post('/loan/destroy/{id}', [LoansController::class, 'destroy'])->name('loans.destroy');
 });
