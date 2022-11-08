@@ -99,4 +99,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/loan/store', [LoansController::class, 'store'])->name('loans.store');
 
     Route::post('/loan/destroy/{id}', [LoansController::class, 'destroy'])->name('loans.destroy');
+
+    Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');
 });

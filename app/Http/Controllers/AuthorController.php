@@ -50,7 +50,7 @@ class AuthorController extends Controller
 
         $author->save();
 
-        return response($author->jsonSerialize(), Response::HTTP_CREATED);
+        return response(['author' => $author->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**

@@ -128,6 +128,27 @@ class LoansController extends Controller
     }
 
     /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function returnLoan(Request $request)
+    {
+        $musicSheet = MusicSheet::find($request->musicSheetId);
+        $musicSheet->available += $request->cuantity;
+        $musicSheet->save();
+        Loans::find($request->loanId)->delete();
+
+        $borrowers = Borrowers::with('loans')->whereHas('loans')->get();
+
+        foreach ($borrowers as $borrower) {
+            $borrower['total_music_sheets'] = array_sum(array_column($borrower->loans->all(), 'cuantity'));
+        }
+        return response(['loans' => Loans::all(), 'borrowers' => $borrowers->jsonSerialize()], Response::HTTP_OK);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Loans  $loans
