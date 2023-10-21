@@ -50,7 +50,6 @@ class LoansController extends Controller
      */
     public function store(Request $request)
     {
-
         $this->validate($request, [
             'id'            => ['required'],
             'title'         => ['required'],
@@ -67,7 +66,7 @@ class LoansController extends Controller
         $loan = new Loans();
         $loan->borrower_id = $request->borrowerId;
         $loan->status = 'abierto';
-        $loan->loan_date = \Carbon\Carbon::now('utc')->format('m-d-Y');
+        $loan->loan_date = \Carbon\Carbon::now('utc');
         $loan->delivery_date = $request->deliveryDate;
         $loan->music_sheets_borrowed_amount = json_encode([$request->id => $request->cuantity]);
         $loan->cuantity = $request->cuantity;
