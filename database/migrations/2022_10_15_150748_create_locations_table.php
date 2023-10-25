@@ -15,8 +15,10 @@ class CreateLocationsTable extends Migration
     {
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->string('cabinet_id', 100)->comment('Identificador de la gaveta en el archivador');
-            $table->string('drawer_id', 100)->comment('Identificador del archivador');
+            $table->foreignId('cabinet_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade')
+            ->comment('Identificador de la gaveta en el archivador');
+            $table->foreignId('drawer_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade')
+            ->comment('Identificador del archivador');
             $table->softDeletes();
             $table->timestamps();
         });
