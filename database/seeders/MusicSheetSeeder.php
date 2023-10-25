@@ -43,7 +43,7 @@ class MusicSheetSeeder extends Seeder
 
                 $lacation = Locations::create([
                     'cabinet_id'    => $cabinet_id,
-                    'drawer_id'     => $cabinet_id
+                    'drawer_id'     => $drawer_id
                 ]);
 
                 MusicSheet::create([

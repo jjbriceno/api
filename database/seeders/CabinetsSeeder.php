@@ -5,7 +5,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Cabinets;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CabinetsSeeder extends Seeder
 {

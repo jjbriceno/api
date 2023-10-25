@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Drawers;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class DrawersSeeder extends Seeder
 {

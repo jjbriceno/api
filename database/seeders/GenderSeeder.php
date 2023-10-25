@@ -130,11 +130,8 @@ class GenderSeeder extends Seeder
             "Voces Blancas Malagueña",
             "Voces Oscuras",
             "Walt Disney Dumbo",
-
-
-
-
         ];
+
         DB::transaction(function () use ($a) {
             foreach ($a  as $SuperA) {
                 Gender::updateOrCreate(['name' => $SuperA]);
