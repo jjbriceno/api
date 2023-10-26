@@ -16,14 +16,14 @@ class MusicSheet extends Model
      *
      * @var array
      */
-    protected $with = ['author', 'gender', 'location'];
+    protected $with = ['author', 'gender', 'location', 'musicSheetFile'];
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = ['author_id', 'gender_id', 'location_id', 'title', 'available'];
+    protected $fillable = ['author_id', 'gender_id', 'location_id', 'title', 'available', 'music_sheet_file_id'];
 
     /**
      * Attributes to be hidden from arrays
@@ -60,5 +60,16 @@ class MusicSheet extends Model
     public function location()
     {
         return $this->belongsTo(Locations::class);
+    }
+
+    
+    /**
+     * Retrieves the related MusicSheetFile model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function musicSheetFile()
+    {
+        return $this->belongsTo(MusicSheetFile::class);
     }
 }

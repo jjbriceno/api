@@ -8,6 +8,7 @@ use App\Models\Cabinets;
 use App\Models\Drawers;
 use App\Models\Locations;
 use App\Models\MusicSheet;
+use App\Models\MusicSheetFile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -19,22 +20,26 @@ class MusicSheetController extends Controller
     public function __construct()
     {
         $this->rules = [
-            'title'         => ['required', 'unique_with:music_sheets, authorId = author_id'],
-            'authorId'      => ['required'],
-            'genderId'      => ['required'],
-            'drawerId'      => ['required'],
-            'cabinetId'     => ['required'],
-            'cuantity'      => ['required']
+            'title'             => ['required', 'unique_with:music_sheets, authorId = author_id'],
+            'authorId'          => ['required'],
+            'genderId'          => ['required'],
+            'drawerId'          => ['required'],
+            'cabinetId'         => ['required'],
+            'cuantity'          => ['required'],
+            'musicSheetFile'    => ['sometimes', 'required', 'mimes:jpeg,png,pdf', 'max:2048'],
         ];
 
         $this->messages = [
-            'title.required'         => "El 'Título' es obligatorio",
-            'title.unique_with'      => "Este Título ya ha sido registrado con este autor",
-            'authorId.required'      => "El 'Autor' es obligatorio",
-            'genderId.required'      => "El 'Género musical' es obligatorio",
-            'drawerId.required'      => "El 'Estante' es obligatorio",
-            'cabinetId.required'     => "La 'Gaveta' es obligatoria",
-            'cuantity.required'      => "La 'Cantidad de partiruras' debe ser de al menos uno"
+            'title.required'            => "El 'Título' es obligatorio",
+            'title.unique_with'         => "Este Título ya ha sido registrado con este autor",
+            'authorId.required'         => "El 'Autor' es obligatorio",
+            'genderId.required'         => "El 'Género musical' es obligatorio",
+            'drawerId.required'         => "El 'Estante' es obligatorio",
+            'cabinetId.required'        => "La 'Gaveta' es obligatoria",
+            'cuantity.required'         => "La 'Cantidad de partiruras' debe ser de al menos uno",
+            'musicSheetFile.required'   => "El Archivo es obligatorio",
+            'musicSheetFile.mimes'      => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
+            'musicSheetFile.required'   => "El tamaño maximo del archivo es de 2 MB",
         ];
     }
     /**
@@ -83,6 +88,21 @@ class MusicSheetController extends Controller
         $location->drawer_id = $request->drawerId;
         $location->save();
 
+        if ($request->hasFile('musicSheetFile')) {
+            $author = Author::find($request->authorId);
+            $title = $author ?
+            $request->title . ' - ' . $author->full_name
+            : $request->file('musicSheetFile')->getClientOriginalName();
+            $file_format = $request->file('musicSheetFile')->getClientOriginalExtension();
+
+            $musicSheetFile = MusicSheetFile::create([
+                'file_name' => $title,
+                'file_format' => $file_format,
+                'binary_file' => base64_encode($request->file('musicSheetFile')->get()),
+            ]);
+            $musicSheet->music_sheet_file_id = $musicSheetFile->id;
+        }
+
         $musicSheet->location_id = $location->id;
         $musicSheet->save();
 
@@ -122,6 +142,32 @@ class MusicSheetController extends Controller
             $musicSheet->gender_id = $request->genderId;
             $musicSheet->cuantity = $request->cuantity;
 
+            if ($request->hasFile('musicSheetFile')) {
+                $author = Author::find($request->authorId);
+                $title = $author ?
+                $request->title . ' - ' . $author->full_name
+                : $request->file('musicSheetFile')->getClientOriginalName();
+                $file_format = $request->file('musicSheetFile')->getClientOriginalExtension();
+
+                if ($musicSheet->music_sheet_file_id) {
+                    $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
+                    if ($musicSheetFile) {
+                        $musicSheetFile->file_name = $title;
+                        $musicSheetFile->file_format = $file_format;
+                        $musicSheetFile->binary_file = base64_encode($request->file('musicSheetFile')->get());
+                        $musicSheetFile->save();
+                        $musicSheet->music_sheet_file_id = $musicSheetFile->id;
+                    }
+                } else {
+                    $musicSheetFile = MusicSheetFile::create([
+                        'file_name'     => $title,
+                        'file_format'   => $file_format,
+                        'binary_file'   => base64_encode($request->file('musicSheetFile')->get()),
+                    ]);
+                    $musicSheet->music_sheet_file_id = $musicSheetFile->id;
+                }
+            }
+
             $location = Locations::find($request->locationId);
             $location->cabinet_id = $request->cabinetId;
             $location->drawer_id = $request->drawerId;
@@ -156,6 +202,10 @@ class MusicSheetController extends Controller
     {
         $musicSheet = MusicSheet::find($id);
         $location = Locations::find($musicSheet->location_id);
+        if ($musicSheet->music_sheet_file_id) {
+            $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
+            $musicSheetFile->delete();
+        }
 
         $musicSheet->delete();
         $location->delete();

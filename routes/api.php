@@ -7,6 +7,7 @@ use App\Http\Controllers\DrawersController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\LoansController;
 use App\Http\Controllers\MusicSheetController;
+use App\Http\Controllers\MusicSheetFileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:sanctum'])->group(function () {
+
 
     // Get the currently authenticated user
     Route::get('/user', function (Request $request) {
@@ -54,6 +55,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/music-sheets/destroy/{id}', [MusicSheetController::class, 'destroy'])->name('music-sheets.destroy');
 
     Route::post('/music-sheets/update', [MusicSheetController::class, 'update'])->name('music-sheets.update');
+
+    /**
+     * Routes that allow music sheet file management
+     */
+
+    Route::post('/sheet-file/store', [MusicSheetFileController::class, 'store'])->name('music-sheet-file.store');
+
+    Route::post('/sheet-file/update', [MusicSheetFileController::class, 'update'])->name('music-sheet-file.update');
+
+    Route::post('/sheet-file/destroy/{id}', [MusicSheetFileController::class, 'destroy'])->name('music-sheet-file.destroy');
+
+    Route::get('/sheet-file/download/{id}', [MusicSheetFileController::class, 'download'])->name('music-sheet-file.download');
 
     /**
      * Routes that allow gender management
@@ -101,4 +114,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/loan/destroy/{id}', [LoansController::class, 'destroy'])->name('loans.destroy');
 
     Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');
-});
+
