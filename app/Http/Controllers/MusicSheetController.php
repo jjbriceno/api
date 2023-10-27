@@ -76,37 +76,38 @@ class MusicSheetController extends Controller
             $this->messages
         );
 
+        if ($request->hasFile('file')) {
+            $author = Author::find($request->authorId);
+            $title = $author ?
+                $request->title . ' - ' . $author->full_name
+                : $request->file('file')->getClientOriginalName();
+            $file_format = $request->file('file')->getClientOriginalExtension();
+
+            $musicSheetFile = new MusicSheetFile();
+            $musicSheetFile->file_name = $title;
+            $musicSheetFile->file_format = $file_format;
+            $musicSheetFile->binary_file = base64_encode($request->file('file')->get());
+            $musicSheetFile->save();
+        }
+
         $musicSheet = new MusicSheet();
         $musicSheet->title = $request->title;
         $musicSheet->author_id = $request->authorId;
         $musicSheet->gender_id = $request->genderId;
         $musicSheet->cuantity = $request->cuantity;
         $musicSheet->available = $request->cuantity;
+        $musicSheet->music_sheet_file_id = $musicSheetFile->id;
 
         $location = new Locations();
         $location->cabinet_id = $request->cabinetId;
         $location->drawer_id = $request->drawerId;
         $location->save();
 
-        if ($request->hasFile('musicSheetFile')) {
-            $author = Author::find($request->authorId);
-            $title = $author ?
-            $request->title . ' - ' . $author->full_name
-            : $request->file('musicSheetFile')->getClientOriginalName();
-            $file_format = $request->file('musicSheetFile')->getClientOriginalExtension();
-
-            $musicSheetFile = MusicSheetFile::create([
-                'file_name' => $title,
-                'file_format' => $file_format,
-                'binary_file' => base64_encode($request->file('musicSheetFile')->get()),
-            ]);
-            $musicSheet->music_sheet_file_id = $musicSheetFile->id;
-        }
 
         $musicSheet->location_id = $location->id;
         $musicSheet->save();
 
-        return response()->json(['item' => MusicSheet::find($musicSheet->id), 'message' => 'success']);
+        return response()->json(['message' => 'success'], 200);
     }
 
     /**
@@ -145,8 +146,8 @@ class MusicSheetController extends Controller
             if ($request->hasFile('musicSheetFile')) {
                 $author = Author::find($request->authorId);
                 $title = $author ?
-                $request->title . ' - ' . $author->full_name
-                : $request->file('musicSheetFile')->getClientOriginalName();
+                    $request->title . ' - ' . $author->full_name
+                    : $request->file('musicSheetFile')->getClientOriginalName();
                 $file_format = $request->file('musicSheetFile')->getClientOriginalExtension();
 
                 if ($musicSheet->music_sheet_file_id) {
