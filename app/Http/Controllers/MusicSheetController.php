@@ -49,7 +49,7 @@ class MusicSheetController extends Controller
      */
     public function index()
     {
-        return response()->json(['music_sheet' => MusicSheet::all()]);
+        return response()->json(['music_sheet' => MusicSheet::query()->without('musicSheetFile')->get()]);
     }
 
     /**
@@ -103,11 +103,10 @@ class MusicSheetController extends Controller
         $location->drawer_id = $request->drawerId;
         $location->save();
 
-
         $musicSheet->location_id = $location->id;
         $musicSheet->save();
 
-        return response()->json(['message' => 'success'], 200);
+        return response()->json(['item' => $musicSheet, 'message' => 'success'], 200);
     }
 
     /**
