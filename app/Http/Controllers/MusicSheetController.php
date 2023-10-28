@@ -7,6 +7,7 @@ use App\Models\Locations;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use App\Models\MusicSheetFile;
+use App\Http\Resources\MusicSheetResource;
 use App\Http\Resources\MusicSheetCollection;
 
 class MusicSheetController extends Controller
@@ -23,7 +24,7 @@ class MusicSheetController extends Controller
             'drawerId'          => ['required'],
             'cabinetId'         => ['required'],
             'cuantity'          => ['required'],
-            'musicSheetFile'    => ['sometimes', 'required', 'mimes:jpeg,png,pdf', 'max:2048'],
+            'file'              => ['sometimes', 'required', 'mimes:jpeg,png,pdf', 'max:5148'],
         ];
 
         $this->messages = [
@@ -34,9 +35,9 @@ class MusicSheetController extends Controller
             'drawerId.required'         => "El 'Estante' es obligatorio",
             'cabinetId.required'        => "La 'Gaveta' es obligatoria",
             'cuantity.required'         => "La 'Cantidad de partiruras' debe ser de al menos uno",
-            'musicSheetFile.required'   => "El Archivo es obligatorio",
-            'musicSheetFile.mimes'      => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
-            'musicSheetFile.required'   => "El tamaño maximo del archivo es de 2 MB",
+            'file.required'             => "El Archivo es obligatorio",
+            'file.mimes'                => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
+            'file.required'             => "El tamaño maximo del archivo es de 2 MB",
         ];
     }
     /**
@@ -46,7 +47,7 @@ class MusicSheetController extends Controller
      */
     public function index()
     {
-        $musicSheets = MusicSheet::where('available', '>', 0);
+        $musicSheets = MusicSheet::where('music_sheet_file_id', '>', 0);
 
         return new MusicSheetCollection($musicSheets->paginate(10));
     }
@@ -151,19 +152,17 @@ class MusicSheetController extends Controller
 
                 if ($musicSheet->music_sheet_file_id) {
                     $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
-                    if ($musicSheetFile) {
-                        $musicSheetFile->file_name = $title;
-                        $musicSheetFile->file_format = $file_format;
-                        $musicSheetFile->binary_file = base64_encode($request->file('musicSheetFile')->get());
-                        $musicSheetFile->save();
-                        $musicSheet->music_sheet_file_id = $musicSheetFile->id;
-                    }
                 } else {
                     $musicSheetFile = new MusicSheetFile();
-                    $musicSheetFile->file_name = $title;
-                    $musicSheetFile->file_format = $file_format;
-                    $musicSheetFile->binary_file = base64_encode($request->file('file')->get());
-                    $musicSheetFile->save();
+                }
+
+                if ($musicSheetFile) {
+                    $musicSheetFile->fill([
+                        'file_name' => $title,
+                        'file_format' => $file_format,
+                        'binary_file' => base64_encode($request->file('file')->get()),
+                    ])->save();
+
                     $musicSheet->music_sheet_file_id = $musicSheetFile->id;
                 }
             }
@@ -175,7 +174,7 @@ class MusicSheetController extends Controller
             $musicSheet->save();
         }
 
-        return response()->json(['item' => $musicSheet->jsonSerialize(), 'message' => 'success']);
+        return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success']);
     }
 
     /**
