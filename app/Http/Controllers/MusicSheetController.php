@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
-use App\Models\Gender;
-use App\Models\Cabinets;
-use App\Models\Drawers;
 use App\Models\Locations;
 use App\Models\MusicSheet;
-use App\Models\MusicSheetFile;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use App\Models\MusicSheetFile;
+use App\Http\Resources\MusicSheetCollection;
 
 class MusicSheetController extends Controller
 {
@@ -49,7 +46,7 @@ class MusicSheetController extends Controller
      */
     public function index()
     {
-        return response()->json(['music_sheet' => MusicSheet::query()->without('musicSheetFile')->get()]);
+        return new MusicSheetCollection(MusicSheet::all());
     }
 
     /**
@@ -75,6 +72,9 @@ class MusicSheetController extends Controller
             $this->rules,
             $this->messages
         );
+        $musicSheet = new MusicSheet();
+        $location = new Locations();
+
 
         if ($request->hasFile('file')) {
             $author = Author::find($request->authorId);
@@ -88,17 +88,15 @@ class MusicSheetController extends Controller
             $musicSheetFile->file_format = $file_format;
             $musicSheetFile->binary_file = base64_encode($request->file('file')->get());
             $musicSheetFile->save();
+            $musicSheet->music_sheet_file_id = $musicSheetFile->id;
         }
 
-        $musicSheet = new MusicSheet();
         $musicSheet->title = $request->title;
         $musicSheet->author_id = $request->authorId;
         $musicSheet->gender_id = $request->genderId;
         $musicSheet->cuantity = $request->cuantity;
         $musicSheet->available = $request->cuantity;
-        $musicSheet->music_sheet_file_id = $musicSheetFile->id;
 
-        $location = new Locations();
         $location->cabinet_id = $request->cabinetId;
         $location->drawer_id = $request->drawerId;
         $location->save();
