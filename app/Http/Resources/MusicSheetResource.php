@@ -15,13 +15,15 @@ class MusicSheetResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'title'         => $this->title,
-            'available'     => $this->available,
-            'cuantity'      => $this->cuantity,
-            'author'        => $this->author,
-            'gender'        => $this->gender,
-            'location'      => $this->location,
-            'has_file'      => $this->music_sheet_file_id ? true : false
+            'id'                        => $this->id,
+            'title'                     => $this->title,
+            'available'                 => $this->available,
+            'cuantity'                  => $this->cuantity,
+            'author'                    => $this->author,
+            'gender'                    => $this->gender,
+            'location'                  => $this->location,
+            'has_file'                  => $this->music_sheet_file_id ? true : false,
+            'music_sheet_file_id'       => $this->music_sheet_file_id ? $this->music_sheet_file_id : null
         ];
     }
 }

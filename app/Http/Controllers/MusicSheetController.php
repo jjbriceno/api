@@ -46,7 +46,9 @@ class MusicSheetController extends Controller
      */
     public function index()
     {
-        return new MusicSheetCollection(MusicSheet::all());
+        $musicSheets = MusicSheet::where('available', '>', 0);
+
+        return new MusicSheetCollection($musicSheets->paginate(10));
     }
 
     /**
@@ -140,12 +142,12 @@ class MusicSheetController extends Controller
             $musicSheet->gender_id = $request->genderId;
             $musicSheet->cuantity = $request->cuantity;
 
-            if ($request->hasFile('musicSheetFile')) {
+            if ($request->hasFile('file')) {
                 $author = Author::find($request->authorId);
                 $title = $author ?
                     $request->title . ' - ' . $author->full_name
-                    : $request->file('musicSheetFile')->getClientOriginalName();
-                $file_format = $request->file('musicSheetFile')->getClientOriginalExtension();
+                    : $request->file('file')->getClientOriginalName();
+                $file_format = $request->file('file')->getClientOriginalExtension();
 
                 if ($musicSheet->music_sheet_file_id) {
                     $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
@@ -157,11 +159,11 @@ class MusicSheetController extends Controller
                         $musicSheet->music_sheet_file_id = $musicSheetFile->id;
                     }
                 } else {
-                    $musicSheetFile = MusicSheetFile::create([
-                        'file_name'     => $title,
-                        'file_format'   => $file_format,
-                        'binary_file'   => base64_encode($request->file('musicSheetFile')->get()),
-                    ]);
+                    $musicSheetFile = new MusicSheetFile();
+                    $musicSheetFile->file_name = $title;
+                    $musicSheetFile->file_format = $file_format;
+                    $musicSheetFile->binary_file = base64_encode($request->file('file')->get());
+                    $musicSheetFile->save();
                     $musicSheet->music_sheet_file_id = $musicSheetFile->id;
                 }
             }
