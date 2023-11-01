@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Author;
 use App\Models\Locations;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
@@ -21,11 +20,19 @@ class MusicSheetController extends Controller
     {
         $this->musicSheetRepository = $musicSheetRepository;
     }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\ResponsepucSheets->paginate(10));
-    }
+     * @return \Illuminate\Http\Response
+     */
+    // public function index()
+    // {
+    //     // $musicSheets = MusicSheet::query()->where('music_sheet_file_id', '!=', 0);
+    //     $musicSheets = MusicSheet::query()->get();
+
+    //     return new MusicSheetCollection($musicSheets);
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -103,5 +110,14 @@ class MusicSheetController extends Controller
         $location->delete();
 
         return response()->json(['message' => 'success']);
+    }
+
+    public function index()
+    {
+        $itemsPerPage = request('itemsPerPage');
+
+        $musicSheet = MusicSheet::filtered();
+
+        return new MusicSheetCollection($musicSheet->paginate($itemsPerPage ? $itemsPerPage : 10));
     }
 }

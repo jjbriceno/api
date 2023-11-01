@@ -22,7 +22,6 @@ class MusicSheetResource extends JsonResource
             'author'                    => $this->author,
             'gender'                    => $this->gender,
             'location'                  => $this->location,
-            'has_file'                  => $this->music_sheet_file_id ? true : false,
             'music_sheet_file_id'       => $this->music_sheet_file_id ? $this->music_sheet_file_id : null
         ];
     }

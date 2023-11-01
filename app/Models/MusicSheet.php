@@ -62,7 +62,7 @@ class MusicSheet extends Model
         return $this->belongsTo(Locations::class);
     }
 
-    
+
     /**
      * Retrieves the related MusicSheetFile model.
      *
@@ -71,5 +71,35 @@ class MusicSheet extends Model
     public function musicSheetFile()
     {
         return $this->belongsTo(MusicSheetFile::class);
+    }
+
+    /**
+     * Filters the query based on the search criteria and sort order.
+     *
+     * @param mixed $query The query to be filtered.
+     * @return void
+     */
+    public function scopeFiltered($query)
+    {
+        $search = request('search');
+        $sortBy = request('sortBy');
+        $order = request('descending') == 'true' ? 'desc' : 'asc';
+
+        $query->select('*');
+
+        if ($search) {
+            $query->where('title', 'like', '%' . $search . '%');
+        }
+
+        switch ($sortBy) {
+            case 'title': {
+                    $query->orderBy($sortBy, $order);
+                }
+        }
+
+        return $query;
+        // $query->when($search, function ($query) use ($search) {
+        //     $query->where('title', 'like', '%' . $search . '%');
+        // });
     }
 }
