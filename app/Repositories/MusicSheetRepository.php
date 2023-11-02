@@ -6,9 +6,9 @@ use App\Models\Author;
 use App\Models\Locations;
 use App\Models\MusicSheet;
 use App\Models\MusicSheetFile;
-use App\Http\Requests\MusicSheetRequest;
+use App\Http\Requests\MusicSheet\MusicSheetRequest;
 use App\Http\Resources\MusicSheetResource;
-use App\Http\Requests\MusicSheetUpdateRequest;
+use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
 use App\Interfaces\MusicSheetRepositoryInterface;
 
 class MusicSheetRepository implements MusicSheetRepositoryInterface

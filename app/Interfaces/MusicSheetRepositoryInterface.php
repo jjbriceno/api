@@ -2,8 +2,8 @@
 
 namespace App\Interfaces;
 
-use App\Http\Requests\MusicSheetRequest;
-use App\Http\Requests\MusicSheetUpdateRequest;
+use App\Http\Requests\MusicSheet\MusicSheetRequest;
+use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
 
 interface MusicSheetRepositoryInterface 
 {

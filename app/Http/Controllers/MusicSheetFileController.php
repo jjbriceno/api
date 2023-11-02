@@ -102,7 +102,7 @@ class MusicSheetFileController extends Controller
             $this->rules,
             $this->messages
         );
-    
+
         if ($request->hasFile('musicSheetFile')) {
             if ($musicSheetFile) {
                 $musicSheetFile->file_name = $request->file('musicSheetFile')->getClientOriginalName();
@@ -111,7 +111,7 @@ class MusicSheetFileController extends Controller
                 $musicSheetFile->save();
             }
         }
-    
+
         return response()->json(['message' => 'success'], 200);
     }
 
@@ -128,10 +128,8 @@ class MusicSheetFileController extends Controller
         return response()->json(['message' => 'success']);
     }
 
-    public function download($id)
+    public function download(MusicSheetFile $musicSheetFile)
     {
-        $musicSheetFile = MusicSheetFile::find($id);
-
         if ($musicSheetFile) {
             // Lee el contenido del recurso de transmisión en una variable
             $stream_get_contents = stream_get_contents($musicSheetFile->binary_file);
