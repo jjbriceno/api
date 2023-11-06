@@ -6,10 +6,9 @@ use App\Models\Locations;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use App\Models\MusicSheetFile;
-use App\Http\Requests\MusicSheetRequest;
-use App\Http\Resources\MusicSheetResource;
+use App\Http\Requests\MusicSheet\MusicSheetRequest;
 use App\Http\Resources\MusicSheetCollection;
-use App\Http\Requests\MusicSheetUpdateRequest;
+use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
 use App\Interfaces\MusicSheetRepositoryInterface;
 
 class MusicSheetController extends Controller
@@ -114,10 +113,6 @@ class MusicSheetController extends Controller
 
     public function index()
     {
-        $itemsPerPage = request('itemsPerPage');
-
-        $musicSheet = MusicSheet::filtered();
-
-        return new MusicSheetCollection($musicSheet->paginate($itemsPerPage ? $itemsPerPage : 10));
+        return $this->musicSheetRepository->index();
     }
 }

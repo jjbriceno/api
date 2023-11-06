@@ -6,10 +6,11 @@ use App\Models\Author;
 use App\Models\Locations;
 use App\Models\MusicSheet;
 use App\Models\MusicSheetFile;
-use App\Http\Requests\MusicSheet\MusicSheetRequest;
 use App\Http\Resources\MusicSheetResource;
-use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
+use App\Http\Resources\MusicSheetCollection;
 use App\Interfaces\MusicSheetRepositoryInterface;
+use App\Http\Requests\MusicSheet\MusicSheetRequest;
+use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
 
 class MusicSheetRepository implements MusicSheetRepositoryInterface
 {
@@ -90,5 +91,12 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
         }
 
         return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success']);
+    }
+
+    public function index()
+    {
+        $musicSheet = MusicSheet::filtered()->paginate(10);
+
+        return new MusicSheetCollection($musicSheet);
     }
 }

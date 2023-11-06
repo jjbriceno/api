@@ -21,8 +21,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-
+Route::middleware(['auth:sanctum'])->group(function () {
 
     // Get the currently authenticated user
     Route::get('/user', function (Request $request) {
@@ -115,3 +114,4 @@ use Illuminate\Support\Facades\Route;
 
     Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');
 
+});

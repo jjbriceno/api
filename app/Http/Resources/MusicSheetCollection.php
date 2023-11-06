@@ -11,7 +11,7 @@ class MusicSheetCollection extends ResourceCollection
      *
      * @var string
      */
-    public static $wrap = 'music_sheet';
+    public static $wrap = 'music_sheets';
     /**
      * Transform the resource collection into an array.
      *

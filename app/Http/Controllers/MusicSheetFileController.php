@@ -128,16 +128,16 @@ class MusicSheetFileController extends Controller
         return response()->json(['message' => 'success']);
     }
 
-    public function download(MusicSheetFile $musicSheetFile)
+    public function download(MusicSheetFile $id)
     {
-        if ($musicSheetFile) {
+        if ($id) {
             // Lee el contenido del recurso de transmisión en una variable
-            $stream_get_contents = stream_get_contents($musicSheetFile->binary_file);
+            $stream_get_contents = stream_get_contents($id->binary_file);
             if ($stream_get_contents !== false) {
                 $fileContent = base64_decode($stream_get_contents);
                 $headers = [
                     'Content-Type' => 'application/octet-stream',
-                    'Content-Disposition' => 'attachment; filename="' . $musicSheetFile->file_name . '"',
+                    'Content-Disposition' => 'attachment; filename="' . $id->file_name . '"',
                 ];
                 return response($fileContent, 200, $headers);
             } else {
