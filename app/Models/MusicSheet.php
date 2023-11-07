@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MusicSheet extends Model
 {
-
     use HasFactory, SoftDeletes;
 
     /**
@@ -62,7 +61,6 @@ class MusicSheet extends Model
         return $this->belongsTo(Locations::class);
     }
 
-
     /**
      * Retrieves the related MusicSheetFile model.
      *
@@ -81,25 +79,23 @@ class MusicSheet extends Model
      */
     public function scopeFiltered($query)
     {
-        $search = request('search');
-        $sortBy = request('sortBy');
-        $order = request('descending') == 'true' ? 'desc' : 'asc';
-
         $query->select('*');
 
-        if ($search) {
-            $query->where('title', 'like', '%' . $search . '%');
-        }
-
-        switch ($sortBy) {
-            case 'title': {
-                    $query->orderBy($sortBy, $order);
-                }
-        }
+        $query->orderBy("id", "asc");
 
         return $query;
-        // $query->when($search, function ($query) use ($search) {
-        //     $query->where('title', 'like', '%' . $search . '%');
-        // });
+    }
+
+    public function scopeSearch($query)
+    {
+        $search = request('search');
+
+        $query->when($search, function ($query) use ($search) {
+            $query->where('title', 'ilike', $search . '%');
+        });
+
+        $query->orderBy("title", "asc");
+
+        return $query;
     }
 }

@@ -18,30 +18,6 @@ class MusicSheetController extends Controller
     {
         $this->musicSheetRepository = $musicSheetRepository;
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    // public function index()
-    // {
-    //     // $musicSheets = MusicSheet::query()->where('music_sheet_file_id', '!=', 0);
-    //     $musicSheets = MusicSheet::query()->get();
-
-    //     return new MusicSheetCollection($musicSheets);
-    // }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -113,5 +89,10 @@ class MusicSheetController extends Controller
     public function index()
     {
         return $this->musicSheetRepository->index();
+    }
+    
+    public function search()
+    {
+        return $this->musicSheetRepository->search();
     }
 }

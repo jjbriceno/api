@@ -95,8 +95,18 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
 
     public function index()
     {
-        $musicSheet = MusicSheet::filtered()->paginate(10);
+        $musicSheets = MusicSheet::filtered()->paginate(10);
 
-        return new MusicSheetCollection($musicSheet);
+        return new MusicSheetCollection($musicSheets);
+    }
+
+    public function search()
+    {
+        if(request('search')) {
+            $musicSheet = MusicSheet::search()->paginate(10);
+            return new MusicSheetCollection($musicSheet);
+        } else {
+            return $this->index();
+        }
     }
 }
