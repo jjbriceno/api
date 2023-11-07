@@ -7,7 +7,6 @@ use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use App\Models\MusicSheetFile;
 use App\Http\Requests\MusicSheet\MusicSheetRequest;
-use App\Http\Resources\MusicSheetCollection;
 use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
 use App\Interfaces\MusicSheetRepositoryInterface;
 
@@ -51,7 +50,7 @@ class MusicSheetController extends Controller
      */
     public function store(MusicSheetRequest $request)
     {
-        $this->musicSheetRepository->store($request);
+        return $this->musicSheetRepository->store($request);
     }
 
     /**
@@ -73,7 +72,7 @@ class MusicSheetController extends Controller
      */
     public function edit(MusicSheetUpdateRequest $request)
     {
-        $this->musicSheetRepository->edit($request);
+        return $this->musicSheetRepository->edit($request);
     }
 
     /**

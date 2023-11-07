@@ -47,7 +47,7 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
         $musicSheet->location_id = $location->id;
         $musicSheet->save();
 
-        return response()->json(['item' => $musicSheet, 'message' => 'success'], 200);
+        return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], 200);
     }
 
     public function edit(MusicSheetUpdateRequest $request)
