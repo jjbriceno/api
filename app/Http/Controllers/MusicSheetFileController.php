@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MusicSheetFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MusicSheetFileController extends Controller
 {
@@ -134,12 +135,14 @@ class MusicSheetFileController extends Controller
             // Lee el contenido del recurso de transmisión en una variable
             $stream_get_contents = stream_get_contents($id->binary_file);
             if ($stream_get_contents !== false) {
-                $fileContent = base64_decode($stream_get_contents);
-                $headers = [
-                    'Content-Type' => 'application/octet-stream',
-                    'Content-Disposition' => 'attachment; filename="' . $id->file_name . '"',
-                ];
-                return response($fileContent, 200, $headers);
+                $path       = public_path($id->file_name);
+                $contents   = base64_decode($stream_get_contents);
+                //store file temporarily
+                file_put_contents($path, $contents);
+                $response = response()->download($path, $id->file_name)->deleteFileAfterSend(true);
+                $response->headers->set('Access-Control-Expose-Headers', 'Content-Disposition');
+
+                return $response;
             } else {
                 return response()->json(['message' => 'Hubo un error en la descarga'], 404);
             }

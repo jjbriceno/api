@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -21,6 +22,7 @@ class RoleAndPermissionSeeder extends Seeder
         Permission::create(['name' => 'download-music-sheet']);
         Permission::create(['name' => 'view-music-sheet']);
         Permission::create(['name' => 'borrow-music-sheet']);
+        Permission::create(['name' => 'history-music-sheet']);
 
         $adminRole = Role::create(['name' => 'Admin']);
         $userRole = Role::create(['name' => 'User']);

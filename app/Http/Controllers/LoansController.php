@@ -7,6 +7,9 @@ use App\Models\Borrowers;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Requests\Loans\LoanRequest;
+use App\Events\Loans\NewLoanRegisterEvent;
+use App\Http\Resources\MusicSheetResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class LoansController extends Controller
@@ -20,10 +23,6 @@ class LoansController extends Controller
      */
     public function index()
     {
-        // $loans = Loans::all()->where('status', 'abierto')->groupBy(function ($item) {
-        //     return Borrowers::where('id', $item->borrower_id)->first()->name;
-        // });
-
         $borrowers = Borrowers::with('loans')->whereHas('loans')->get();
 
         foreach ($borrowers as $borrower) {
@@ -48,31 +47,21 @@ class LoansController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(LoanRequest $request)
     {
-        $this->validate($request, [
-            'id'            => ['required'],
-            'title'         => ['required'],
-            'authorId'      => ['required'],
-            'genderId'      => ['required'],
-            'locationId'    => ['required'],
-            'drawerId'      => ['required'],
-            'cabinetId'     => ['required'],
-            'cuantity'      => ['required'],
-            'borrowerId'    => ['required'],
-            'deliveryDate'  => ['required']
+        $loan = Loans::create([
+            'borrower_id' => $request->borrowerId,
+            'status' => 'abierto',
+            'loan_date' => \Carbon\Carbon::now('utc'),
+            'delivery_date' => $request->deliveryDate,
+            'music_sheets_borrowed_amount' => json_encode([$request->musicSheetId => $request->cuantity]),
+            'cuantity' => $request->cuantity
         ]);
 
-        $loan = new Loans();
-        $loan->borrower_id = $request->borrowerId;
-        $loan->status = 'abierto';
-        $loan->loan_date = \Carbon\Carbon::now('utc');
-        $loan->delivery_date = $request->deliveryDate;
-        $loan->music_sheets_borrowed_amount = json_encode([$request->id => $request->cuantity]);
-        $loan->cuantity = $request->cuantity;
-        $loan->save();
+        event(new NewLoanRegisterEvent($request->musicSheetId, $loan->cuantity));
 
-        return response($loan->jsonSerialize(), Response::HTTP_CREATED);
+        // TODO return
+        return new MusicSheetResource(MusicSheet::find($request->musicSheetId));
     }
 
     /**

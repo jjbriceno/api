@@ -23,9 +23,10 @@ use Illuminate\Support\Facades\Route;
 */
 Route::middleware(['auth:sanctum'])->group(function () {
 
+
     // Get the currently authenticated user
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return auth()->user();
     });
 
     /**
