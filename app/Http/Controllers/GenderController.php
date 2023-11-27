@@ -38,7 +38,11 @@ class GenderController extends Controller
     {
         $this->validate($request, [
             'genderName' => ['required']
-        ]);
+        ],
+        [
+            'genderName.required' => 'El nombre del género es requerido'
+        ]
+    );
 
         $gender = new Gender();
         $gender->name = $request->genderName;
