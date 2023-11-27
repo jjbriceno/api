@@ -41,6 +41,9 @@ class AuthorController extends Controller
             $request,
             [
                 'fullName' => ['required'],
+            ],
+            [
+                'fullName.required' => 'El nombre es requerido.',
             ]
         );
 
