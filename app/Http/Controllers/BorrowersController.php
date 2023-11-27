@@ -47,7 +47,16 @@ class BorrowersController extends Controller
             'email'     => ['nullable', 'unique:borrowers,email'],
             'phone'     => ['required', 'unique:borrowers,phone'],
             'address'   => ['nullable']
-        ]);
+        ],
+        [
+            'firstName.required' => 'El nombre es requerido',
+            'lastName.required'  => 'El apellido es requerido',
+            'email.unique'       => 'El correo electrónico ya se encuentra registrado',
+            'phone.unique'       => 'El teléfono ya se encuentra registrado',
+            'phone.required'     => 'El teléfono es requerido',
+            'phone.unique'       => 'El teléfono ya se encuentra registrado',
+        ]
+    );
 
         $borrower = new Borrowers();
         $borrower->name = $request->firstName . ' ' . $request->lastName;
