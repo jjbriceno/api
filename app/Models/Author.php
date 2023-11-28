@@ -15,12 +15,34 @@ class Author extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var array <int, string>
      */
     protected $fillable = ['full_name'];
 
     public function musicSheets()
     {
         return $this->HasMany(MusicSheet::class);
+    }
+
+    public function scopeFiltered($query)
+    {
+        $query->select('*');
+
+        $query->orderBy("id", "asc");
+
+        return $query;
+    }
+
+    public function scopeSearch($query)
+    {
+        $search = request('search');
+
+        $query->when($search, function ($query) use ($search) {
+            $query->where('full_name', 'ilike', $search . '%');
+        });
+
+        $query->orderBy("full_name", "asc");
+
+        return $query;
     }
 }

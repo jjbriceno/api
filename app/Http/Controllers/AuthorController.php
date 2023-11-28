@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\MusicSheet;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Http\Resources\Author\AuthorCollection;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class AuthorController extends Controller
 {
@@ -18,7 +19,12 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        return response()->json(['authors' => Author::all()]);
+        // $musicSheets = MusicSheet::filtered()->paginate(10);
+
+        // return new MusicSheetCollection($musicSheets);
+        // return response()->json(['authors' => Author::all()]);
+        $authors = Author::filtered()->paginate(10);
+        return new AuthorCollection($authors);
     }
     /**
      * Show the form for creating a new resource.

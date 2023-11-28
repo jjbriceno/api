@@ -22,16 +22,16 @@ class Locations extends Model
     {
         return $this->belongsTo(
             Drawers::class,
+            'drawer_id',
             'id',
-            'drawer_id'
         );
     }
     public function cabin()
     {
         return $this->belongsTo(
             Cabinets::class,
+            'cabinet_id',
             'id',
-            'cabinet_id'
         );
     }
 

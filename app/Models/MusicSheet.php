@@ -91,7 +91,35 @@ class MusicSheet extends Model
         $search = request('search');
 
         $query->when($search, function ($query) use ($search) {
-            $query->where('title', 'ilike', $search . '%');
+            $query->where('title', 'ilike', $search . '%')
+            ->orWhere(
+                function ($query) use ($search) {
+                    $query->whereHas('author', function ($query) use ($search) {
+                        $query->where('full_name', 'ilike', $search . '%');
+                    });
+                }
+            )->orWhere(
+                function ($query) use ($search) {
+                    $query->whereHas('gender', function ($query) use ($search) {
+                        $query->where('name', 'ilike', $search . '%');
+                    });
+                }
+            )->orWhere(
+                function ($query) use ($search) {
+                    $query->whereHas('location', function ($query) use ($search) {
+                        $query->whereHas('drawer', function ($query) use ($search) {
+                            $query->where('name', 'ilike', $search . '%');
+                        })->orWhere(
+                            function ($query) use ($search) {
+                                $query->whereHas('cabin', function ($query) use ($search) {
+                                    $query->where('name', 'ilike', $search . '%');
+                                });
+                            }
+                        );
+                    });
+                }
+            );
+            
         });
 
         $query->orderBy("title", "asc");
