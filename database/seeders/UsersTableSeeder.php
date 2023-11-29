@@ -17,19 +17,29 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::transaction(function () {
-            $adminUser = User::create(
-                [
-                    'name' => "José Briceño",
-                    'email' => "bricenoj9@gmail.com",
-                    'email_verified_at' => now(),
-                    'password' => Hash::make("password"), // password
-                    'remember_token' => Str::random(10),
-                ]
-            );
-
-            if ($adminUser) {
-                $adminUser->assignRole("Admin");
+        $users = [
+            [
+                'name' => "José Briceño",
+                'email' => "bricenoj9@gmail.com",
+                'email_verified_at' => now(),
+                'password' => Hash::make("password"), // password
+                'remember_token' => Str::random(10),
+            ],
+            [
+                'name' => "Francisco Peña",
+                'email' => "javierrupe19@gmail.com",
+                'email_verified_at' => now(),
+                'password' => Hash::make("password"), // password
+                'remember_token' => Str::random(10),
+            ],
+        ];
+        DB::transaction(function () use ($users){
+            foreach ($users as $user) {
+                $adminUser = User::create($user);
+    
+                if ($adminUser) {
+                    $adminUser->assignRole("Admin");
+                }
             }
         });
     }

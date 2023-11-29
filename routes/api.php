@@ -38,27 +38,29 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow authors management
      */
-    Route::get('/authors', [AuthorController::class, 'index'])->name('authors');
+    Route::resource('/authors', AuthorController::class)->only(['index', 'store', 'update', 'destroy']);
+    // Route::get('/authors', [AuthorController::class, 'index'])->name('authors');
 
-    Route::post('/authors/store', [AuthorController::class, 'store'])->name('authors.store');
+    // Route::post('/authors/store', [AuthorController::class, 'store'])->name('authors.store');
 
     Route::post('/authors/edit', [AuthorController::class, 'edit'])->name('authors.edit');
 
-    Route::post('/authors/destroy/{id}', [AuthorController::class, 'destroy'])->name('authors.destroy');
+    // Route::post('/authors/destroy/{id}', [AuthorController::class, 'destroy'])->name('authors.destroy');
 
 
     /**
      * Routes that allow music sheets management
      */
-    Route::get('/music-sheets', [MusicSheetController::class, 'index'])->name('music-sheets');
+    Route::resource('/music-sheets', MusicSheetController::class)->only(['index', 'store', 'update', 'destroy']);
+    // Route::get('/music-sheets', [MusicSheetController::class, 'index'])->name('music-sheets');
 
-    Route::post('/music-sheets/store', [MusicSheetController::class, 'store'])->name('music-sheets.store');
+    // Route::post('/music-sheets/store', [MusicSheetController::class, 'store'])->name('music-sheets.store');
 
     Route::post('/music-sheets/edit', [MusicSheetController::class, 'edit'])->name('music-sheets.edit');
 
-    Route::post('/music-sheets/destroy/{id}', [MusicSheetController::class, 'destroy'])->name('music-sheets.destroy');
+    // Route::post('/music-sheets/destroy/{id}', [MusicSheetController::class, 'destroy'])->name('music-sheets.destroy');
 
-    Route::post('/music-sheets/update', [MusicSheetController::class, 'update'])->name('music-sheets.update');
+    // Route::post('/music-sheets/update', [MusicSheetController::class, 'update'])->name('music-sheets.update');
 
     /**
      * Routes that allow music sheet file management
@@ -67,16 +69,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('/sheet-file/update', [MusicSheetFileController::class, 'update'])->name('music-sheet-file.update');
 
-    Route::post('/sheet-file/destroy/{id}', [MusicSheetFileController::class, 'destroy'])->name('music-sheet-file.destroy');
+    Route::delete('/sheet-file/destroy/{id}', [MusicSheetFileController::class, 'destroy'])->name('music-sheet-file.destroy');
 
     Route::get('/sheet-file/download/{id}', [MusicSheetFileController::class, 'download'])->name('music-sheet-file.download');
 
     /**
      * Routes that allow gender management
      */
-    Route::get('/genders', [GenderController::class, 'index'])->name('genders');
+    Route::resource('/gender', GenderController::class)->only(['index', 'store', 'update', 'destroy']);
+    // Route::get('/genders', [GenderController::class, 'index'])->name('genders');
 
-    Route::post('/genders/store', [GenderController::class, 'store'])->name('genders.store');
+    // Route::post('/genders/store', [GenderController::class, 'store'])->name('genders.store');
 
     Route::post('/genders/edit', [GenderController::class, 'edit'])->name('genders.edit');
 
@@ -93,23 +96,25 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow borrowers management
      */
-    Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
+    Route::resource('/borrowers', BorrowersController::class)->only(['index', 'store', 'update', 'destroy']);
+    // Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
 
-    Route::post('/borrowers/store', [BorrowersController::class, 'store'])->name('borrowers.store');
+    // Route::post('/borrowers/store', [BorrowersController::class, 'store'])->name('borrowers.store');
 
     Route::post('/borrowers/edit', [BorrowersController::class, 'edit'])->name('borrowers.edit');
 
-    Route::post('/borrowers/destroy/{id}', [BorrowersController::class, 'destroy'])->name('borrowers.destroy');
+    // Route::post('/borrowers/destroy/{id}', [BorrowersController::class, 'destroy'])->name('borrowers.destroy');
 
 
     /**
      * Routes that allow loans management
      */
-    Route::get('/loan', [LoansController::class, 'index'])->name('loans');
+    Route::resource('/loan', LoansController::class)->only(['index', 'store', 'update', 'destroy']);
+    // Route::get('/loan', [LoansController::class, 'index'])->name('loans');
 
-    Route::post('/loan/store', [LoansController::class, 'store'])->name('loans.store');
+    // Route::post('/loan/store', [LoansController::class, 'store'])->name('loans.store');
 
-    Route::post('/loan/destroy/{id}', [LoansController::class, 'destroy'])->name('loans.destroy');
+    // Route::post('/loan/destroy/{id}', [LoansController::class, 'destroy'])->name('loans.destroy');
 
     Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');
 
