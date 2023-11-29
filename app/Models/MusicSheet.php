@@ -111,7 +111,7 @@ class MusicSheet extends Model
                             $query->where('name', 'ilike', $search . '%');
                         })->orWhere(
                             function ($query) use ($search) {
-                                $query->whereHas('cabin', function ($query) use ($search) {
+                                $query->whereHas('cabinet', function ($query) use ($search) {
                                     $query->where('name', 'ilike', $search . '%');
                                 });
                             }

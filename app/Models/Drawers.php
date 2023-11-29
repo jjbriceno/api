@@ -10,15 +10,11 @@ class Drawers extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'cabinets_cuantity'
+        'name',
     ];
 
     public function locations()
     {
-        return $this->hasMany(
-            Locations::class,
-            'drawer_id',
-            'id'
-        );
+        return $this->hasMany(Locations::class);
     }
 }

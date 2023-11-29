@@ -34,7 +34,7 @@ class MusicSheetSeeder extends Seeder
                 $author_name = trim($data[1], " ");
                 $cuantity = trim($data[2], " ");
                 $gender_name = trim($data[3], " ");
-                list($drawer_name, $cabinet_name) = explode('-', str_replace(' ', '', $data[4]));
+                list($cabinet_name, $drawer_name) = explode('-', str_replace(' ', '', $data[4]));
 
                 $drawer_id = Drawers::where('name', $drawer_name)->first()->id;
                 $cabinet_id = Cabinets::where('name', $cabinet_name)->first()->id;

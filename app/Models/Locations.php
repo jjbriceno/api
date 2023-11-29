@@ -20,19 +20,11 @@ class Locations extends Model
 
     public function drawer()
     {
-        return $this->belongsTo(
-            Drawers::class,
-            'drawer_id',
-            'id',
-        );
+        return $this->belongsTo(Drawers::class,);
     }
-    public function cabin()
+    public function cabinet()
     {
-        return $this->belongsTo(
-            Cabinets::class,
-            'cabinet_id',
-            'id',
-        );
+        return $this->belongsTo(Cabinets::class);
     }
 
     public function sheets()
@@ -42,15 +34,15 @@ class Locations extends Model
 
     public function getCabinetNameAttribute()
     {
-        $gabinet = Cabinets::where('id', $this->cabinet_id)->first();
+        $cabinet = Cabinets::where('id', $this->cabinet_id)->first();
 
-        return $gabinet->name;
+        return $cabinet->name;
     }
 
     public function getDrawerNameAttribute()
     {
-        $gabinet = Drawers::where('id', $this->drawer_id)->first();
+        $drawer = Drawers::where('id', $this->drawer_id)->first();
 
-        return $gabinet->name;
+        return $drawer->name;
     }
 }

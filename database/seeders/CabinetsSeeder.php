@@ -20,7 +20,8 @@ class CabinetsSeeder extends Seeder
             $count = 1;
             while ($count < 5) {
                 Cabinets::updateOrCreate(
-                    ['name' => 'G' . $count],
+                    ['name' => 'Estante' . $count],
+                    ['drawers_cuantity' => '4']
                 );
                 $count++;
             }

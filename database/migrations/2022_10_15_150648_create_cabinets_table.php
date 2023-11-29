@@ -15,7 +15,8 @@ class CreateCabinetsTable extends Migration
     {
         Schema::create('cabinets', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);  
+            $table->string('name', 100);
+            $table->string('drawers_cuantity', 100)->comment('cantidad de gavetas en el archivador');
             $table->timestamps();
         });
     }

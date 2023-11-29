@@ -19,8 +19,7 @@ class DrawersSeeder extends Seeder
             $count = 1;
             while ($count < 5) {
                 Drawers::updateOrCreate(
-                    ['name' => 'Estante' . $count],
-                    ['cabinets_cuantity' => '4']
+                    ['name' => 'G' . $count],
                 );
                 $count++;
             }
