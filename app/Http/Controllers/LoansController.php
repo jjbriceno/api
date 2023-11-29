@@ -72,7 +72,7 @@ class LoansController extends Controller
      */
     public function show(Loans $loans)
     {
-        //
+        return response(['loan' => $loans->jsonSerialize()], Response::HTTP_OK);
     }
 
     /**

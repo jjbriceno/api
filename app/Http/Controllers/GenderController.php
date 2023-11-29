@@ -59,7 +59,7 @@ class GenderController extends Controller
      */
     public function show(Gender $gender)
     {
-        //
+        return response(['gender' => $gender->jsonSerialize()], Response::HTTP_OK);
     }
 
     /**

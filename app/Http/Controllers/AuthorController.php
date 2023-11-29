@@ -70,7 +70,7 @@ class AuthorController extends Controller
      */
     public function show(Author $author)
     {
-        //
+        return response(['author' => $author->jsonSerialize()], Response::HTTP_OK);
     }
 
     /**

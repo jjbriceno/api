@@ -37,7 +37,7 @@ class MusicSheetController extends Controller
      */
     public function show(MusicSheet $musicSheet)
     {
-        //
+        return response(['musicSheet' => $musicSheet->jsonSerialize()], Response::HTTP_OK);
     }
 
     /**

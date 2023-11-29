@@ -74,8 +74,9 @@ class BorrowersController extends Controller
      * @param  \App\Models\borrower  $borrower
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(Borrowers $borrower)
     {
+        return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_OK);
     }
 
     /**
@@ -114,7 +115,6 @@ class BorrowersController extends Controller
      */
     public function update(Request $request, Borrowers $borrower)
     {
-
 
         $borrower->name = $request->name;
         $borrower->phone = $request->phone;

@@ -31,14 +31,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     /**
-     * Routes that allow music sheets search
-     */
-    Route::get('/music-sheets/search', [MusicSheetController::class, 'search'])->name('music-sheets.search');
-
-    /**
      * Routes that allow authors management
      */
-    Route::resource('/authors', AuthorController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/authors', AuthorController::class,  ['except' => ['create', 'edit']]);
     // Route::get('/authors', [AuthorController::class, 'index'])->name('authors');
 
     // Route::post('/authors/store', [AuthorController::class, 'store'])->name('authors.store');
@@ -51,7 +46,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow music sheets management
      */
-    Route::resource('/music-sheets', MusicSheetController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/music-sheets', MusicSheetController::class, ['except' => ['create', 'edit']]);
     // Route::get('/music-sheets', [MusicSheetController::class, 'index'])->name('music-sheets');
 
     // Route::post('/music-sheets/store', [MusicSheetController::class, 'store'])->name('music-sheets.store');
@@ -61,6 +56,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Route::post('/music-sheets/destroy/{id}', [MusicSheetController::class, 'destroy'])->name('music-sheets.destroy');
 
     // Route::post('/music-sheets/update', [MusicSheetController::class, 'update'])->name('music-sheets.update');
+
+    /**
+     * Routes that allow music sheets search
+     */
+    Route::get('/music-sheets/search', [MusicSheetController::class, 'search'])->name('music-sheets.search');
 
     /**
      * Routes that allow music sheet file management
@@ -76,7 +76,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow gender management
      */
-    Route::resource('/gender', GenderController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/gender', GenderController::class, ['except' => ['create', 'edit']]);
     // Route::get('/genders', [GenderController::class, 'index'])->name('genders');
 
     // Route::post('/genders/store', [GenderController::class, 'store'])->name('genders.store');
@@ -96,7 +96,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow borrowers management
      */
-    Route::resource('/borrowers', BorrowersController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/borrowers', BorrowersController::class, ['except' => ['create', 'edit']]);
     // Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
 
     // Route::post('/borrowers/store', [BorrowersController::class, 'store'])->name('borrowers.store');
@@ -109,7 +109,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow loans management
      */
-    Route::resource('/loan', LoansController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/loan', LoansController::class, ['except' => ['create', 'edit']]);
     // Route::get('/loan', [LoansController::class, 'index'])->name('loans');
 
     // Route::post('/loan/store', [LoansController::class, 'store'])->name('loans.store');
