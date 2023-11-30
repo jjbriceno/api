@@ -38,7 +38,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Route::post('/authors/store', [AuthorController::class, 'store'])->name('authors.store');
 
-    Route::post('/authors/edit', [AuthorController::class, 'edit'])->name('authors.edit');
+    // Route::post('/authors/edit', [AuthorController::class, 'edit'])->name('authors.edit');
 
     // Route::post('/authors/destroy/{id}', [AuthorController::class, 'destroy'])->name('authors.destroy');
 
@@ -76,12 +76,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow gender management
      */
-    Route::resource('/gender', GenderController::class, ['except' => ['create', 'edit']]);
+    Route::resource('/genders', GenderController::class, ['except' => ['create', 'edit']]);
     // Route::get('/genders', [GenderController::class, 'index'])->name('genders');
 
     // Route::post('/genders/store', [GenderController::class, 'store'])->name('genders.store');
 
-    Route::post('/genders/edit', [GenderController::class, 'edit'])->name('genders.edit');
+    // Route::post('/genders/edit', [GenderController::class, 'edit'])->name('genders.edit');
 
     /**
      * Routes that allow drawers management
@@ -109,7 +109,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow loans management
      */
-    Route::resource('/loan', LoansController::class, ['except' => ['create', 'edit']]);
+    Route::resource('/loans', LoansController::class, ['except' => ['create', 'edit']]);
     // Route::get('/loan', [LoansController::class, 'index'])->name('loans');
 
     // Route::post('/loan/store', [LoansController::class, 'store'])->name('loans.store');

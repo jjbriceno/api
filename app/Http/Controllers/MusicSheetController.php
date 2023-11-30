@@ -9,6 +9,7 @@ use App\Models\MusicSheetFile;
 use App\Http\Requests\MusicSheet\MusicSheetRequest;
 use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
 use App\Interfaces\MusicSheetRepositoryInterface;
+use Illuminate\Http\Response;
 
 class MusicSheetController extends Controller
 {
@@ -46,9 +47,9 @@ class MusicSheetController extends Controller
      * @param  \App\Models\MusicSheet  $musicSheet
      * @return \Illuminate\Http\Response
      */
-    public function edit(MusicSheetUpdateRequest $request)
+    public function edit()
     {
-        return $this->musicSheetRepository->edit($request);
+        //
     }
 
     /**
@@ -58,11 +59,9 @@ class MusicSheetController extends Controller
      * @param  \App\Models\MusicSheet  $musicSheet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(MusicSheetUpdateRequest $request, MusicSheet $musicSheet)
     {
-        $musicSheet = MusicSheet::find($request->id);
-        $musicSheet->available -= $request->cuantity;
-        $musicSheet->save();
+        return $this->musicSheetRepository->update($request, $musicSheet);
     }
 
     /**

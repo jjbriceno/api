@@ -37,10 +37,11 @@ class GenderController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'genderName' => ['required']
+            'genderName' => ['required', 'unique:genders,name']
         ],
         [
-            'genderName.required' => 'El nombre del género es requerido'
+            'genderName.required' => 'El nombre del género es requerido',
+            'genderName.unique' => 'El nombre del género ya ha sido registrado'
         ]
     );
 
@@ -70,15 +71,7 @@ class GenderController extends Controller
      */
     public function edit(Request $request)
     {
-        $this->validate($request, [
-            'genderName' => ['required']
-        ]);
-
-        $gender = Gender::find($request->id);
-        $gender->name = $request->genderName;
-        $gender->save();
-
-        return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
+        //
     }
 
     /**
@@ -90,11 +83,18 @@ class GenderController extends Controller
      */
     public function update(Request $request, Gender $gender)
     {
-        $gender->name = $request->name;
+        $this->validate($request, [
+            'genderName' => ['required', 'unique:genders,name,' . $gender->id]
+        ],
+        [
+            'genderName.required' => 'El nombre del género es requerido',
+            'genderName.unique' => 'El nombre del género ya ha sido registrado'
+        ]);
 
+        $gender->name = $request->genderName;
         $gender->save();
 
-        return response($gender, Response::HTTP_OK);
+        return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**
@@ -105,8 +105,6 @@ class GenderController extends Controller
      */
     public function destroy($id)
     {
-        Gender::destroy($id);
-
-        return response(null, Response::HTTP_OK);
+        return response(Gender::destroy($id), Response::HTTP_OK);
     }
 }

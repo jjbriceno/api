@@ -12,6 +12,27 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 class AuthorController extends Controller
 {
     use ValidatesRequests;
+    protected array $rules;
+    protected array $messages;
+
+    private function Rules($id = '') 
+    {
+        return $id ?
+        [
+            'fullName' => ['required', 'unique:authors,full_name' . $id],
+        ]
+        : [
+            'fullName' => ['required', 'unique:authors,full_name'],
+        ];
+    }
+
+    private function Messages()
+    {
+        return [
+            'fullName.required' => 'El nombre de autor es requerido.',
+            'fullName.unique'   => 'El nombre de autor ya ha sido registrado.',
+        ];
+    }
     /**
      * Display a listing of the resource.
      *
@@ -45,12 +66,8 @@ class AuthorController extends Controller
     {
         $this->validate(
             $request,
-            [
-                'fullName' => ['required'],
-            ],
-            [
-                'fullName.required' => 'El nombre es requerido.',
-            ]
+            $this->Rules(),
+            $this->Messages()
         );
 
         $author = new Author();
@@ -81,16 +98,7 @@ class AuthorController extends Controller
      */
     public function edit(Request $request)
     {
-        $this->validate($request, [
-            'id' => ['required'],
-            'fullName' => ['required']
-        ]);
-
-        $author = Author::find($request->id);
-        $author->full_name = $request->fullName;
-        $author->save();
-
-        return response(['author' => $author->jsonSerialize()], Response::HTTP_CREATED);
+        //
     }
 
     /**
@@ -102,11 +110,17 @@ class AuthorController extends Controller
      */
     public function update(Request $request, Author $author)
     {
-        $author->full_name = $request->full_name;
+        $this->validate(
+            $request,
+            $this->Rules($author->id),
+            $this->Messages()
+        );
 
+        $author = Author::find($request->id);
+        $author->full_name = $request->fullName;
         $author->save();
 
-        return response($author, Response::HTTP_OK);
+        return response(['author' => $author->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**
@@ -119,8 +133,8 @@ class AuthorController extends Controller
     {
         MusicSheet::where('author_id', $id)->delete();
 
-        Author::destroy($id);
+        $response = Author::destroy($id);
 
-        return response(null, Response::HTTP_OK);
+        return response($response, Response::HTTP_OK);
     }
 }

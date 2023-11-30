@@ -50,9 +50,9 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
         return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], 200);
     }
 
-    public function edit(MusicSheetUpdateRequest $request)
+    public function update(MusicSheetUpdateRequest $request, MusicSheet $musicSheet)
     {
-        $musicSheet = MusicSheet::find($request->id);
+        // $musicSheet = MusicSheet::find($request->id);
         if ($musicSheet) {
             $musicSheet->title = $request->title;
             $musicSheet->author_id = $request->authorId;
