@@ -60,7 +60,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Routes that allow music sheets search
      */
-    Route::get('/music-sheets/search', [MusicSheetController::class, 'search'])->name('music-sheets.search');
+    Route::get('/music-sheets-search/search', [MusicSheetController::class, 'search'])->name('music-sheets.search');
 
     /**
      * Routes that allow music sheet file management
