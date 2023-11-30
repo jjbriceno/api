@@ -72,17 +72,22 @@ class MusicSheetController extends Controller
      */
     public function destroy($id)
     {
-        $musicSheet = MusicSheet::find($id);
-        $location = Locations::find($musicSheet->location_id);
-        if ($musicSheet->music_sheet_file_id) {
-            $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
-            $musicSheetFile->delete();
+        try{
+            $musicSheet = MusicSheet::find($id);
+            $location = Locations::find($musicSheet->location_id);
+            if ($musicSheet->music_sheet_file_id) {
+                $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
+                // $musicSheetFile->delete();
+            }
+            $musicSheet->delete();
+            $location->delete();
+    
+            return response()->json(['musicSheet' => $musicSheet->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
+    
+        } catch (\Throwable $th) {
+            // dd($th);
+            return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
         }
-
-        $musicSheet->delete();
-        $location->delete();
-
-        return response()->json(['message' => 'success']);
     }
 
     public function index()

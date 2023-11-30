@@ -52,7 +52,6 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
 
     public function update(MusicSheetUpdateRequest $request, MusicSheet $musicSheet)
     {
-        // $musicSheet = MusicSheet::find($request->id);
         if ($musicSheet) {
             $musicSheet->title = $request->title;
             $musicSheet->author_id = $request->authorId;
@@ -83,7 +82,7 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
                 }
             }
 
-            $location = Locations::find($request->locationId);
+            $location = $musicSheet->location()->first();
             $location->cabinet_id = $request->cabinetId;
             $location->drawer_id = $request->drawerId;
             $location->save();

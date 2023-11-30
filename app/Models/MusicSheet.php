@@ -54,7 +54,7 @@ class MusicSheet extends Model
     /**
      * Undocumented function
      *
-     * @return void
+     * @return belongsTo
      */
     public function location()
     {

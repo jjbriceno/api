@@ -7,6 +7,7 @@ use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Resources\Author\AuthorCollection;
+use Exception;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class AuthorController extends Controller
@@ -19,7 +20,7 @@ class AuthorController extends Controller
     {
         return $id ?
         [
-            'fullName' => ['required', 'unique:authors,full_name' . $id],
+            'fullName' => ['required', 'unique:authors,full_name,' . $id],
         ]
         : [
             'fullName' => ['required', 'unique:authors,full_name'],
@@ -131,10 +132,15 @@ class AuthorController extends Controller
      */
     public function destroy($id)
     {
-        MusicSheet::where('author_id', $id)->delete();
-
-        $response = Author::destroy($id);
-
-        return response($response, Response::HTTP_OK);
+        try{
+            MusicSheet::where('author_id', $id)->delete();
+            $author = Author::find($id);
+            $author->delete();
+    
+            return response()->json(['author' => $author->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
+    
+        } catch (\Throwable $th) {
+            return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
+        }
     }
 }

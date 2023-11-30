@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gender;
+use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -105,6 +106,15 @@ class GenderController extends Controller
      */
     public function destroy($id)
     {
-        return response(Gender::destroy($id), Response::HTTP_OK);
+        try{
+            MusicSheet::where('gender_id', $id)->delete();
+            $gender = Gender::find($id);
+            $gender->delete();
+    
+            return response()->json(['gender' => $gender->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
+    
+        } catch (\Throwable $th) {
+            return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
+        }
     }
 }
