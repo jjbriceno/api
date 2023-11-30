@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\MusicSheetFile;
 use App\Http\Requests\MusicSheet\MusicSheetRequest;
 use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
+use App\Http\Resources\MusicSheetCollection;
+use App\Http\Resources\MusicSheetResource;
 use App\Interfaces\MusicSheetRepositoryInterface;
 use Illuminate\Http\Response;
 
@@ -36,9 +38,14 @@ class MusicSheetController extends Controller
      * @param  \App\Models\MusicSheet  $musicSheet
      * @return \Illuminate\Http\Response
      */
-    public function show(MusicSheet $musicSheet)
+    public function show($id)
     {
-        return response(['musicSheet' => $musicSheet->jsonSerialize()], Response::HTTP_OK);
+        $musicSheet = MusicSheet::find($id);
+        if (!$musicSheet) {
+            return response()->json(['error' => 'Partitura no encontrada'], Response::HTTP_NOT_FOUND);
+        }
+    
+        return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_OK);
     }
 
     /**
@@ -75,17 +82,16 @@ class MusicSheetController extends Controller
         try{
             $musicSheet = MusicSheet::find($id);
             $location = Locations::find($musicSheet->location_id);
-            if ($musicSheet->music_sheet_file_id) {
-                $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
-                // $musicSheetFile->delete();
-            }
             $musicSheet->delete();
             $location->delete();
+            if ($musicSheet->music_sheet_file_id) {
+                $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
+                $musicSheetFile->delete();
+            }
     
-            return response()->json(['musicSheet' => $musicSheet->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
+            return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_OK);
     
         } catch (\Throwable $th) {
-            // dd($th);
             return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
         }
     }
