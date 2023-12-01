@@ -8,10 +8,44 @@ use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Facades\DB;
 
 class BorrowersController extends Controller
 {
     use ValidatesRequests;
+
+    private function Rules($id = '')
+    {
+        return $id ?
+        [
+            'id'        => ['required'],
+            'name'      => ['required'],
+            'lastName'  => ['required'],
+            'email'     => ['required', 'unique:borrowers,email,' . $id],
+            'phone'     => ['required', 'unique:borrowers,phone,' . $id],
+            'address'   => ['nullable']
+        ]
+        : [
+            'firstName' => ['required'],
+            'lastName'  => ['required'],
+            'email'     => ['required', 'unique:borrowers,email'],
+            'phone'     => ['required', 'unique:borrowers,phone'],
+            'address'   => ['nullable']
+        ];
+    }
+
+    private function Messeges()
+    {
+        return [
+            'firstName.required' => 'El nombre es requerido',
+            'lastName.required'  => 'El apellido es requerido',
+            'email.required'     => 'El correo electrónico es requerido',
+            'email.unique'       => 'El correo electrónico ya se encuentra registrado',
+            'phone.unique'       => 'El teléfono ya se encuentra registrado',
+            'phone.required'     => 'El teléfono es requerido',
+            'phone.unique'       => 'El teléfono ya se encuentra registrado',
+        ];
+    }
 
     /**
      * Display a listing of the resource.
@@ -41,25 +75,15 @@ class BorrowersController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'firstName' => ['required'],
-            'lastName'  => ['required'],
-            'email'     => ['nullable', 'unique:borrowers,email'],
-            'phone'     => ['required', 'unique:borrowers,phone'],
-            'address'   => ['nullable']
-        ],
-        [
-            'firstName.required' => 'El nombre es requerido',
-            'lastName.required'  => 'El apellido es requerido',
-            'email.unique'       => 'El correo electrónico ya se encuentra registrado',
-            'phone.unique'       => 'El teléfono ya se encuentra registrado',
-            'phone.required'     => 'El teléfono es requerido',
-            'phone.unique'       => 'El teléfono ya se encuentra registrado',
-        ]
-    );
+        $this->validate(
+            $request,
+            $this->Rules(),
+            $this->Messeges()
+        );
 
         $borrower = new Borrowers();
-        $borrower->name = $request->firstName . ' ' . $request->lastName;
+        $borrower->first_name = $request->firstName;
+        $borrower->last_name = $request->lastName;
         $borrower->email = $request->email;
         $borrower->phone = $request->phone;
         $borrower->address  = $request->address;
@@ -87,23 +111,7 @@ class BorrowersController extends Controller
      */
     public function edit(Request $request)
     {
-        $this->validate($request, [
-            'id'        => ['required'],
-            'name'      => ['required'],
-            'lastName'  => ['required'],
-            'email'     => ['nullable', 'unique:borrowers,email,' . $request->id],
-            'phone'     => ['required', 'unique:borrowers,phone,' . $request->id],
-            'address'   => ['nullable']
-        ]);
-
-        $borrower = Borrowers::find($request->id);
-        $borrower->name = $request->name . ' ' . $request->lastName;
-        $borrower->email = $request->email;
-        $borrower->phone = $request->phone;
-        $borrower->address = $request->address;
-        $borrower->save();
-
-        return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_CREATED);
+        //
     }
 
     /**
@@ -113,17 +121,23 @@ class BorrowersController extends Controller
      * @param  \App\Models\borrower  $borrower
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Borrowers $borrower)
+    public function update(Request $request, $id)
     {
 
-        $borrower->name = $request->name;
-        $borrower->phone = $request->phone;
-        $borrower->email = $request->email;
-        $borrower->address  = $request->address;
+        $this->validate($request, [
+            $this->Rules($id),
+            $this->Messages()
+        ]);
 
+        $borrower = Borrowers::find($id);
+        $borrower->first_name = $request->name;
+        $borrower->last_name = $request->lastName;
+        $borrower->email = $request->email;
+        $borrower->phone = $request->phone;
+        $borrower->address = $request->address;
         $borrower->save();
 
-        return response($borrower, Response::HTTP_OK);
+        return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**
@@ -134,27 +148,34 @@ class BorrowersController extends Controller
      */
     public function destroy($id)
     {
-
-        $loans = Loans::where('borrower_id', $id);
-
-        $loansArray = $loans->get()->all();
-
-        if ($loansArray) {
-            $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
-            foreach ($musicSheetsJson as $key) {
-                $keyArray = (array) $key;
-                foreach ($keyArray as $id => $cuantity) {
-                    $musicSheet = MusicSheet::find($id);
-                    $musicSheet->available += $cuantity;
-                    $musicSheet->save();
+        try{
+            DB::transaction(function () use ($id) {
+                $borrower = Borrowers::find($id);
+                $loans = $borrower->loans();
+                // $loans = Loans::where('borrower_id', $id);
+    
+                $loansArray = $loans->get()->all();
+    
+                if ($loansArray) {
+                    $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
+                    foreach ($musicSheetsJson as $key) {
+                        $keyArray = (array) $key;
+                        foreach ($keyArray as $id => $cuantity) {
+                            $musicSheet = MusicSheet::find($id);
+                            $musicSheet->available += $cuantity;
+                            $musicSheet->save();
+                        }
+                    }
                 }
-            }
+    
+                $loans->delete();
+    
+                $borrower = Borrowers::find($id);
+                $borrower->delete();
+                return response()->json(['borrower' => $borrower->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
+            });
+        } catch (\Throwable $th) {
+            return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
         }
-
-        $loans->delete();
-
-        Borrowers::destroy($id);
-
-        return response(null, Response::HTTP_OK);
     }
 }

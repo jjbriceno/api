@@ -11,13 +11,13 @@ class Borrowers extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'phone', 'email', 'address'
+        'first_name', 'last_name', 'phone', 'email', 'address'
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
     public function loans()
     {
-        return $this->hasMany(Loans::class, 'borrower_id');
+        return $this->hasMany(Loans::class);
     }
 }

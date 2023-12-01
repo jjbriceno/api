@@ -15,7 +15,8 @@ class CreateBorrowersTable extends Migration
     {
         Schema::create('borrowers', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
+            $table->string('first_name', 50);
+            $table->string('last_name', 50);
             $table->string('phone', 11);
             $table->string('email', 50)->nullable();
             $table->string('address', 50)->nullable();
