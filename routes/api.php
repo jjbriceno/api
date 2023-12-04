@@ -51,7 +51,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Route::post('/music-sheets/store', [MusicSheetController::class, 'store'])->name('music-sheets.store');
 
-    Route::post('/music-sheets/edit', [MusicSheetController::class, 'edit'])->name('music-sheets.edit');
+    // Route::post('/music-sheets/edit', [MusicSheetController::class, 'edit'])->name('music-sheets.edit');
 
     // Route::post('/music-sheets/destroy/{id}', [MusicSheetController::class, 'destroy'])->name('music-sheets.destroy');
 
