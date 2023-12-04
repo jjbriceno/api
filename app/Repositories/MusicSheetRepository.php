@@ -71,52 +71,6 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
         }
     }
 
-    // public function store(Request $request)
-    // {
-    //     // Se validan los datos
-    //     $this->validation(
-    //         $request,
-    //         $this->Rules(),
-    //         $this->Messages()
-    //     );
-
-    //     $musicSheet = DB::transaction(function () use ($request) {
-    //        // Se busca el autor
-    //         $authorId = Author::find($request->authorId);
-    //         // Se busca el género musical
-    //         $genderId = Author::find($request->authorId);
-    //         // Se crea una nueva instancia de partitura musical
-    //         $musicSheet = new MusicSheet();
-    //         // Se crea una nueva instancia de ubicación
-    //         $location = new Locations();
-
-    //         // Se almacenan los datos de la partitura
-    //         $musicSheet->title = $request->title;
-    //         $musicSheet->author_id = $authorId->id;
-    //         $musicSheet->gender_id = $genderId->id;
-    //         $musicSheet->cuantity = $request->cuantity;
-    //         $musicSheet->available = $request->cuantity;
-
-
-    //         // Se almacenan los datos de la ubicación de la partitura
-    //         $location->cabinet_id = $request->cabinetId;
-    //         $location->drawer_id = $request->drawerId;
-    //         $location->save();
-
-    //         // Se almacena el ID de la ubicación
-    //         $musicSheet->location_id = $location->id;
-    //         // Se guarda la partitura
-    //         $musicSheet->save();
-
-    //         return $musicSheet;
-    //     });
-
-    //     return response()->json([
-    //         'item' => $musicSheet,
-    //         'message' => 'success']
-    //         , 200); 
-    // }
-
     public function update(MusicSheetUpdateRequest $request, MusicSheet $musicSheet)
     {
         if ($musicSheet) {
