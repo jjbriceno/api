@@ -16,8 +16,8 @@ class CreateMusicSheetsTable extends Migration
         Schema::create('music_sheets', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable()->comment('Título de la partitura');
-            $table->integer('cuantity')->comment('Cantidad de partituras existentes');
-            $table->integer('available')->comment('Cantidad de partituras disponibles');
+            $table->integer('cuantity')->default(1)->comment('Cantidad de partituras existentes');
+            $table->integer('available')->default(1)->comment('Cantidad de partituras disponibles');
             $table->foreignId('author_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('gender_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('location_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
