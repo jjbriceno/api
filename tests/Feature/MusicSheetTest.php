@@ -78,7 +78,7 @@ class MusicSheetTest extends TestCase
 
         /**
          * Preparación: Crear un autor y una partitura 
-         * para ese con un título
+         * con un título
          */
         $author = Author::find(1);
         MusicSheet::create([
@@ -127,25 +127,33 @@ class MusicSheetTest extends TestCase
             'cuantity' => 10,
         ]);
 
-        // Assert: Verificar que la respuesta indique una falla en la busqueda
+        // Assert: Verificar que la respuesta indique una falla del servidor
         $response->assertStatus(500);
     }
 
-    // public function test_store_new_music_sheet()
-    // {
-    //     $responseUser = $this->getAuthenticated();
-    //     $this->assertAuthenticated();
+    /** @test 
+     * Almacenar una nueva partitura.
+     */
+    public function test_store_new_music_sheet()
+    {
+        // Autenticación del usuario logueado
+        $responseUser = $this->getAuthenticated();
+        $this->assertAuthenticated();
 
-    //     $response = $this->post('api/music-sheets', [
-    //         'title' => 'Test Title',
-    //         'authorId' => 1,
-    //         'genderId' => 1,
-    //         'cuantity' => 10,
-    //         'cabinetId' => 1,
-    //         'drawerId' => 1,
-    //     ]);
+        // Intento de almacenar una nueva partitura
+        $response = $this->post('api/music-sheets', [
+            'title' => 'Test Title',
+            'authorId' => 1,
+            'genderId' => 1,
+            'cuantity' => 10,
+            'cabinetId' => 1,
+            'drawerId' => 1,
+        ]);
 
-    //     $response->assertStatus(200);
-    //     $response->assertJsonStructure(['item', 'message']);
-    // }
+        // Verificación del estado de la respuesta HTTP
+        $response->assertStatus(200);
+
+        // Verificación de la estructura de la respuesta JSON
+        $response->assertJsonStructure(['item', 'message']);
+    }
 }
