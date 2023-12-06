@@ -86,9 +86,14 @@ class AuthorController extends Controller
      * @param  \App\Models\Author  $author
      * @return \Illuminate\Http\Response
      */
-    public function show(Author $author)
+    public function show($id)
     {
-        return response(['author' => $author->jsonSerialize()], Response::HTTP_OK);
+        try {
+            $author = Author::findOrFail($id);
+            return response(['author' => $author->jsonSerialize()], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -117,7 +122,7 @@ class AuthorController extends Controller
             $this->Messages()
         );
 
-        $author = Author::find($request->id);
+        // $author = Author::find($request->id);
         $author->full_name = $request->fullName;
         $author->save();
 
@@ -134,13 +139,13 @@ class AuthorController extends Controller
     {
         try{
             MusicSheet::where('author_id', $id)->delete();
-            $author = Author::find($id);
+            $author = Author::findOrFail($id);
             $author->delete();
     
             return response()->json(['author' => $author->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
     
         } catch (\Throwable $th) {
-            return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -12,6 +12,7 @@ use App\Http\Resources\MusicSheetCollection;
 use App\Http\Resources\MusicSheetResource;
 use App\Interfaces\MusicSheetRepositoryInterface;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class MusicSheetController extends Controller
 {
@@ -40,12 +41,12 @@ class MusicSheetController extends Controller
      */
     public function show($id)
     {
-        $musicSheet = MusicSheet::find($id);
-        if (!$musicSheet) {
-            return response()->json(['error' => 'Partitura no encontrada'], Response::HTTP_NOT_FOUND);
+        try {
+            $musicSheet = MusicSheet::findOrFail($id);
+            return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_NOT_FOUND);
         }
-    
-        return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_OK);
     }
 
     /**
@@ -66,9 +67,9 @@ class MusicSheetController extends Controller
      * @param  \App\Models\MusicSheet  $musicSheet
      * @return \Illuminate\Http\Response
      */
-    public function update(MusicSheetUpdateRequest $request, MusicSheet $musicSheet)
+    public function update(MusicSheetUpdateRequest $request, $id)
     {
-        return $this->musicSheetRepository->update($request, $musicSheet);
+        return $this->musicSheetRepository->update($request, $id);
     }
 
     /**
@@ -80,19 +81,21 @@ class MusicSheetController extends Controller
     public function destroy($id)
     {
         try{
-            $musicSheet = MusicSheet::find($id);
-            $location = Locations::find($musicSheet->location_id);
-            $musicSheet->delete();
-            $location->delete();
-            if ($musicSheet->music_sheet_file_id) {
-                $musicSheetFile = MusicSheetFile::find($musicSheet->music_sheet_file_id);
-                $musicSheetFile->delete();
-            }
-    
-            return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_OK);
+            $musicSheet = MusicSheet::findOrFail($id);
+            $musicSheetDeleted = DB::transaction(function () use ($musicSheet) {
+                $location = Locations::findOrFail($musicSheet->location_id);
+                $musicSheet->delete();
+                $location->delete();
+                if ($musicSheet->music_sheet_file_id) {
+                    $musicSheetFile = MusicSheetFile::findOrFail($musicSheet->music_sheet_file_id);
+                    $musicSheetFile->delete();
+                }
+                return $musicSheet;
+            });
+            return response()->json(['item' => new MusicSheetResource($musicSheetDeleted), 'message' => 'success'], Response::HTTP_OK);
     
         } catch (\Throwable $th) {
-            return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 

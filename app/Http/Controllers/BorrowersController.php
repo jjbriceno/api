@@ -98,9 +98,14 @@ class BorrowersController extends Controller
      * @param  \App\Models\borrower  $borrower
      * @return \Illuminate\Http\Response
      */
-    public function show(Borrowers $borrower)
+    public function show($id)
     {
-        return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_OK);
+        try {
+            $borrower = Borrowers::findOrFail($id);
+            return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -129,7 +134,7 @@ class BorrowersController extends Controller
             $this->Messages()
         ]);
 
-        $borrower = Borrowers::find($id);
+        $borrower = Borrowers::findOrFail($id);
         $borrower->first_name = $request->name;
         $borrower->last_name = $request->lastName;
         $borrower->email = $request->email;
@@ -150,7 +155,7 @@ class BorrowersController extends Controller
     {
         try{
             DB::transaction(function () use ($id) {
-                $borrower = Borrowers::find($id);
+                $borrower = Borrowers::findOrFail($id);
                 $loans = $borrower->loans();
                 // $loans = Loans::where('borrower_id', $id);
     
@@ -161,7 +166,7 @@ class BorrowersController extends Controller
                     foreach ($musicSheetsJson as $key) {
                         $keyArray = (array) $key;
                         foreach ($keyArray as $id => $cuantity) {
-                            $musicSheet = MusicSheet::find($id);
+                            $musicSheet = MusicSheet::findOrFail($id);
                             $musicSheet->available += $cuantity;
                             $musicSheet->save();
                         }
@@ -170,12 +175,12 @@ class BorrowersController extends Controller
     
                 $loans->delete();
     
-                $borrower = Borrowers::find($id);
+                $borrower = Borrowers::findOrFail($id);
                 $borrower->delete();
                 return response()->json(['borrower' => $borrower->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
             });
         } catch (\Throwable $th) {
-            return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

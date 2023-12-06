@@ -9,7 +9,7 @@ use App\Models\MusicSheet;
 interface MusicSheetRepositoryInterface
 {
     public function store(MusicSheetRequest $request);
-    public function update(MusicSheetUpdateRequest $request, MusicSheet $musicSheet);
+    public function update(MusicSheetUpdateRequest $request, $id);
     public function index();
     public function search();
 }

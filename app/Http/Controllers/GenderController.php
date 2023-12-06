@@ -59,9 +59,14 @@ class GenderController extends Controller
      * @param  \App\Models\Gender  $gender
      * @return \Illuminate\Http\Response
      */
-    public function show(Gender $gender)
+    public function show($id)
     {
-        return response(['gender' => $gender->jsonSerialize()], Response::HTTP_OK);
+        try {
+            $gender = Gender::findOrFail($id);
+            return response(['gender' => $gender->jsonSerialize()], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -108,13 +113,13 @@ class GenderController extends Controller
     {
         try{
             MusicSheet::where('gender_id', $id)->delete();
-            $gender = Gender::find($id);
+            $gender = Gender::findOrFail($id);
             $gender->delete();
     
             return response()->json(['gender' => $gender->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
     
         } catch (\Throwable $th) {
-            return response()->json(['message' => "Ocurrió un error durante la eliminación"], 500);
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

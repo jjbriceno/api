@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MusicSheetFile;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
 class MusicSheetFileController extends Controller
@@ -14,11 +15,10 @@ class MusicSheetFileController extends Controller
     public function __construct()
     {
         $this->rules = [
-            'musicSheetFile'    => 'sometimes|required|mimes:jpeg,png,pdf|max:2048',
+            'musicSheetFile'    => 'sometimes|mimes:jpeg,png,pdf|max:2048',
         ];
 
         $this->messages = [
-            'musicSheetFile.required'       => "El Archivo es obligatorio",
             'musicSheetFile.mimes'          => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
             'musicSheetFile.required'       => "El tamaño maximo del archivo es de 2 MB",
         ];
@@ -56,15 +56,19 @@ class MusicSheetFileController extends Controller
             $this->rules,
             $this->messages
         );
+        try {
+            if ($request->hasFile('musicSheetFile')) {
+                $musicSheetFile = MusicSheetFile::create([
+                    'file_name' => $request->file('musicSheetFile')->getClientOriginalName(),
+                    'file_format' => $request->file('musicSheetFile')->getClientOriginalExtension(),
+                    'binary_file' => base64_encode($request->file('musicSheetFile')->get()),
+                ]);
+            }
+            return response()->json(['message' => 'success'], Response::HTTP_CREATED);
 
-        if ($request->hasFile('musicSheetFile')) {
-            $musicSheetFile = MusicSheetFile::create([
-                'file_name' => $request->file('musicSheetFile')->getClientOriginalName(),
-                'file_format' => $request->file('musicSheetFile')->getClientOriginalExtension(),
-                'binary_file' => base64_encode($request->file('musicSheetFile')->get()),
-            ]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return response()->json(['record' => $musicSheetFile, 'message' => 'success'], 200);
     }
 
     /**
@@ -96,7 +100,7 @@ class MusicSheetFileController extends Controller
      * @param  \App\Models\musicSheetFile  $musicSheetFile
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, musicSheetFile $musicSheetFile)
+    public function update(Request $request, $id)
     {
         $this->validate(
             $request,
@@ -104,16 +108,22 @@ class MusicSheetFileController extends Controller
             $this->messages
         );
 
-        if ($request->hasFile('musicSheetFile')) {
-            if ($musicSheetFile) {
-                $musicSheetFile->file_name = $request->file('musicSheetFile')->getClientOriginalName();
-                $musicSheetFile->file_format = $request->file('musicSheetFile')->getClientOriginalExtension();
-                $musicSheetFile->binary_file = base64_encode(file_get_contents($request->file('musicSheetFile')->getRealPath()));
-                $musicSheetFile->save();
-            }
-        }
+        try {
+            $musicSheetFile = MusicSheetFile::findOrFail($id);
 
-        return response()->json(['message' => 'success'], 200);
+            if ($request->hasFile('musicSheetFile')) {
+                if ($musicSheetFile) {
+                    $musicSheetFile->file_name = $request->file('musicSheetFile')->getClientOriginalName();
+                    $musicSheetFile->file_format = $request->file('musicSheetFile')->getClientOriginalExtension();
+                    $musicSheetFile->binary_file = base64_encode(file_get_contents($request->file('musicSheetFile')->getRealPath()));
+                    $musicSheetFile->save();
+                }
+            }
+            return response()->json(['message' => 'success'], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -122,32 +132,38 @@ class MusicSheetFileController extends Controller
      * @param  \App\Models\musicSheetFile  $musicSheetFile
      * @return \Illuminate\Http\Response
      */
-    public function destroy(musicSheetFile $musicSheetFile)
+    public function destroy($id)
     {
-        $musicSheetFile->delete();
-
-        return response()->json(['message' => 'success']);
+        try {
+            $musicSheetFile = MusicSheetFile::findOrFail($id);
+            $musicSheetFile->delete();
+            return response()->json(['message' => 'success'], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+            
     }
 
-    public function download(MusicSheetFile $id)
+    public function download($id)
     {
-        if ($id) {
+        try {
+            $musicSheetFile = MusicSheetFile::query()->findOrFail($id);
             // Lee el contenido del recurso de transmisión en una variable
-            $stream_get_contents = stream_get_contents($id->binary_file);
+            $stream_get_contents = stream_get_contents($musicSheetFile->binary_file);
             if ($stream_get_contents !== false) {
-                $path       = public_path($id->file_name);
+                $path       = public_path($musicSheetFile->file_name);
                 $contents   = base64_decode($stream_get_contents);
                 //store file temporarily
                 file_put_contents($path, $contents);
-                $response = response()->download($path, $id->file_name)->deleteFileAfterSend(true);
+                $response = response()->download($path, $musicSheetFile->file_name)->deleteFileAfterSend(true);
                 $response->headers->set('Access-Control-Expose-Headers', 'Content-Disposition');
-
                 return $response;
             } else {
-                return response()->json(['message' => 'Hubo un error en la descarga'], 404);
+                new \Exception("Error Processing Request");
             }
-        } else {
-            return response()->json(['message' => 'Archivo no encontrado'], 404);
-        }
+        
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_NOT_FOUND);
+        } 
     }
 }
