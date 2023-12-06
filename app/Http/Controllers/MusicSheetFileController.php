@@ -64,7 +64,7 @@ class MusicSheetFileController extends Controller
                     'binary_file' => base64_encode($request->file('musicSheetFile')->get()),
                 ]);
             }
-            return response()->json(['message' => 'success'], Response::HTTP_CREATED);
+            return response()->json(['file_id' => $musicSheetFile->id, 'message' => 'success'], Response::HTTP_CREATED);
 
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
