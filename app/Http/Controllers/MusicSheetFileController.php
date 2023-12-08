@@ -15,12 +15,13 @@ class MusicSheetFileController extends Controller
     public function __construct()
     {
         $this->rules = [
-            'musicSheetFile'    => 'sometimes|mimes:jpeg,png,pdf|max:2048',
+            'musicSheetFile'    => 'required|mimes:jpeg,png,pdf|max:2048',
         ];
 
         $this->messages = [
-            'musicSheetFile.mimes'          => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
-            'musicSheetFile.required'       => "El tamaño maximo del archivo es de 2 MB",
+            'musicSheetFile.required'   => "El archivo es requerido",
+            'musicSheetFile.mimes'      => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
+            'musicSheetFile.max'        => "El tamaño maximo del archivo es de 2 MB",
         ];
     }
     /**
@@ -64,7 +65,7 @@ class MusicSheetFileController extends Controller
                     'binary_file' => base64_encode($request->file('musicSheetFile')->get()),
                 ]);
             }
-            return response()->json(['file_id' => $musicSheetFile->id, 'message' => 'success'], Response::HTTP_CREATED);
+            return response()->json(['file_id' => $musicSheetFile?->id, 'message' => 'success'], Response::HTTP_CREATED);
 
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -147,6 +148,7 @@ class MusicSheetFileController extends Controller
     public function download($id)
     {
         try {
+            $id = $id == 'null' ? null : $id;
             $musicSheetFile = MusicSheetFile::query()->findOrFail($id);
             // Lee el contenido del recurso de transmisión en una variable
             $stream_get_contents = stream_get_contents($musicSheetFile->binary_file);

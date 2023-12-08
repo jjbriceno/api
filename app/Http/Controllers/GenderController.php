@@ -44,13 +44,16 @@ class GenderController extends Controller
             'genderName.required' => 'El nombre del género es requerido',
             'genderName.unique' => 'El nombre del género ya ha sido registrado'
         ]
-    );
+        );
 
-        $gender = new Gender();
-        $gender->name = $request->genderName;
-        $gender->save();
-
-        return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
+        try {
+            $gender = Gender::create([
+                'name' => $request->genderName
+            ]);
+            return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }   
     }
 
     /**
@@ -87,20 +90,25 @@ class GenderController extends Controller
      * @param  \App\Models\Gender  $gender
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Gender $gender)
+    public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'genderName' => ['required', 'unique:genders,name,' . $gender->id]
+            'genderName' => ['required', 'unique:genders,name,' . $id]
         ],
         [
             'genderName.required' => 'El nombre del género es requerido',
             'genderName.unique' => 'El nombre del género ya ha sido registrado'
         ]);
 
-        $gender->name = $request->genderName;
-        $gender->save();
+        try {
+            $gender = Gender::findOrFail($id);
+            $gender->name = $request->genderName;
+            $gender->save();
 
-        return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
+            return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
