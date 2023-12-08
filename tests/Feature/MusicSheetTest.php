@@ -151,7 +151,7 @@ class MusicSheetTest extends TestCase
         ]);
 
         // Verificación del estado de la respuesta HTTP
-        $response->assertStatus(200);
+        $response->assertStatus(201);
 
         // Verificación de la estructura de la respuesta JSON
         $response->assertJsonStructure(['item', 'message']);

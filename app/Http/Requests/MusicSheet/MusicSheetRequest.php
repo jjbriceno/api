@@ -3,6 +3,7 @@
 namespace App\Http\Requests\MusicSheet;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MusicSheetRequest extends FormRequest
 {
@@ -24,13 +25,13 @@ class MusicSheetRequest extends FormRequest
     public function rules()
     {
         return [
-            'title'             => ['required', 'unique_with:music_sheets, authorId = author_id'],
+            'title'             => ['required', Rule::unique('music_sheets', 'title')->where('author_id', $this->authorId)],
             'authorId'          => ['required'],
             'genderId'          => ['required'],
             'drawerId'          => ['required'],
             'cabinetId'         => ['required'],
             'cuantity'          => ['required'],
-            'file'              => ['sometimes', 'required', 'mimes:jpeg,png,pdf', 'max:5148'],
+            'file'              => ['sometimes', 'required', 'mimes:jpeg,png,pdf', 'max:2048'],
         ];
     }
 
@@ -38,7 +39,7 @@ class MusicSheetRequest extends FormRequest
     {
         return [
             'title.required'            => "El 'Título' es obligatorio",
-            'title.unique_with'         => "Este Título ya ha sido registrado con este autor",
+            'title.unique'              => "Este Título ya ha sido registrado con este autor",
             'authorId.required'         => "El 'Autor' es obligatorio",
             'genderId.required'         => "El 'Género musical' es obligatorio",
             'drawerId.required'         => "La 'Gaveta' es obligatorio",
@@ -46,7 +47,7 @@ class MusicSheetRequest extends FormRequest
             'cuantity.required'         => "La 'Cantidad de partiruras' debe ser de al menos uno",
             'file.required'             => "El Archivo es obligatorio",
             'file.mimes'                => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
-            'file.max'                  => "El tamaño maximo del archivo es de 5 MB",
+            'file.max'                  => "El tamaño maximo del archivo es de 2 MB",
         ];
     }
 }
