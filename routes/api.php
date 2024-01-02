@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::middleware(['auth:sanctum'])->group(function () {
 
     /*
@@ -30,6 +31,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return auth()->user();
     });
 
+
+    /** 
+     * Routes that allow authors search 
+     */
+    Route::get('/authors/search', [AuthorController::class, 'search'])->name('authors.search');
     /**
      * Routes that allow authors management
      */
@@ -117,5 +123,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Route::post('/loan/destroy/{id}', [LoansController::class, 'destroy'])->name('loans.destroy');
 
     Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');
-
 });

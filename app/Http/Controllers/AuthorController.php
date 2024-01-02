@@ -16,15 +16,15 @@ class AuthorController extends Controller
     protected array $rules;
     protected array $messages;
 
-    private function Rules($id = '') 
+    private function Rules($id = '')
     {
         return $id ?
-        [
-            'fullName' => ['required', 'unique:authors,full_name,' . $id],
-        ]
-        : [
-            'fullName' => ['required', 'unique:authors,full_name'],
-        ];
+            [
+                'fullName' => ['required', 'unique:authors,full_name,' . $id],
+            ]
+            : [
+                'fullName' => ['required', 'unique:authors,full_name'],
+            ];
     }
 
     private function Messages()
@@ -137,15 +137,24 @@ class AuthorController extends Controller
      */
     public function destroy($id)
     {
-        try{
+        try {
             MusicSheet::where('author_id', $id)->delete();
             $author = Author::findOrFail($id);
             $author->delete();
-    
+
             return response()->json(['author' => $author->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
-    
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function search()
+    {
+        if (request('search')) {
+            $authors = Author::search()->paginate(10);
+            return new AuthorCollection($authors);
+        } else {
+            return $this->index();
         }
     }
 }
