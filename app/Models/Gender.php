@@ -20,6 +20,20 @@ class Gender extends Model
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
+    /**
+     * Filters the query based on the search criteria and sort order.
+     *
+     * @param mixed $query The query to be filtered.
+     * @return void
+     */
+    public function scopeFiltered($query)
+    {
+        $query->select('*');
+
+        $query->orderBy("id", "asc");
+
+        return $query;
+    }
 
     /**
      * Get the musicSheets that owns the Gender

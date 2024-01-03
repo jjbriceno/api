@@ -6,6 +6,7 @@ use App\Models\Gender;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Resources\Gender\GenderCollection;
 
 class GenderController extends Controller
 {
@@ -16,7 +17,9 @@ class GenderController extends Controller
      */
     public function index()
     {
-        return response()->json(['genders' => Gender::all()]);
+        $genders = Gender::filtered()->paginate(10);
+
+        return new GenderCollection($genders);
     }
 
     /**
@@ -37,13 +40,15 @@ class GenderController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'genderName' => ['required', 'unique:genders,name']
-        ],
-        [
-            'genderName.required' => 'El nombre del género es requerido',
-            'genderName.unique' => 'El nombre del género ya ha sido registrado'
-        ]
+        $this->validate(
+            $request,
+            [
+                'genderName' => ['required', 'unique:genders,name']
+            ],
+            [
+                'genderName.required' => 'El nombre del género es requerido',
+                'genderName.unique' => 'El nombre del género ya ha sido registrado'
+            ]
         );
 
         try {
@@ -53,7 +58,7 @@ class GenderController extends Controller
             return response(['gender' => $gender->jsonSerialize()], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }   
+        }
     }
 
     /**
@@ -92,13 +97,16 @@ class GenderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'genderName' => ['required', 'unique:genders,name,' . $id]
-        ],
-        [
-            'genderName.required' => 'El nombre del género es requerido',
-            'genderName.unique' => 'El nombre del género ya ha sido registrado'
-        ]);
+        $this->validate(
+            $request,
+            [
+                'genderName' => ['required', 'unique:genders,name,' . $id]
+            ],
+            [
+                'genderName.required' => 'El nombre del género es requerido',
+                'genderName.unique' => 'El nombre del género ya ha sido registrado'
+            ]
+        );
 
         try {
             $gender = Gender::findOrFail($id);
@@ -119,13 +127,12 @@ class GenderController extends Controller
      */
     public function destroy($id)
     {
-        try{
+        try {
             MusicSheet::where('gender_id', $id)->delete();
             $gender = Gender::findOrFail($id);
             $gender->delete();
-    
+
             return response()->json(['gender' => $gender->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
-    
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
