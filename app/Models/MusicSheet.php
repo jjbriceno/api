@@ -86,40 +86,45 @@ class MusicSheet extends Model
         return $query;
     }
 
+    /**
+     * Scope a query to search for records based on a search term.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query  The query builder instance.
+     * @return \Illuminate\Database\Eloquent\Builder  The modified query builder instance.
+     */
     public function scopeSearch($query)
     {
         $search = request('search');
 
         $query->when($search, function ($query) use ($search) {
             $query->where('title', 'ilike', $search . '%')
-            ->orWhere(
-                function ($query) use ($search) {
-                    $query->whereHas('author', function ($query) use ($search) {
-                        $query->where('full_name', 'ilike', $search . '%');
-                    });
-                }
-            )->orWhere(
-                function ($query) use ($search) {
-                    $query->whereHas('gender', function ($query) use ($search) {
-                        $query->where('name', 'ilike', $search . '%');
-                    });
-                }
-            )->orWhere(
-                function ($query) use ($search) {
-                    $query->whereHas('location', function ($query) use ($search) {
-                        $query->whereHas('drawer', function ($query) use ($search) {
+                ->orWhere(
+                    function ($query) use ($search) {
+                        $query->whereHas('author', function ($query) use ($search) {
+                            $query->where('full_name', 'ilike', $search . '%');
+                        });
+                    }
+                )->orWhere(
+                    function ($query) use ($search) {
+                        $query->whereHas('gender', function ($query) use ($search) {
                             $query->where('name', 'ilike', $search . '%');
-                        })->orWhere(
-                            function ($query) use ($search) {
-                                $query->whereHas('cabinet', function ($query) use ($search) {
-                                    $query->where('name', 'ilike', $search . '%');
-                                });
-                            }
-                        );
-                    });
-                }
-            );
-            
+                        });
+                    }
+                )->orWhere(
+                    function ($query) use ($search) {
+                        $query->whereHas('location', function ($query) use ($search) {
+                            $query->whereHas('drawer', function ($query) use ($search) {
+                                $query->where('name', 'ilike', $search . '%');
+                            })->orWhere(
+                                function ($query) use ($search) {
+                                    $query->whereHas('cabinet', function ($query) use ($search) {
+                                        $query->where('name', 'ilike', $search . '%');
+                                    });
+                                }
+                            );
+                        });
+                    }
+                );
         });
 
         $query->orderBy("title", "asc");

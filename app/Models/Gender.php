@@ -36,6 +36,25 @@ class Gender extends Model
     }
 
     /**
+     * Scope a query to search for records based on a search term.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query  The query builder instance.
+     * @return \Illuminate\Database\Eloquent\Builder  The modified query builder instance.
+     */
+    public function scopeSearch($query)
+    {
+        $search = request('search');
+        
+        $query->when($search, function ($query) use ($search) {
+            $query->where('name', 'ilike', $search . '%');
+        });
+
+        $query->orderBy("name", "asc");
+
+        return $query;
+    }
+
+    /**
      * Get the musicSheets that owns the Gender
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

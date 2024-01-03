@@ -137,4 +137,14 @@ class GenderController extends Controller
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function search(Request $request)
+    {
+        if (request('search')) {
+            $genders = Gender::search()->paginate(10);
+            return new GenderCollection($genders);
+        } else {
+            return $this->index();
+        }
+    }
 }

@@ -79,6 +79,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/sheet-file/download/{id}', [MusicSheetFileController::class, 'download'])->name('music-sheet-file.download');
 
+    /** 
+     * Routes that allow authors search 
+     */
+    Route::get('/genders/search', [GenderController::class, 'search'])->name('genders.search');
     /**
      * Routes that allow gender management
      */
