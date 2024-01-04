@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\TryCatch;
 
 class BorrowersController extends Controller
 {
@@ -17,24 +18,24 @@ class BorrowersController extends Controller
     private function Rules($id = '')
     {
         return $id ?
-        [
-            'id'        => ['required'],
-            'name'      => ['required'],
-            'lastName'  => ['required'],
-            'email'     => ['required', 'unique:borrowers,email,' . $id],
-            'phone'     => ['required', 'unique:borrowers,phone,' . $id],
-            'address'   => ['nullable']
-        ]
-        : [
-            'firstName' => ['required'],
-            'lastName'  => ['required'],
-            'email'     => ['required', 'unique:borrowers,email'],
-            'phone'     => ['required', 'unique:borrowers,phone'],
-            'address'   => ['nullable']
-        ];
+            [
+                'id'        => ['required'],
+                'firstName' => ['required'],
+                'lastName'  => ['required'],
+                'email'     => ['required', 'unique:borrowers,email,' . $id],
+                'phone'     => ['required', 'unique:borrowers,phone,' . $id],
+                'address'   => ['nullable']
+            ]
+            : [
+                'firstName' => ['required'],
+                'lastName'  => ['required'],
+                'email'     => ['required', 'unique:borrowers,email'],
+                'phone'     => ['required', 'unique:borrowers,phone'],
+                'address'   => ['nullable']
+            ];
     }
 
-    private function Messeges()
+    private function Messages()
     {
         return [
             'firstName.required' => 'El nombre es requerido',
@@ -43,7 +44,6 @@ class BorrowersController extends Controller
             'email.unique'       => 'El correo electrónico ya se encuentra registrado',
             'phone.unique'       => 'El teléfono ya se encuentra registrado',
             'phone.required'     => 'El teléfono es requerido',
-            'phone.unique'       => 'El teléfono ya se encuentra registrado',
         ];
     }
 
@@ -78,7 +78,7 @@ class BorrowersController extends Controller
         $this->validate(
             $request,
             $this->Rules(),
-            $this->Messeges()
+            $this->Messages()
         );
 
         $borrower = new Borrowers();
@@ -126,16 +126,16 @@ class BorrowersController extends Controller
      * @param  \App\Models\borrower  $borrower
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Borrowers $borrower)
     {
-
-        $this->validate($request, [
-            $this->Rules($id),
+        $this->validate(
+            $request,
+            $this->Rules($borrower->id),
             $this->Messages()
-        ]);
+        );
 
-        $borrower = Borrowers::findOrFail($id);
-        $borrower->first_name = $request->name;
+        $borrower = Borrowers::findOrFail($borrower->id);
+        $borrower->first_name = $request->firstName;
         $borrower->last_name = $request->lastName;
         $borrower->email = $request->email;
         $borrower->phone = $request->phone;
@@ -153,14 +153,14 @@ class BorrowersController extends Controller
      */
     public function destroy($id)
     {
-        try{
+        try {
             DB::transaction(function () use ($id) {
                 $borrower = Borrowers::findOrFail($id);
                 $loans = $borrower->loans();
                 // $loans = Loans::where('borrower_id', $id);
-    
+
                 $loansArray = $loans->get()->all();
-    
+
                 if ($loansArray) {
                     $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
                     foreach ($musicSheetsJson as $key) {
@@ -172,9 +172,9 @@ class BorrowersController extends Controller
                         }
                     }
                 }
-    
+
                 $loans->delete();
-    
+
                 $borrower = Borrowers::findOrFail($id);
                 $borrower->delete();
                 return response()->json(['borrower' => $borrower->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
