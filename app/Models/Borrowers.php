@@ -20,4 +20,13 @@ class Borrowers extends Model
     {
         return $this->hasMany(Loans::class);
     }
+
+    public function scopeFiltered($query)
+    {
+        $query->select('*');
+
+        $query->orderBy("id", "asc");
+
+        return $query;
+    }
 }

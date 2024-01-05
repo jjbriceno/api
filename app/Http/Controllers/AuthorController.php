@@ -41,11 +41,8 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        // $musicSheets = MusicSheet::filtered()->paginate(10);
-
-        // return new MusicSheetCollection($musicSheets);
-        // return response()->json(['authors' => Author::all()]);
         $authors = Author::filtered()->paginate(10);
+        
         return new AuthorCollection($authors);
     }
     /**

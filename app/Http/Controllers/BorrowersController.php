@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Loans;
 use App\Models\Borrowers;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Stmt\TryCatch;
+use App\Http\Resources\Borrowers\BorrowersCollection;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class BorrowersController extends Controller
 {
@@ -54,7 +53,9 @@ class BorrowersController extends Controller
      */
     public function index()
     {
-        return response()->json(['borrowers' => Borrowers::all()]);
+        $borrowers = Borrowers::filtered()->paginate(5);
+
+        return new BorrowersCollection($borrowers);
     }
 
     /**
