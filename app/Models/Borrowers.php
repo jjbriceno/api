@@ -29,4 +29,20 @@ class Borrowers extends Model
 
         return $query;
     }
+
+    public function scopeSearch($query)
+    {
+        $search = request('search');
+
+        $query->when($search, function ($query) use ($search) {
+            $query->where('first_name', 'ilike', $search . '%')
+                ->orWhere('last_name', 'ilike', $search . '%')
+                ->orWhere('phone', 'ilike', $search . '%')
+                ->orWhere('email', 'ilike', $search . '%');
+        });
+
+        $query->orderBy("first_name", "asc");
+
+        return $query;
+    }
 }

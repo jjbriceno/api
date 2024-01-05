@@ -184,4 +184,14 @@ class BorrowersController extends Controller
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function search()
+    {
+        if (request('search')) {
+            $musicSheet = Borrowers::search()->paginate(5);
+            return new BorrowersCollection($musicSheet);
+        } else {
+            return $this->index();
+        }
+    }
 }

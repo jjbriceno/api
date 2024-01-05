@@ -103,6 +103,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::get('/cabinets', [CabinetsController::class, 'index'])->name('cabinets');
 
+    /** 
+     * Routes that allow borrowers search 
+     */
+    Route::get('/borrowers/search', [BorrowersController::class, 'search'])->name('borrowers.search');
+
     /**
      * Routes that allow borrowers management
      */
