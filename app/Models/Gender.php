@@ -6,6 +6,7 @@ use App\Models\MusicSheet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 
 class Gender extends Model
 {
@@ -44,7 +45,7 @@ class Gender extends Model
     public function scopeSearch($query)
     {
         $search = request('search');
-        
+
         $query->when($search, function ($query) use ($search) {
             $query->where('name', 'ilike', $search . '%');
         });
@@ -62,5 +63,10 @@ class Gender extends Model
     public function musicSheets()
     {
         return $this->hasMany(MusicSheet::class);
+    }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = Str::title($value);
     }
 }

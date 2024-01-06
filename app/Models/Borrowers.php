@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Borrowers extends Model
 {
@@ -44,5 +45,25 @@ class Borrowers extends Model
         $query->orderBy("first_name", "asc");
 
         return $query;
+    }
+
+    public function setFirstNameAttribute($value)
+    {
+        $this->attributes['first_name'] = Str::title($value);
+    }
+
+    public function setLastNameAttribute($value)
+    {
+        $this->attributes['last_name'] = Str::title($value);
+    }
+
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = Str::lower($value);
+    }
+
+    public function setAddressAttribute($value)
+    {
+        $this->attributes['address'] = Str::title($value);
     }
 }
