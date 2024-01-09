@@ -29,44 +29,44 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
         try {
             $musicSheet = DB::transaction(function () use ($request) {
                 // Se crea una nueva instancia de partitura musical
-               $musicSheet = new MusicSheet();
-               // Se busca el autor
-               $author = Author::findOrFail($request->authorId);
-               // Se busca el género musical
-               $gender = Gender::find($request->genderId);
-               // Se crea una nueva instancia de ubicación
-               $location = new Locations();
-   
-               if ($request->hasFile('file')) {
-                   $title = $author ?
-                       $request->title . ' - ' . $author->full_name
-                       : $request->file('file')->getClientOriginalName();
-                   $file_format = $request->file('file')->getClientOriginalExtension();
-   
-                   $musicSheetFile = new MusicSheetFile();
-                   $musicSheetFile->file_name = $title;
-                   $musicSheetFile->file_format = $file_format;
-                   $musicSheetFile->binary_file = base64_encode($request->file('file')->get());
-                   $musicSheetFile->save();
-                   $musicSheet->music_sheet_file_id = $musicSheetFile->id;
-               }
-   
-               $musicSheet->title = $request->title;
-               $musicSheet->author_id = $author->id;
-               $musicSheet->gender_id = $gender->id;
-               $musicSheet->cuantity = $request->cuantity;
-               $musicSheet->available = $request->cuantity;
-   
-               $location->cabinet_id = $request->cabinetId;
-               $location->drawer_id = $request->drawerId;
-               $location->save();
-   
-               $musicSheet->location_id = $location->id;
-               $musicSheet->save();
-               
-               return $musicSheet;
-           });
-           return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_CREATED);
+                $musicSheet = new MusicSheet();
+                // Se busca el autor
+                $author = Author::findOrFail($request->authorId);
+                // Se busca el género musical
+                $gender = Gender::find($request->genderId);
+                // Se crea una nueva instancia de ubicación
+                $location = new Locations();
+
+                if ($request->hasFile('file')) {
+                    $title = $author ?
+                        $request->title . ' - ' . $author->full_name
+                        : $request->file('file')->getClientOriginalName();
+                    $file_format = $request->file('file')->getClientOriginalExtension();
+
+                    $musicSheetFile = new MusicSheetFile();
+                    $musicSheetFile->file_name = $title;
+                    $musicSheetFile->file_format = $file_format;
+                    $musicSheetFile->binary_file = base64_encode($request->file('file')->get());
+                    $musicSheetFile->save();
+                    $musicSheet->music_sheet_file_id = $musicSheetFile->id;
+                }
+
+                $musicSheet->title = $request->title;
+                $musicSheet->author_id = $author->id;
+                $musicSheet->gender_id = $gender->id;
+                $musicSheet->cuantity = $request->cuantity;
+                $musicSheet->available = $request->cuantity;
+
+                $location->cabinet_id = $request->cabinetId;
+                $location->drawer_id = $request->drawerId;
+                $location->save();
+
+                $musicSheet->location_id = $location->id;
+                $musicSheet->save();
+
+                return $musicSheet;
+            });
+            return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -116,7 +116,7 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
                 $musicSheet->save();
                 return $musicSheet;
             });
-            return response()->json(['item' => new MusicSheetResource($musicSheetUpdate), 'message' => 'success'], Response::HTTP_OK);
+            return new MusicSheetResource($musicSheetUpdate);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -131,7 +131,7 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
 
     public function search()
     {
-        if(request('search')) {
+        if (request('search')) {
             $musicSheet = MusicSheet::search()->paginate(10);
             return new MusicSheetCollection($musicSheet);
         } else {
