@@ -20,6 +20,6 @@ class BorrowersCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return BorrowersResource::collection($this->collection);
     }
 }
