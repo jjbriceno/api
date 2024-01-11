@@ -31,6 +31,6 @@ class CreateBorrowersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('borrowers');
+        Schema::dropIfExists('borrower');
     }
 }

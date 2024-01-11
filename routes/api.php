@@ -93,19 +93,31 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow cabinets management
      */
 
+<<<<<<< Updated upstream
     Route::get('/cabinets', [CabinetsController::class, 'index'])->name('cabinets');
+=======
+    /** 
+     * Routes that allow Borrower search 
+     */
+    Route::get('/borrowers/search', [BorrowersController::class, 'search'])->name('Borrower.search');
+>>>>>>> Stashed changes
 
     /**
-     * Routes that allow borrowers management
+     * Routes that allow Borrower management
      */
+<<<<<<< Updated upstream
 
     Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
+=======
+    Route::resource('/borrowers', BorrowersController::class, ['except' => ['create', 'edit']]);
+    // Route::get('/Borrower', [BorrowersController::class, 'index'])->name('Borrower');
+>>>>>>> Stashed changes
 
-    // Route::post('/borrowers/store', [BorrowersController::class, 'store'])->name('borrowers.store');
+    // Route::post('/Borrower/store', [BorrowersController::class, 'store'])->name('Borrower.store');
 
-    // Route::post('/borrowers/edit', [BorrowersController::class, 'edit'])->name('borrowers.edit');
+    // Route::post('/Borrower/edit', [BorrowersController::class, 'edit'])->name('Borrower.edit');
 
-    // Route::post('/borrowers/destroy/{id}', [BorrowersController::class, 'destroy'])->name('borrowers.destroy');
+    // Route::post('/Borrower/destroy/{id}', [BorrowersController::class, 'destroy'])->name('Borrower.destroy');
 
 
     /**

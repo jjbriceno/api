@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Loans;
-use App\Models\Borrowers;
+use App\Models\Borrower;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -23,12 +23,12 @@ class LoansController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrowers::with('loans')->whereHas('loans')->get();
+        $Borrower = Borrower::with('loans')->whereHas('loans')->get();
 
-        foreach ($borrowers as $borrower) {
+        foreach ($Borrower as $borrower) {
             $borrower['total_music_sheets'] = array_sum(array_column($borrower->loans->all(), 'cuantity'));
         }
-        return response()->json(['loans' => $borrowers->jsonSerialize()]);
+        return response()->json(['loans' => $Borrower->jsonSerialize()]);
     }
 
     /**
@@ -128,12 +128,12 @@ class LoansController extends Controller
         $musicSheet->save();
         Loans::find($request->loanId)->delete();
 
-        $borrowers = Borrowers::with('loans')->whereHas('loans')->get();
+        $Borrower = Borrower::with('loans')->whereHas('loans')->get();
 
-        foreach ($borrowers as $borrower) {
+        foreach ($Borrower as $borrower) {
             $borrower['total_music_sheets'] = array_sum(array_column($borrower->loans->all(), 'cuantity'));
         }
-        return response(['loans' => Loans::all(), 'borrowers' => $borrowers->jsonSerialize()], Response::HTTP_OK);
+        return response(['loans' => Loans::all(), 'Borrower' => $Borrower->jsonSerialize()], Response::HTTP_OK);
     }
 
     /**
@@ -163,8 +163,8 @@ class LoansController extends Controller
 
         $loans->delete();
 
-        $borrowers = Borrowers::with('loans')->whereHas('loans')->get();
+        $Borrower = Borrower::with('loans')->whereHas('loans')->get();
 
-        return response(['loans' => $borrowers->jsonSerialize()], Response::HTTP_OK);
+        return response(['loans' => $Borrower->jsonSerialize()], Response::HTTP_OK);
     }
 }

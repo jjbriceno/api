@@ -10,6 +10,7 @@ use App\Models\Locations;
 use App\Models\MusicSheet;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class MusicSheetSeeder extends Seeder
 {
@@ -30,11 +31,16 @@ class MusicSheetSeeder extends Seeder
 
         DB::transaction(function () use ($csvFile) {
             while (($data = fgetcsv($csvFile, 0, ",")) !== false) {
-                $title = trim($data[0], " ");
-                $author_name = trim($data[1], " ");
+                $title = Str::title(trim($data[0], " "));
+                $author_name = Str::title(trim($data[1], " "));
                 $cuantity = trim($data[2], " ");
+<<<<<<< Updated upstream
                 $gender_name = trim($data[3], " ");
                 list($drawer_name, $cabinet_name) = explode('-', str_replace(' ', '', $data[4]));
+=======
+                $gender_name = Str::title(trim($data[3], " "));
+                list($cabinet_name, $drawer_name) = explode('-', str_replace(' ', '', $data[4]));
+>>>>>>> Stashed changes
 
                 $drawer_id = Drawers::where('name', $drawer_name)->first()->id;
                 $cabinet_id = Cabinets::where('name', $cabinet_name)->first()->id;
