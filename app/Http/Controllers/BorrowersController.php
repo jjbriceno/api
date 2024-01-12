@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Borrowers;
+use App\Models\Borrower;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\Borrowers\BorrowersCollection;
+use App\Http\Resources\Borrower\BorrowerResource;
+use App\Http\Resources\Borrower\BorrowerCollection;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class BorrowersController extends Controller
@@ -53,9 +54,9 @@ class BorrowersController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrowers::filtered()->paginate(5);
+        $borrowers = Borrower::filtered()->paginate(5);
 
-        return new BorrowersCollection($borrowers);
+        return new BorrowerCollection($borrowers);
     }
 
     /**
@@ -82,28 +83,28 @@ class BorrowersController extends Controller
             $this->Messages()
         );
 
-        $borrower = new Borrowers();
-        $borrower->first_name = $request->firstName;
-        $borrower->last_name = $request->lastName;
-        $borrower->email = $request->email;
-        $borrower->phone = $request->phone;
-        $borrower->address  = $request->address;
-        $borrower->save();
+        $Borrower = new Borrower();
+        $Borrower->first_name = $request->firstName;
+        $Borrower->last_name = $request->lastName;
+        $Borrower->email = $request->email;
+        $Borrower->phone = $request->phone;
+        $Borrower->address  = $request->address;
+        $Borrower->save();
 
-        return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_CREATED);
+        return response(['Borrower' => $Borrower->jsonSerialize()], Response::HTTP_CREATED);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\borrower  $borrower
+     * @param  \App\Models\Borrower  $Borrower
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         try {
-            $borrower = Borrowers::findOrFail($id);
-            return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_OK);
+            $Borrower = Borrower::findOrFail($id);
+            return response(['Borrower' => $Borrower->jsonSerialize()], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -112,7 +113,7 @@ class BorrowersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\borrower  $borrower
+     * @param  \App\Models\Borrower  $Borrower
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request)
@@ -124,10 +125,10 @@ class BorrowersController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\borrower  $borrower
+     * @param  \App\Models\Borrower  $Borrower
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Borrowers $borrower)
+    public function update(Request $request, Borrower $borrower)
     {
         $this->validate(
             $request,
@@ -135,7 +136,7 @@ class BorrowersController extends Controller
             $this->Messages()
         );
 
-        $borrower = Borrowers::findOrFail($borrower->id);
+        $borrower = Borrower::findOrFail($borrower->id);
         $borrower->first_name = $request->firstName;
         $borrower->last_name = $request->lastName;
         $borrower->email = $request->email;
@@ -143,21 +144,21 @@ class BorrowersController extends Controller
         $borrower->address = $request->address;
         $borrower->save();
 
-        return response(['borrower' => $borrower->jsonSerialize()], Response::HTTP_CREATED);
+        return new BorrowerResource($borrower);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\borrower  $borrower
+     * @param  \App\Models\Borrower  $Borrower
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         try {
             DB::transaction(function () use ($id) {
-                $borrower = Borrowers::findOrFail($id);
-                $loans = $borrower->loans();
+                $Borrower = Borrower::findOrFail($id);
+                $loans = $Borrower->loans();
                 // $loans = Loans::where('borrower_id', $id);
 
                 $loansArray = $loans->get()->all();
@@ -176,9 +177,9 @@ class BorrowersController extends Controller
 
                 $loans->delete();
 
-                $borrower = Borrowers::findOrFail($id);
-                $borrower->delete();
-                return response()->json(['borrower' => $borrower->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
+                $Borrower = Borrower::findOrFail($id);
+                $Borrower->delete();
+                return response()->json(['Borrower' => $Borrower->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
             });
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -188,8 +189,8 @@ class BorrowersController extends Controller
     public function search()
     {
         if (request('search')) {
-            $musicSheet = Borrowers::search()->paginate(5);
-            return new BorrowersCollection($musicSheet);
+            $musicSheet = Borrower::search()->paginate(5);
+            return new BorrowerCollection($musicSheet);
         } else {
             return $this->index();
         }

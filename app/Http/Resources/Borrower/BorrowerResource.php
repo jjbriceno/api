@@ -1,11 +1,18 @@
 <?php
 
-namespace App\Http\Resources\Borrowers;
+namespace App\Http\Resources\Borrower;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BorrowersResource extends JsonResource
+class BorrowerResource extends JsonResource
 {
+    /**
+     * The "data" wrapper that should be applied.
+     *
+     * @var string
+     */
+    public static $wrap = 'borrower';
+
     /**
      * Transform the resource into an array.
      *

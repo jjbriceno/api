@@ -66,8 +66,8 @@ class Loans extends Model
      *
      * @return void
      */
-    public function borrower()
+    public function Borrower()
     {
-        return $this->belongsTo(Borrowers::class);
+        return $this->belongsTo(Borrower::class);
     }
 }

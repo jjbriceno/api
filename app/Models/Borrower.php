@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-class Borrowers extends Model
+class Borrower extends Model
 {
     use HasFactory, SoftDeletes;
 

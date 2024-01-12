@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\Borrowers;
+namespace App\Http\Resources\Borrower;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class BorrowersCollection extends ResourceCollection
+class BorrowerCollection extends ResourceCollection
 {
     /**
      * The "data" wrapper that should be applied.
@@ -20,6 +20,6 @@ class BorrowersCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return BorrowersResource::collection($this->collection);
+        return BorrowerResource::collection($this->collection);
     }
 }
