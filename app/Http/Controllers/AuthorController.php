@@ -7,7 +7,6 @@ use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Resources\Author\AuthorCollection;
-use Exception;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class AuthorController extends Controller

@@ -8,6 +8,7 @@ use App\Models\Drawers;
 use App\Models\Cabinets;
 use App\Models\Locations;
 use App\Models\MusicSheet;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -30,10 +31,10 @@ class MusicSheetSeeder extends Seeder
 
         DB::transaction(function () use ($csvFile) {
             while (($data = fgetcsv($csvFile, 0, ",")) !== false) {
-                $title = trim($data[0], " ");
-                $author_name = trim($data[1], " ");
+                $title = Str::title(trim($data[0], " "));
+                $author_name = Str::title(trim($data[1], " "));
                 $cuantity = trim($data[2], " ");
-                $gender_name = trim($data[3], " ");
+                $gender_name = Str::title(trim($data[3], " "));
                 list($cabinet_name, $drawer_name) = explode('-', str_replace(' ', '', $data[4]));
 
                 $drawer_id = Drawers::where('name', $drawer_name)->first()->id;
