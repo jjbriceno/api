@@ -83,15 +83,15 @@ class BorrowersController extends Controller
             $this->Messages()
         );
 
-        $Borrower = new Borrower();
-        $Borrower->first_name = $request->firstName;
-        $Borrower->last_name = $request->lastName;
-        $Borrower->email = $request->email;
-        $Borrower->phone = $request->phone;
-        $Borrower->address  = $request->address;
-        $Borrower->save();
+        $borrower = new Borrower();
+        $borrower->first_name = $request->firstName;
+        $borrower->last_name = $request->lastName;
+        $borrower->email = $request->email;
+        $borrower->phone = $request->phone;
+        $borrower->address  = $request->address;
+        $borrower->save();
 
-        return response(['Borrower' => $Borrower->jsonSerialize()], Response::HTTP_CREATED);
+        return new BorrowerResource($borrower);
     }
 
     /**
@@ -103,8 +103,8 @@ class BorrowersController extends Controller
     public function show($id)
     {
         try {
-            $Borrower = Borrower::findOrFail($id);
-            return response(['Borrower' => $Borrower->jsonSerialize()], Response::HTTP_OK);
+            $borrower = Borrower::findOrFail($id);
+            return new BorrowerResource($borrower);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
