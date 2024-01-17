@@ -66,8 +66,33 @@ class Loans extends Model
      *
      * @return void
      */
-    public function Borrower()
+    public function borrower()
     {
         return $this->belongsTo(Borrower::class);
+    }
+
+    public function scopeFiltered($query)
+    {
+        $query->select('*');
+
+        $query->orderBy("id", "asc");
+
+        return $query;
+    }
+
+    public function scopeSearch($query)
+    {
+        $search = request('search');
+
+        $query->when($search, function ($query) use ($search) {
+            $query->whereHas('borrower', function ($query) use ($search) {
+                $query->where('first_name', 'ilike', $search . '%')
+                    ->orWhere('last_name', 'ilike', $search . '%');
+            });
+        });
+
+        $query->orderBy("id", "asc");
+
+        return $query;
     }
 }

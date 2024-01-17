@@ -25,6 +25,8 @@ class LoansController extends Controller
     {
         $borrowers = Borrower::with('loans')->whereHas('loans')->get();
 
+        dd($borrowers);
+
         foreach ($borrowers as $Borrower) {
             $Borrower['total_music_sheets'] = array_sum(array_column($Borrower->loans->all(), 'cuantity'));
         }
