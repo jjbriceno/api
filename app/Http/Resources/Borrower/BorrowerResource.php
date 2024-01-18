@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Borrower;
 
+use App\Http\Resources\Loan\LoanResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BorrowerResource extends JsonResource
@@ -28,7 +29,8 @@ class BorrowerResource extends JsonResource
             "phone" => $this->phone,
             "email" => $this->email,
             "address" => $this->address,
-            "full_name" => $this->first_name . " " . $this->last_name
+            "full_name" => $this->first_name . " " . $this->last_name,
+            "loans" => LoanResource::collection($this->whenLoaded('loans')),
         ];
     }
 }

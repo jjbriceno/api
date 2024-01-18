@@ -54,7 +54,7 @@ class BorrowersController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrower::filtered()->paginate(5);
+        $borrowers = Borrower::paginate(5);
 
         return new BorrowerCollection($borrowers);
     }

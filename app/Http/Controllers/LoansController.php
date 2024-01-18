@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Requests\Loans\LoanRequest;
 use App\Events\Loans\NewLoanRegisterEvent;
+use App\Http\Resources\Borrower\BorrowerCollection;
+use App\Http\Resources\Borrower\BorrowerResource;
 use App\Http\Resources\MusicSheetResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
@@ -23,14 +25,13 @@ class LoansController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrower::with('loans')->whereHas('loans')->get();
-
-        dd($borrowers);
-
-        foreach ($borrowers as $Borrower) {
-            $Borrower['total_music_sheets'] = array_sum(array_column($Borrower->loans->all(), 'cuantity'));
+        $borrowers = Borrower::query()->whereHas('loans')->paginate(1);
+        
+        foreach ($borrowers as $borrower) {
+            $borrower['total_music_sheets'] = array_sum(array_column($borrower->loans->all(), 'cuantity'));
         }
-        return response()->json(['loans' => $borrowers->jsonSerialize()]);
+
+        return new BorrowerCollection($borrowers);
     }
 
     /**
