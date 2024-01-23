@@ -103,6 +103,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::get('/cabinets', [CabinetsController::class, 'index'])->name('cabinets');
 
+    /**
+     * Routes that allow loans management
+     */
+    Route::get('/get-borrowers', [BorrowersController::class, 'getBorrowers'])->name('borrowers.get');
+
     /** 
      * Routes that allow borrowers search 
      */
@@ -120,6 +125,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Route::post('/borrowers/destroy/{id}', [BorrowersController::class, 'destroy'])->name('borrowers.destroy');
 
+    /**
+     * Routes that allow loans search
+     */
+    // Route::get('/loans/search', [LoansController::class, 'search'])->name('loans.search');
 
     /**
      * Routes that allow loans management

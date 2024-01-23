@@ -60,6 +60,18 @@ class BorrowersController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getBorrowers()
+    {
+        $borrowers = Borrower::query()->whereHas('loans')->with('loans')->paginate(10);
+
+        return new BorrowerCollection($borrowers);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -189,7 +201,7 @@ class BorrowersController extends Controller
     public function search()
     {
         if (request('search')) {
-            $musicSheet = Borrower::search()->paginate(5);
+            $musicSheet = Borrower::search()->paginate(10);
             return new BorrowerCollection($musicSheet);
         } else {
             return $this->index();

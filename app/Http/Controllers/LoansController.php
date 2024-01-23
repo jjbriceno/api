@@ -10,7 +10,6 @@ use Illuminate\Http\Response;
 use App\Http\Requests\Loans\LoanRequest;
 use App\Events\Loans\NewLoanRegisterEvent;
 use App\Http\Resources\Borrower\BorrowerCollection;
-use App\Http\Resources\Borrower\BorrowerResource;
 use App\Http\Resources\MusicSheetResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
@@ -25,11 +24,7 @@ class LoansController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrower::query()->whereHas('loans')->paginate(1);
-        
-        foreach ($borrowers as $borrower) {
-            $borrower['total_music_sheets'] = array_sum(array_column($borrower->loans->all(), 'cuantity'));
-        }
+        $borrowers = Borrower::query()->whereHas('loans')->with('loans')->paginate(10);
 
         return new BorrowerCollection($borrowers);
     }
@@ -106,15 +101,11 @@ class LoansController extends Controller
         $loans->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
         $loans->cuantity = $request->cuantity;
         $loans->status = $request->status;
-
         $loans->loan_date = $request->loan_date;
-
         $loans->delivery_date = $request->delivery_date;
-
         $loans->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
-
-
         $loans->save();
+
         return response($loans, Response::HTTP_OK);
     }
 
@@ -170,4 +161,14 @@ class LoansController extends Controller
 
         return response(['loans' => $borrowers->jsonSerialize()], Response::HTTP_OK);
     }
+
+    // public function search()
+    // {
+    //     if (request('search')) {
+    //         $musicSheet = Loans::search()->paginate(10);
+    //         return new BorrowerCollection($musicSheet);
+    //     } else {
+    //         return $this->index();
+    //     }
+    // }
 }
