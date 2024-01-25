@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Loans extends Model
+class Loan extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -44,6 +44,13 @@ class Loans extends Model
         'music_sheets_borrowed_amount',
         'cuantity'
     ];
+
+    /**
+     * 
+     */
+    public function musicSheets() {
+        return $this->belongsToMany(MusicSheet::class);
+    }
 
     /**
      * Accesor to get author name for this loan

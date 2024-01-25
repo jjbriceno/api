@@ -19,7 +19,7 @@ class Borrower extends Model
 
     public function loans()
     {
-        return $this->hasMany(Loans::class);
+        return $this->hasMany(Loan::class);
     }
 
     public function scopeFiltered($query)

@@ -33,6 +33,13 @@ class MusicSheet extends Model
     protected $hidden = ['author_id', 'gender_id', 'location_id'];
 
     /**
+     * 
+     */
+    public function loans() {
+        return $this->belongsToMany(Loan::class);
+    }
+
+    /**
      * One Music sheets belongs to one author
      *
      * @return void

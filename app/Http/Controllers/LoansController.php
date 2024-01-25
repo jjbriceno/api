@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Loans;
+use App\Models\Loan;
 use App\Models\Borrower;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Requests\Loans\LoanRequest;
-use App\Events\Loans\NewLoanRegisterEvent;
+use App\Http\Requests\Loan\LoanRequest;
+use App\Events\Loan\NewLoanRegisterEvent;
 use App\Http\Resources\Borrower\BorrowerCollection;
 use App\Http\Resources\MusicSheetResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -24,8 +24,10 @@ class LoansController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrower::query()->whereHas('loans')->with('loans')->paginate(10);
-
+        $borrowers = Borrower::query()->whereHas('loans', function($query) {
+            $query->whereHas('musicSheets');
+        })->paginate(10);
+        
         return new BorrowerCollection($borrowers);
     }
 
@@ -47,14 +49,15 @@ class LoansController extends Controller
      */
     public function store(LoanRequest $request)
     {
-        $loan = Loans::create([
+        $loan = Loan::query()->create([
             'borrower_id' => $request->borrowerId,
             'status' => 'abierto',
             'loan_date' => \Carbon\Carbon::now('utc'),
             'delivery_date' => $request->deliveryDate,
-            'music_sheets_borrowed_amount' => json_encode([$request->musicSheetId => $request->cuantity]),
             'cuantity' => $request->cuantity
         ]);
+
+        $loan->musicSheets()->attach($request->musicSheetId);
 
         event(new NewLoanRegisterEvent($request->musicSheetId, $loan->cuantity));
 
@@ -65,10 +68,10 @@ class LoansController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Loans  $loans
+     * @param  \App\Models\Loan  $loans
      * @return \Illuminate\Http\Response
      */
-    public function show(Loans $loans)
+    public function show(Loan $loans)
     {
         return response(['loan' => $loans->jsonSerialize()], Response::HTTP_OK);
     }
@@ -76,10 +79,10 @@ class LoansController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Loans  $loans
+     * @param  \App\Models\Loan  $loans
      * @return \Illuminate\Http\Response
      */
-    public function edit(Loans $loans)
+    public function edit(Loan $loans)
     {
         //
     }
@@ -88,10 +91,10 @@ class LoansController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Loans  $loans
+     * @param  \App\Models\Loan  $loans
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Loans $loans)
+    public function update(Request $request, Loan $loans)
     {
 
         $loans->lender_id = $request->lender_id;
@@ -120,26 +123,26 @@ class LoansController extends Controller
         $musicSheet = MusicSheet::find($request->musicSheetId);
         $musicSheet->available += $request->cuantity;
         $musicSheet->save();
-        Loans::find($request->loanId)->delete();
+        Loan::find($request->loanId)->delete();
 
         $borrowers = Borrower::with('loans')->whereHas('loans')->get();
 
         foreach ($borrowers as $Borrower) {
             $Borrower['total_music_sheets'] = array_sum(array_column($Borrower->loans->all(), 'cuantity'));
         }
-        return response(['loans' => Loans::all(), 'borrowers' => $borrowers->jsonSerialize()], Response::HTTP_OK);
+        return response(['loans' => Loan::all(), 'borrowers' => $borrowers->jsonSerialize()], Response::HTTP_OK);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Loans  $loans
+     * @param  \App\Models\Loan  $loans
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
 
-        $loans = Loans::where('borrower_id', $id);
+        $loans = Loan::where('borrower_id', $id);
 
         $loansArray = $loans->get()->all();
 

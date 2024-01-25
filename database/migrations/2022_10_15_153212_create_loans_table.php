@@ -19,7 +19,7 @@ class CreateLoansTable extends Migration
             $table->enum('status', ['abierto', 'cerrado'])->nullable()->comment('Estado de la entrega');
             $table->date('loan_date')->nullable()->comment('Fecha de préstamo');
             $table->date('delivery_date')->nullable()->comment('Fecha de entrega');
-            $table->jsonb('music_sheets_borrowed_amount')->comment('Objeto de pares de {id, cantidad} de partituras prestadas');
+            // $table->jsonb('music_sheets_borrowed_amount')->comment('Objeto de pares de {id, cantidad} de partituras prestadas');
             $table->integer('cuantity')->comment('Cantidad de partituras prestadas');
             $table->softDeletes();
             $table->timestamps();

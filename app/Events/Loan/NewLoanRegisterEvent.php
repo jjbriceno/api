@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Events\Loans;
+namespace App\Events\Loan;
 
-use App\Models\Loans;
+use App\Models\Loan;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;

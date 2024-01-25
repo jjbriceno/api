@@ -22,6 +22,7 @@ class LoanResource extends JsonResource
             'delivery_date' => $this->delivery_date,
             'music_sheets_borrowed_amount' => $this->music_sheets_borrowed_amount,
             'cuantity' => $this->cuantity,
+            'loan_info' => $this->getLoanInfoAttribute()
         ];
     }
 }

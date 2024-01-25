@@ -54,7 +54,7 @@ class BorrowersController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrower::query()->whereHas('loans')->with('loans')->paginate(10);
+        $borrowers = Borrower::paginate(10);
 
         return new BorrowerCollection($borrowers);
     }
@@ -66,7 +66,10 @@ class BorrowersController extends Controller
      */
     public function getBorrowers()
     {
-        $borrowers = Borrower::query()->whereHas('loans')->with('loans')->paginate(10);
+        $borrowers = Borrower::query()->whereHas('loans', function($query) {
+            $query->whereHas('musicSheets')->with('musicSheets');
+        })->with('loans')->paginate(10);
+        // $borrowers = Borrower::query()->whereHas('loans')->with('loans')->paginate(10);
 
         return new BorrowerCollection($borrowers);
     }
@@ -171,7 +174,7 @@ class BorrowersController extends Controller
             DB::transaction(function () use ($id) {
                 $Borrower = Borrower::findOrFail($id);
                 $loans = $Borrower->loans();
-                // $loans = Loans::where('borrower_id', $id);
+                // $loans = Loan::where('borrower_id', $id);
 
                 $loansArray = $loans->get()->all();
 

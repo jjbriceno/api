@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners\Loans;
+namespace App\Listeners\Loan;
 
 use App\Models\MusicSheet;
 use Illuminate\Contracts\Queue\ShouldQueue;
