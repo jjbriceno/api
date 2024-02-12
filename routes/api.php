@@ -113,6 +113,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::get('/borrowers/search', [BorrowersController::class, 'search'])->name('borrowers.search');
 
+    /** Route that allow get loans for a borrower */
+    Route::get('/get-borrower-loans/{id}', [LoansController::class, 'getBorrowerLoans'])->name('borrowersLoans.get');
+
     /**
      * Routes that allow borrowers management
      */

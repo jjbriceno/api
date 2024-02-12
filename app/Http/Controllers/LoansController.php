@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use App\Http\Requests\Loan\LoanRequest;
 use App\Events\Loan\NewLoanRegisterEvent;
 use App\Http\Resources\Borrower\BorrowerCollection;
+use App\Http\Resources\Loan\LoanResource;
 use App\Http\Resources\MusicSheetResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
@@ -165,13 +166,10 @@ class LoansController extends Controller
         return response(['loans' => $borrowers->jsonSerialize()], Response::HTTP_OK);
     }
 
-    // public function search()
-    // {
-    //     if (request('search')) {
-    //         $musicSheet = Loans::search()->paginate(10);
-    //         return new BorrowerCollection($musicSheet);
-    //     } else {
-    //         return $this->index();
-    //     }
-    // }
+    public function getBorrowerLoans($id)
+    {
+        $loans = Loan::where('borrower_id', $id)->get();
+
+        return LoanResource::collection($loans);
+    }
 }

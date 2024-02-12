@@ -30,7 +30,7 @@ class BorrowerResource extends JsonResource
             "email" => $this->email,
             "address" => $this->address,
             "full_name" => $this->first_name . " " . $this->last_name,
-            "loans" => LoanResource::collection($this->whenLoaded('loans')),
+            "loans_count" => $this->loans->count() ?? 0,
             "total_music_sheets" => $this->calculateTotalMusicSheets()
         ];
     }

@@ -7,6 +7,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class LoanResource extends JsonResource
 {
     /**
+     * The "data" wrapper that should be applied.
+     *
+     * @var string
+     */
+    public static $wrap = 'loan';
+    /**
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -20,7 +26,6 @@ class LoanResource extends JsonResource
             'status' => $this->status,
             'loan_date' => $this->loan_date->locale('es_ES')->isoFormat('LL'),
             'delivery_date' => $this->delivery_date->locale('es_ES')->isoFormat('LL'),
-            // 'music_sheets_borrowed_amount' => $this->music_sheets_borrowed_amount,
             'cuantity' => $this->cuantity,
             'loan_info' => $this->getLoanInfoAttribute()
         ];
