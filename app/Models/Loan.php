@@ -59,11 +59,8 @@ class Loan extends Model
      */
     public function getLoanInfoAttribute()
     {
-        $loan = json_decode($this->music_sheets_borrowed_amount, true);
-
-        $musicSheetId = array_keys($loan)[0];
-
-        $musicSheet = MusicSheet::find($musicSheetId);
+        // TODO: Corregir para procesar n partituras
+        $musicSheet = $this->musicSheets()->with("author")->get()[0];
 
         return ['author' => $musicSheet->author->full_name, 'title' => $musicSheet->title];
     }

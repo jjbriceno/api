@@ -34,7 +34,7 @@ class LoanRequest extends FormRequest
             'available'     => ['required'],
             'cuantity'      => ['required'],
             'borrowerId'    => ['required'],
-            'deliveryDate'  => ['required', 'date']
+            'deliveryDate'  => ['required', 'date', 'after:today'],
         ];
     }
 

@@ -18,9 +18,9 @@ class LoanResource extends JsonResource
             'id' => $this->id,
             'borrower_id' => $this->borrower_id,
             'status' => $this->status,
-            'loan_date' => $this->loan_date,
-            'delivery_date' => $this->delivery_date,
-            'music_sheets_borrowed_amount' => $this->music_sheets_borrowed_amount,
+            'loan_date' => $this->loan_date->locale('es_ES')->isoFormat('LL'),
+            'delivery_date' => $this->delivery_date->locale('es_ES')->isoFormat('LL'),
+            // 'music_sheets_borrowed_amount' => $this->music_sheets_borrowed_amount,
             'cuantity' => $this->cuantity,
             'loan_info' => $this->getLoanInfoAttribute()
         ];
