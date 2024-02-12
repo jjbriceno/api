@@ -121,17 +121,15 @@ class LoansController extends Controller
      */
     public function returnLoan(Request $request)
     {
-        $musicSheet = MusicSheet::find($request->musicSheetId);
-        $musicSheet->available += $request->cuantity;
-        $musicSheet->save();
+        // TODO: refactor cuando las devoluciones tiene 1 prestamo con n partiruras
+        $musicSheets = MusicSheet::whereIn('id', $request->musicSheetIds)->get();
+        $musicSheets->each(function ($musicSheet) use ($request) {
+            $musicSheet->available += $request->cuantity;
+            $musicSheet->save();
+        });
         Loan::find($request->loanId)->delete();
 
-        $borrowers = Borrower::with('loans')->whereHas('loans')->get();
-
-        foreach ($borrowers as $Borrower) {
-            $Borrower['total_music_sheets'] = array_sum(array_column($Borrower->loans->all(), 'cuantity'));
-        }
-        return response(['loans' => Loan::all(), 'borrowers' => $borrowers->jsonSerialize()], Response::HTTP_OK);
+        return $this->getBorrowerLoans($request->borrowerId);
     }
 
     /**

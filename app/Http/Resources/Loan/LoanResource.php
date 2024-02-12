@@ -27,7 +27,8 @@ class LoanResource extends JsonResource
             'loan_date' => $this->loan_date->locale('es_ES')->isoFormat('LL'),
             'delivery_date' => $this->delivery_date->locale('es_ES')->isoFormat('LL'),
             'cuantity' => $this->cuantity,
-            'loan_info' => $this->getLoanInfoAttribute()
+            'loan_info' => $this->getLoanInfoAttribute(),
+            'music_sheets_ids' => $this->musicSheets()->pluck('music_sheet_id')->toArray(),
         ];
     }
 }
