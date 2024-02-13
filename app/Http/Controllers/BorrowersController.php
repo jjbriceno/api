@@ -56,6 +56,7 @@ class BorrowersController extends Controller
     {
         $borrowers = Borrower::paginate(10);
 
+        // dd($borrowers);
         return new BorrowerCollection($borrowers);
     }
 
@@ -69,7 +70,7 @@ class BorrowersController extends Controller
         $borrowers = Borrower::query()->whereHas('loans', function($query) {
             $query->whereHas('musicSheets')->with('musicSheets');
         })->with('loans')->paginate(10);
-        // $borrowers = Borrower::query()->whereHas('loans')->with('loans')->paginate(10);
+
 
         return new BorrowerCollection($borrowers);
     }
