@@ -138,6 +138,12 @@ class GenderController extends Controller
         }
     }
 
+    /**
+     * Handle the search functionality.
+     *
+     * @param Request $request
+     * @return GenderCollection
+     */
     public function search(Request $request)
     {
         if (request('search')) {
@@ -146,5 +152,14 @@ class GenderController extends Controller
         } else {
             return $this->index();
         }
+    }
+
+    /**
+     * Get all the genders from the database.
+     *
+     * @return GenderCollection
+     */
+    public function getGenders() {
+        return new GenderCollection(Gender::all());
     }
 }

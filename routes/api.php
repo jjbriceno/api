@@ -87,11 +87,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow gender management
      */
     Route::resource('/genders', GenderController::class, ['except' => ['create', 'edit']]);
-    // Route::get('/genders', [GenderController::class, 'index'])->name('genders');
-
-    // Route::post('/genders/store', [GenderController::class, 'store'])->name('genders.store');
-
-    // Route::post('/genders/edit', [GenderController::class, 'edit'])->name('genders.edit');
+    Route::get('/all-genders', [GenderController::class, 'getGenders'])->name('all-genders');
 
     /**
      * Routes that allow drawers management
