@@ -50,7 +50,6 @@ class LoansController extends Controller
      */
     public function store(LoanRequest $request)
     {
-        dd($request->toArray());
         $loan = Loan::query()->create([
             'borrower_id' => $request->borrowerId,
             'status' => 'open',

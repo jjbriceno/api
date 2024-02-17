@@ -23,7 +23,6 @@ class LoanRequest extends FormRequest
      */
     public function rules()
     {
-        // dd($this->toArray());
         return [
             'musicSheetId'  => ['required'],
             'title'         => ['required'],
