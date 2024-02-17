@@ -40,7 +40,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow authors management
      */
     Route::resource('/authors', AuthorController::class,  ['except' => ['create', 'edit']]);
-    // Route::get('/authors', [AuthorController::class, 'index'])->name('authors');
+    Route::get('/all-authors', [AuthorController::class, 'getAuthors'])->name('all-authors');
 
     // Route::post('/authors/store', [AuthorController::class, 'store'])->name('authors.store');
 

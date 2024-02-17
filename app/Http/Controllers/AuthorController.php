@@ -144,6 +144,12 @@ class AuthorController extends Controller
         }
     }
 
+    /**
+     * Perform a search and return paginated results.
+     *
+     * @param void
+     * @return AuthorCollection
+     */
     public function search()
     {
         if (request('search')) {
@@ -152,5 +158,14 @@ class AuthorController extends Controller
         } else {
             return $this->index();
         }
+    }
+
+    /**
+     * Get the authors from the database.
+     *
+     * @return AuthorCollection
+     */
+    public function getAuthors() {
+        return new AuthorCollection(Author::all());
     }
 }
