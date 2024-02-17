@@ -16,7 +16,7 @@ class CreateLoansTable extends Migration
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('borrower_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
-            $table->enum('status', ['abierto', 'cerrado'])->nullable()->comment('Estado de la entrega');
+            $table->enum('status', ['open', 'closed'])->default('open')->nullable()->comment('Estado de la entrega');
             $table->date('loan_date')->nullable()->comment('Fecha de préstamo');
             $table->date('delivery_date')->nullable()->comment('Fecha de entrega');
             // $table->jsonb('music_sheets_borrowed_amount')->comment('Objeto de pares de {id, cantidad} de partituras prestadas');

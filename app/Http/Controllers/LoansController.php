@@ -50,9 +50,10 @@ class LoansController extends Controller
      */
     public function store(LoanRequest $request)
     {
+        dd($request->toArray());
         $loan = Loan::query()->create([
             'borrower_id' => $request->borrowerId,
-            'status' => 'abierto',
+            'status' => 'open',
             'loan_date' => \Carbon\Carbon::now('utc'),
             'delivery_date' => $request->deliveryDate,
             'cuantity' => $request->cuantity
