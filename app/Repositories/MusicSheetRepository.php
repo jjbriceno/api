@@ -76,9 +76,10 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
     {
         try {
             $musicSheet = MusicSheet::findOrFail($id);
-            $musicSheetUpdate = DB::transaction(function () use ($request, $musicSheet) {
+            DB::transaction(function () use ($request, $musicSheet) {
                 // Se busca el autor
                 $author = Author::findOrFail($request->authorId);
+
                 // Se busca el género musical
                 $gender = Gender::find($request->genderId);
                 $musicSheet->title = $request->title;
@@ -116,7 +117,10 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
                 $musicSheet->save();
                 return $musicSheet;
             });
-            return new MusicSheetResource($musicSheetUpdate);
+
+            $musicSheet = MusicSheet::findOrFail($id);
+
+            return new MusicSheetResource($musicSheet);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
