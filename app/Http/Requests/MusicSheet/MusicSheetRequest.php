@@ -39,7 +39,7 @@ class MusicSheetRequest extends FormRequest
     {
         return [
             'title.required'            => "El 'Título' es obligatorio",
-            'title.unique'              => "Este Título ya ha sido registrado con este autor",
+            'title.unique'              => "Este 'Título' ya ha sido registrado con este autor",
             'authorId.required'         => "El 'Autor' es obligatorio",
             'genderId.required'         => "El 'Género musical' es obligatorio",
             'drawerId.required'         => "La 'Gaveta' es obligatorio",

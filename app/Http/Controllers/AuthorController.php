@@ -17,12 +17,9 @@ class AuthorController extends Controller
 
     private function Rules($id = '')
     {
-        return $id ?
+        return
             [
-                'fullName' => ['required', 'unique:authors,full_name,' . $id],
-            ]
-            : [
-                'fullName' => ['required', 'unique:authors,full_name'],
+                'fullName' => ['required', $id ? 'unique:authors,full_name,' . $id : 'unique:authors,full_name'],
             ];
     }
 
