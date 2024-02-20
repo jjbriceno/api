@@ -32,6 +32,6 @@ class RegisteredUserController extends Controller
 
         $user->tokens()->delete();
 
-        return response()->noContent();
+        return response()->json([]);
     }
 }
