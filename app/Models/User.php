@@ -8,8 +8,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Notifications\EmailVerification\EmailVerificationNotification;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
@@ -45,5 +46,11 @@ class User extends Authenticatable
 
     public function profile() {
         return $this->hasOne(Profile::class);
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        // We override the default notification and will use our own
+        $this->notify(new EmailVerificationNotification());
     }
 }

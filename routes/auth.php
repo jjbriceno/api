@@ -20,15 +20,18 @@ Route::group(['middleware' => ['guest']], function () {
 
     Route::post('/reset-password', [NewPasswordController::class, 'store'])
         ->name('password.update');
+
+    Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+        ->name('verification.verify');
 });
 
 Route::group(['middleware' => ['auth']], function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-    Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
+    // Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+    //     ->middleware(['signed', 'throttle:6,1'])
+    //     ->name('verification.verify');
 
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware(['auth', 'throttle:6,1'])
