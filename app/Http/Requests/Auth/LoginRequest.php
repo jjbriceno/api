@@ -18,7 +18,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return Auth::guard('web')->guest();
     }
 
     /**
