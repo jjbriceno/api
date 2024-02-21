@@ -22,7 +22,12 @@ Route::group(['middleware' => ['guest']], function () {
         ->name('password.update');
 
     Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+        ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
+
+    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        ->middleware(['throttle:6,1'])
+        ->name('verification.send');
 });
 
 Route::group(['middleware' => ['auth']], function () {
@@ -32,8 +37,4 @@ Route::group(['middleware' => ['auth']], function () {
     // Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
     //     ->middleware(['signed', 'throttle:6,1'])
     //     ->name('verification.verify');
-
-    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-        ->middleware(['auth', 'throttle:6,1'])
-        ->name('verification.send');
 });
