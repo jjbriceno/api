@@ -180,8 +180,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        Felixkiss\UniqueWithValidator\ServiceProvider::class,
-
     ],
 
     /*
