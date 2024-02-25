@@ -11,8 +11,11 @@ use App\Http\Requests\Loan\LoanRequest;
 use App\Events\Loan\NewLoanRegisterEvent;
 use App\Http\Resources\Borrower\BorrowerCollection;
 use App\Http\Resources\Loan\LoanResource;
+use App\Http\Resources\MusicSheetCollection;
 use App\Http\Resources\MusicSheetResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\ErrorHandler\ThrowableUtils;
 
 class LoansController extends Controller
 {
@@ -25,10 +28,10 @@ class LoansController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrower::query()->whereHas('loans', function($query) {
-            $query->whereHas('musicSheets');
+        $borrowers = Borrower::query()->whereOnly('status', 'open')->whereHas('loans', function($query) {
+            $query->whereOnly('status', 'open')->whereHas('musicSheets');
         })->paginate(10);
-        
+
         return new BorrowerCollection($borrowers);
     }
 
@@ -58,12 +61,40 @@ class LoansController extends Controller
             'cuantity' => $request->cuantity
         ]);
 
-        $loan->musicSheets()->attach($request->musicSheetId);
-
-        event(new NewLoanRegisterEvent($request->musicSheetId, $loan->cuantity));
+        $loan->musicSheets()->attach($request->musicSheetId, ['cuantity' => $request->cuantity]);
+        event(new NewLoanRegisterEvent($request->musicSheetId, $request->cuantity));
 
         // TODO return
         return new MusicSheetResource(MusicSheet::find($request->musicSheetId));
+        // try {
+        //     $loan = Loan::query()->create([
+        //         'borrower_id' => $request->borrowerId,
+        //         'status' => 'open',
+        //         'loan_date' => \Carbon\Carbon::now('utc'),
+        //         'delivery_date' => $request->deliveryDate,
+        //         'cuantity' => 0
+        //     ]);
+
+        //     $cuantity = 0;
+        //     $arraySheets = [];
+        //     foreach ($request->musicSheet as $sheet) {
+        //         $loan->musicSheets()->attach($sheet->id, ['cuantity' => $sheet->cuantity]);
+        //         $arraySheets[] = $sheet->id;
+        //         $cuantity += $sheet->cuantity;
+        //         event(new NewLoanRegisterEvent($sheet->id, $sheet->cuantity));
+        //     }
+
+        //     $loan->cuantity = $cuantity;
+        //     $loan->save();
+
+        //     $musicSheets = MusicSheet::query()->whereIn('id', $arraySheets)->get();
+    
+        //     // TODO return
+        //     return response(['loans' => new MusicSheetCollection($musicSheets)], Response::HTTP_OK);
+
+        // } catch (\Throwable $th) {
+        //     return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 
     /**
@@ -95,22 +126,35 @@ class LoansController extends Controller
      * @param  \App\Models\Loan  $loans
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Loan $loans)
+    public function update(LoanRequest $request, $id)
     {
+        try {
+            $loan = Loan::findOrFail($id);
+            $loan->delivery_date = $request->deliveryDate;
+            $loan->borrower_id = $request->borrowerId;
 
-        $loans->lender_id = $request->lender_id;
-        $loans->status = $request->status;
-        $loans->loan_date = $request->loan_date;
-        $loans->delivery_date = $request->delivery_date;
-        $loans->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
-        $loans->cuantity = $request->cuantity;
-        $loans->status = $request->status;
-        $loans->loan_date = $request->loan_date;
-        $loans->delivery_date = $request->delivery_date;
-        $loans->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
-        $loans->save();
+            //Se eliminan todas las relacións de las partituras asociadas al prestamo a actualizar
+            $loan->musicSheets()->detach();
 
-        return response($loans, Response::HTTP_OK);
+            $cuantity = 0;
+            $arraySheetsIds = [];
+
+            //Se resgistran las nuevas partituras asociadas al prestamo.
+            foreach ($request->musicSheet as $sheet) {
+                $loan->musicSheets()->attach($sheet->id, ['cuantity' => $sheet->cuantity]);
+                $arraySheetsIds[] = $sheet->id;
+                $cuantity += $sheet->cuantity;
+                event(new NewLoanRegisterEvent($sheet->id, $sheet->cuantity));
+            }
+
+            $loan->cuantity = $cuantity;
+            $loan->save();
+            
+            return response(['loan' => new LoanResource($loan)], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -121,15 +165,24 @@ class LoansController extends Controller
      */
     public function returnLoan(Request $request)
     {
-        // TODO: refactor cuando las devoluciones tiene 1 prestamo con n partiruras
-        $musicSheets = MusicSheet::whereIn('id', $request->musicSheetIds)->get();
-        $musicSheets->each(function ($musicSheet) use ($request) {
-            $musicSheet->available += $request->cuantity;
-            $musicSheet->save();
-        });
-        Loan::find($request->loanId)->delete();
+        try {
+            // TODO: refactor cuando las devoluciones tiene 1 prestamo con n partiruras
+            $loan = Loan::findOrFail($request->loanId);
+            DB::transaction(function () use ($loan) {
+                $loan->musicSheets()->each(function ($musicSheet) {
+                    $musicSheet->available += $musicSheet->pivot->cuantity;
+                    $musicSheet->save();
+                });
+    
+                $loan->status = 'closed';
+                $loan->save();
+            });
 
-        return $this->getBorrowerLoans($request->borrowerId);
+            return response(['loan' => $this->getBorrowerLoans($request->borrowerId)], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -140,28 +193,26 @@ class LoansController extends Controller
      */
     public function destroy($id)
     {
+        try {
+            $loans = Loan::query()->findOrFail($id);
 
-        $loans = Loan::where('borrower_id', $id);
+            $loansMusicSheets = $loans->musicSheets();
+        
+            $loansMusicSheets->each(function ($musicSheet) {
+                $musicSheet->available += $musicSheet->pivot->cuantity;
+                $musicSheet->save();
+            });
 
-        $loansArray = $loans->get()->all();
+            $loans->musicSheets()->detach();
+            $loans->delete();
 
-        if ($loansArray) {
-            $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
-            foreach ($musicSheetsJson as $key) {
-                $keyArray = (array) $key;
-                foreach ($keyArray as $id => $cuantity) {
-                    $musicSheet = MusicSheet::find($id);
-                    $musicSheet->available += $cuantity;
-                    $musicSheet->save();
-                }
-            }
+            $borrowers = Borrower::with('loans')->whereHas('loans')->get();
+
+            return response(['loans' => new BorrowerCollection($borrowers)], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $loans->delete();
-
-        $borrowers = Borrower::with('loans')->whereHas('loans')->get();
-
-        return response(['loans' => $borrowers->jsonSerialize()], Response::HTTP_OK);
     }
 
     public function getBorrowerLoans($id)

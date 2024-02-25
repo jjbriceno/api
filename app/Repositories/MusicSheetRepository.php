@@ -33,7 +33,7 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
                 // Se busca el autor
                 $author = Author::findOrFail($request->authorId);
                 // Se busca el género musical
-                $gender = Gender::find($request->genderId);
+                $gender = Gender::findOrFail($request->genderId);
                 // Se crea una nueva instancia de ubicación
                 $location = new Locations();
 

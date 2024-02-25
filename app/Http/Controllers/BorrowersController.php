@@ -9,7 +9,10 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Borrower\BorrowerResource;
 use App\Http\Resources\Borrower\BorrowerCollection;
+use App\Models\Loan;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+
+use function GuzzleHttp\Promise\each;
 
 class BorrowersController extends Controller
 {
@@ -68,9 +71,8 @@ class BorrowersController extends Controller
     public function getBorrowers()
     {
         $borrowers = Borrower::query()->whereHas('loans', function($query) {
-            $query->whereHas('musicSheets')->with('musicSheets');
+            $query->where('status', 'open')->whereHas('musicSheets')->with('musicSheets');
         })->with('loans')->paginate(10);
-
 
         return new BorrowerCollection($borrowers);
     }
@@ -172,31 +174,25 @@ class BorrowersController extends Controller
     public function destroy($id)
     {
         try {
-            DB::transaction(function () use ($id) {
+            $Borrower = DB::transaction(function () use ($id) {
                 $Borrower = Borrower::findOrFail($id);
                 $loans = $Borrower->loans();
-                // $loans = Loan::where('borrower_id', $id);
 
-                $loansArray = $loans->get()->all();
-
-                if ($loansArray) {
-                    $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
-                    foreach ($musicSheetsJson as $key) {
-                        $keyArray = (array) $key;
-                        foreach ($keyArray as $id => $cuantity) {
-                            $musicSheet = MusicSheet::findOrFail($id);
-                            $musicSheet->available += $cuantity;
-                            $musicSheet->save();
-                        }
-                    }
-                }
+                $loans->each(function ($loan) {
+                    $loan->musicheets()->each(function ($musicSheet) {
+                        $musicSheet->available += $musicSheet->pivot->cuantity;
+                        $musicSheet->save();
+                    });
+        
+                    $loan->musicSheets()->detach();
+                });
 
                 $loans->delete();
-
-                $Borrower = Borrower::findOrFail($id);
                 $Borrower->delete();
-                return response()->json(['Borrower' => $Borrower->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
             });
+
+            return response()->json(['Borrower' => new BorrowerResource($Borrower), 'message' => 'success'], Response::HTTP_OK);
+
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -49,7 +49,7 @@ class Loan extends Model
      * 
      */
     public function musicSheets() {
-        return $this->belongsToMany(MusicSheet::class);
+        return $this->belongsToMany(MusicSheet::class)->withPivot(['music_sheet_id', 'cuantity']);
     }
 
     /**

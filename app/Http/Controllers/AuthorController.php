@@ -37,7 +37,7 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $authors = Author::filtered()->paginate(10);
+        $authors = Author::query()->paginate(10);
         
         return new AuthorCollection($authors);
     }

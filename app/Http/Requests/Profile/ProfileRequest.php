@@ -29,7 +29,7 @@ class ProfileRequest extends FormRequest
             'firstName'                 => ['required'],
             'lastName'                  => ['required'],
             'email'                     => ['required' , $this->user_id ? 'unique:users,email,' . $this->user_id : 'unique:users,email'],
-            'profilePictureId'          => ['sometimes', 'required', 'mimes:jpeg,png', 'max:2048'],
+            'profilePicture'          => ['sometimes', 'required', 'mimes:jpeg,png', 'max:2048'],
         ];
     }
 
@@ -39,10 +39,10 @@ class ProfileRequest extends FormRequest
             'firstName.required'        => "El 'Nombre' es obligatorio",
             'lastName.required'         => "El 'Apellido' es obligatorio",
             'email.required'            => "El 'Correo' es obligatorio",
-            'email.unique'              => "Este 'Correo' ya ha sido registrado con este usuario",
-            'profilePictureId.required' => "La 'Imagen de perfil' es obligatoria",
-            'profilePictureId.mimes'    => "Sólo se aceptan los formatos de archivo jpeg o png",
-            'profilePictureId.max'      => "El tamaño maximo del archivo es de 2 MB",
+            'email.unique'              => "Este 'Correo' ya ha sido registrado",
+            'profilePicture.required'   => "La 'Imagen de perfil' es obligatoria",
+            'profilePicture.mimes'      => "Sólo se aceptan los formatos de archivo jpeg o png",
+            'profilePicture.max'        => "El tamaño maximo del archivo es de 2 MB",
         ];
     }
 }
