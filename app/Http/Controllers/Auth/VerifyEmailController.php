@@ -19,15 +19,15 @@ class VerifyEmailController extends Controller
     public function __invoke(EmailVerificationRequest $request)
     {
         $user = User::find($request->route('id'));
-        
+
         if ($user->hasVerifiedEmail()) {
-            return response()->json(["path" => '/'], 200);
+            return response()->json(["path" => '/dashboard', "user" => $user], 200);
         }
 
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
 
-        return response()->json(["path" => '/', ], 200);
+        return response()->json(["path" => '/dashboard', "user" => $user], 200);
     }
 }

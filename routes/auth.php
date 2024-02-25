@@ -8,6 +8,10 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 
+Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
 Route::group(['middleware' => ['guest']], function () {
     Route::post('/register', [RegisteredUserController::class, 'store'])
         ->name('register');
@@ -21,9 +25,9 @@ Route::group(['middleware' => ['guest']], function () {
     Route::post('/reset-password', [NewPasswordController::class, 'store'])
         ->name('password.update');
 
-    Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
+    // Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+    //     ->middleware(['signed', 'throttle:6,1'])
+    //     ->name('verification.verify');
 
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware(['throttle:6,1'])
