@@ -7,12 +7,16 @@ use App\Models\Borrower;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Loan\LoanRequest;
 use App\Events\Loan\NewLoanRegisterEvent;
-use App\Http\Resources\Borrower\BorrowerCollection;
 use App\Http\Resources\Loan\LoanResource;
 use App\Http\Resources\MusicSheetResource;
+use App\Http\Requests\Loan\AddToCartRequest;
+use App\Http\Resources\Borrower\BorrowerCollection;
+use Carbon\Carbon;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
 
 class LoansController extends Controller
 {
@@ -25,21 +29,11 @@ class LoansController extends Controller
      */
     public function index()
     {
-        $borrowers = Borrower::query()->whereHas('loans', function($query) {
+        $borrowers = Borrower::query()->whereHas('loans', function ($query) {
             $query->whereHas('musicSheets');
         })->paginate(10);
-        
-        return new BorrowerCollection($borrowers);
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return new BorrowerCollection($borrowers);
     }
 
     /**
@@ -75,17 +69,6 @@ class LoansController extends Controller
     public function show(Loan $loans)
     {
         return response(['loan' => $loans->jsonSerialize()], Response::HTTP_OK);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Loan  $loans
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Loan $loans)
-    {
-        //
     }
 
     /**

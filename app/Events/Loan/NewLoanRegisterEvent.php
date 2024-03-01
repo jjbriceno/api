@@ -2,20 +2,16 @@
 
 namespace App\Events\Loan;
 
-use App\Models\Loan;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 class NewLoanRegisterEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $musicSheetId;
+    public $musicSheet;
 
     public $cuantity;
 
@@ -24,9 +20,10 @@ class NewLoanRegisterEvent
      *
      * @return void
      */
-    public function __construct($musicSheetId, $cuantity)
+    public function __construct($musicSheet, $cuantity)
     {
-        $this->musicSheetId = $musicSheetId;
+        $this->musicSheet = $musicSheet;
+        
         $this->cuantity = $cuantity;
     }
 

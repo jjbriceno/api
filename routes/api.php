@@ -5,6 +5,7 @@ use App\Http\Controllers\BorrowersController;
 use App\Http\Controllers\CabinetsController;
 use App\Http\Controllers\DrawersController;
 use App\Http\Controllers\GenderController;
+use App\Http\Controllers\LoanCartController;
 use App\Http\Controllers\LoansController;
 use App\Http\Controllers\MusicSheetController;
 use App\Http\Controllers\MusicSheetFileController;
@@ -40,28 +41,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow authors management
      */
     Route::resource('/authors', AuthorController::class,  ['except' => ['create', 'edit']]);
+
+    /** Route that allows to get all authors */
     Route::get('/all-authors', [AuthorController::class, 'getAuthors'])->name('all-authors');
-
-    // Route::post('/authors/store', [AuthorController::class, 'store'])->name('authors.store');
-
-    // Route::post('/authors/edit', [AuthorController::class, 'edit'])->name('authors.edit');
-
-    // Route::post('/authors/destroy/{id}', [AuthorController::class, 'destroy'])->name('authors.destroy');
 
 
     /**
      * Routes that allow music sheets management
      */
     Route::resource('/music-sheets', MusicSheetController::class, ['except' => ['create', 'edit']]);
-    // Route::get('/music-sheets', [MusicSheetController::class, 'index'])->name('music-sheets');
-
-    // Route::post('/music-sheets/store', [MusicSheetController::class, 'store'])->name('music-sheets.store');
-
-    // Route::post('/music-sheets/edit', [MusicSheetController::class, 'edit'])->name('music-sheets.edit');
-
-    // Route::post('/music-sheets/destroy/{id}', [MusicSheetController::class, 'destroy'])->name('music-sheets.destroy');
-
-    // Route::post('/music-sheets/update', [MusicSheetController::class, 'update'])->name('music-sheets.update');
 
     /**
      * Routes that allow music sheets search
@@ -87,6 +75,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow gender management
      */
     Route::resource('/genders', GenderController::class, ['except' => ['create', 'edit']]);
+
     Route::get('/all-genders', [GenderController::class, 'getGenders'])->name('all-genders');
 
     /**
@@ -116,28 +105,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow borrowers management
      */
     Route::resource('/borrowers', BorrowersController::class, ['except' => ['create', 'edit']]);
-    // Route::get('/borrowers', [BorrowersController::class, 'index'])->name('borrowers');
-
-    // Route::post('/borrowers/store', [BorrowersController::class, 'store'])->name('borrowers.store');
-
-    // Route::post('/borrowers/edit', [BorrowersController::class, 'edit'])->name('borrowers.edit');
-
-    // Route::post('/borrowers/destroy/{id}', [BorrowersController::class, 'destroy'])->name('borrowers.destroy');
-
-    /**
-     * Routes that allow loans search
-     */
-    // Route::get('/loans/search', [LoansController::class, 'search'])->name('loans.search');
 
     /**
      * Routes that allow loans management
      */
-    Route::resource('/loans', LoansController::class, ['except' => ['create', 'edit']]);
-    // Route::get('/loan', [LoansController::class, 'index'])->name('loans');
+    Route::post('/loan/restore-cart-items', [LoanCartController::class, 'restoreCartItems'])->name('loans.restoreCartItems');
 
-    // Route::post('/loan/store', [LoansController::class, 'store'])->name('loans.store');
-
-    // Route::post('/loan/destroy/{id}', [LoansController::class, 'destroy'])->name('loans.destroy');
+    Route::post('/loan/validate-add-to-cart', [LoanCartController::class, 'addToCart'])->name('loans.addToCart');
 
     Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');
+
+    Route::resource('/loans', LoansController::class, ['except' => ['create', 'edit']]);
 });

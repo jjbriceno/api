@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -44,7 +45,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function profile() {
+    public function profile()
+    {
         return $this->hasOne(Profile::class);
     }
 
@@ -52,5 +54,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         // We override the default notification and will use our own
         $this->notify(new EmailVerificationNotification());
+    }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = Str::title($value);
+    }
+
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = Str::lower($value);
     }
 }

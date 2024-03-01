@@ -26,6 +26,8 @@ class NewLoanRegisterListener
      */
     public function handle($event)
     {
-        MusicSheet::query()->find($event->musicSheetId)->decrement('available', $event->cuantity);
+        $event->musicSheet->decrement('available', $event->cuantity);
+
+        $event->musicSheet->save();
     }
 }
