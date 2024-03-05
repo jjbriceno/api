@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
@@ -46,39 +47,7 @@ class ProfileController extends Controller
      */
     public function store(ProfileRequest $request)
     {
-        try {
-            //Se crea una nueva instacia de un perfil de usuario
-            $profile = new Profile();
-            
-            //Se busca el usuario para de este perfil
-            $user           = User::query()->findOrFail($request->user()->id);
-            $user->email    = $request->email;
-            $user->save();
-
-            if ($request->hasFile('profilePicture')) {
-                $file_nanme     = $request->file('profilePicture')->getClientOriginalName();
-                $file_format    = $request->file('profilePicture')->getClientOriginalExtension();
-
-                $profilePicture                 = new ProfilePicture();
-                $profilePicture->file_name      = $file_nanme;
-                $profilePicture->file_format    = $file_format;
-                $profilePicture->binary_file    = base64_encode($request->file('profilePicture')->get());
-                $profilePicture->save();
-                $profile->profile_picture_id    = $profilePicture->id;
-            }
-            
-            $profile->first_name    = $request->firstName;
-            $profile->last_name     = $request->lastName;
-            $profile->phone         = $request->phone;
-            $profile->address       = $request->address;
-            $profile->user_id       = $user->id;
-            $profile->save();
-
-            return response()->json(['profile' => new ProfileResource($profile)], Response::HTTP_CREATED);
-
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        //
     }
 
     /**
@@ -90,7 +59,7 @@ class ProfileController extends Controller
     public function show($id)
     {
         try {
-            $profile = Profile::query()->findOrFail($id);
+            $profile = Profile::query()->where('user_id', $id)->firstOrFail();
             return response(['profile' => new ProfileResource($profile)], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -118,43 +87,45 @@ class ProfileController extends Controller
     public function update(ProfileRequest $request, $id)
     {
         try {
-            //Se se buscar el perfil de usuario que se actualizará
-            $profile = Profile::query()->findOrFail($id);
-    
-            //Se busca el usuario para de este perfil
-            $user           = User::query()->findOrFail($request->user()->id);
-            
-            // Sí el email que se actualiza es nuevo se marca como no verificado
-            if ($user->email != $request->email) {
-                $user->email_verified_at = null;
-            }
-            $user->email    = $request->email;
-            $user->save();
+            //Se busca el usuario  de este perfil
+            $user = User::query()->findOrFail($request->user()->id);
 
-            if ($request->hasFile('profilePicture')) {
-                $file_nanme     = $user->name ?? $request->file('profilePicture')->getClientOriginalName();
-                $file_format    = $request->file('profilePicture')->getClientOriginalExtension();
-
-                if ($profile->profile_picture_id) {
-                    $profilePicture = ProfilePicture::query()->findOrFail($profile->profile_picture_id);
-                } else {
-                    $profilePicture = new ProfilePicture();
+            DB::transaction(function () use ($user, $request) {
+                //Se se buscar el perfil de usuario que se actualizará
+                $profile = $user->profile;
+                // Sí el email que se actualiza es nuevo se marca como no verificado
+                if ($user->email != $request->email) {
+                    $user->email_verified_at = null;
                 }
+                $user->email    = $request->email;
+                $user->save();
 
-                $profilePicture->file_name      = $file_nanme;
-                $profilePicture->file_format    = $file_format;
-                $profilePicture->binary_file    = base64_encode($request->file('profilePicture')->get());
-                $profilePicture->save();
-                $profile->profile_picture_id    = $profilePicture->id;
-            }
-            
-            $profile->first_name    = $request->firstName;
-            $profile->last_name     = $request->lastName;
-            $profile->phone         = $request->phone;
-            $profile->address       = $request->address;
-            $profile->user_id       = $user->id;
-            $profile->save();
+                if ($request->hasFile('profilePicture')) {
+                    $file_nanme     = $user->name ?? $request->file('profilePicture')->getClientOriginalName();
+                    $file_format    = $request->file('profilePicture')->getClientOriginalExtension();
 
+                    if ($profile->profile_picture_id) {
+                        $profilePicture = ProfilePicture::query()->findOrFail($profile->profile_picture_id);
+                    } else {
+                        $profilePicture = new ProfilePicture();
+                    }
+
+                    $profilePicture->file_name      = $file_nanme;
+                    $profilePicture->file_format    = $file_format;
+                    $profilePicture->binary_file    = base64_encode($request->file('profilePicture')->get());
+                    $profilePicture->save();
+                    $profile->profile_picture_id    = $profilePicture->id;
+                }
+                
+                $profile->first_name    = $request->firstName;
+                $profile->last_name     = $request->lastName;
+                $profile->phone         = $request->phone;
+                $profile->address       = $request->address;
+                $profile->user_id       = $user->id;
+                $profile->save();
+            });
+
+            $profile = User::query()->with('profile')->findOrFail($request->user()->id)->profile;
             return response(['profile' => new ProfileResource($profile)], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
