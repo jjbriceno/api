@@ -52,7 +52,7 @@ class MusicSheetSeeder extends Seeder
                     'gender_id'     => $genders_id,
                     'location_id'  => $lacation->id,
                     'title'         => $title,
-                    'cuantity'      => $cuantity,
+                    'quantity'      => $cuantity,
                     'available'     => $cuantity
                 ]);
             }

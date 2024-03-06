@@ -18,7 +18,7 @@ class CreateProfilesTable extends Migration
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->string('first_name', 50)->comment('Primer nombre');
             $table->string('last_name', 50)->comment('Apellido');
-            $table->string('phone', 11)->nullable();
+            $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->foreignId('profile_picture_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->softDeletes();

@@ -37,12 +37,12 @@ class Loan extends Model
      * @var array
      */
     protected $fillable = [
-        'borrower_id',
+        'user_id',
         'status',
         'loan_date',
         'delivery_date',
-        'music_sheets_borrowed_amount',
-        'cuantity'
+        'quantity',
+        'type'
     ];
 
     /**
@@ -70,9 +70,9 @@ class Loan extends Model
      *
      * @return void
      */
-    public function borrower()
+    public function user()
     {
-        return $this->belongsTo(Borrower::class);
+        return $this->belongsTo(User::class);
     }
 
     public function scopeFiltered($query)
@@ -89,9 +89,11 @@ class Loan extends Model
         $search = request('search');
 
         $query->when($search, function ($query) use ($search) {
-            $query->whereHas('borrower', function ($query) use ($search) {
-                $query->where('first_name', 'ilike', $search . '%')
-                    ->orWhere('last_name', 'ilike', $search . '%');
+            $query->whereHas('user', function ($query) use ($search) {
+                $query->whereHas('profile', function ($query) use ($search) {
+                    $query->where('first_name', 'ilike', $search . '%')
+                        ->orWhere('last_name', 'ilike', $search . '%');
+                });
             });
         });
 

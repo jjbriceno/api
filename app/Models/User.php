@@ -56,6 +56,11 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new EmailVerificationNotification());
     }
 
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
+    }
+
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = Str::title($value);

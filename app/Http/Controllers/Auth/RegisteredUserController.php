@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\Profile\UserProfile;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +33,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        event(new UserProfile($user->id, $request->only(['firstName', 'lastName'])));
+
         // Auth::login($user);
+        $user->assingRole('user');
 
         $user->tokens()->delete();
 

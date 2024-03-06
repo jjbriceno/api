@@ -35,10 +35,16 @@ class UsersTableSeeder extends Seeder
         ];
         DB::transaction(function () use ($users){
             foreach ($users as $user) {
-                $adminUser = User::create($user);
+                $user = User::create($user);
+                $user->profile()->create([
+                    'first_name' => explode(" ", $user['name'])[0],
+                    'last_name'  => explode(" ", $user['name'])[1],
+                    'address'    => fake()->address(),
+                    'phone'      => fake()->phoneNumber(),
+                ]);
     
-                if ($adminUser) {
-                    $adminUser->assignRole("admin");
+                if ($user) {
+                    $user->assignRole("admin");
                 }
             }
         });
