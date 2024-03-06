@@ -92,7 +92,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Route that gets all users
      */
-    Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::get('/users', [UserController::class, 'index'])->name('users.get');
 
     /**
      * Route that gets users with active loans management
