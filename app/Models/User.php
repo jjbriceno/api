@@ -50,15 +50,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Profile::class);
     }
 
-    public function loans()
-    {
-        return $this->hasMany(Loan::class);
-    }
-
     public function sendEmailVerificationNotification()
     {
         // We override the default notification and will use our own
         $this->notify(new EmailVerificationNotification());
+    }
+
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
     }
 
     public function setNameAttribute($value)

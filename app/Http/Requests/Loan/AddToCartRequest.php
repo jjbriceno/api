@@ -25,7 +25,6 @@ class AddToCartRequest extends FormRequest
         return [
             'musicSheetId'  => ['required'],
             'cuantity'      => ['required', 'numeric', 'lte:' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available],
-            'borrowerId'    => ['required'],
             'deliveryDate'  => ['required', 'date', 'after:today'],
         ];
     }
@@ -37,7 +36,6 @@ class AddToCartRequest extends FormRequest
             'cuantity.required'         => 'La cantidad es obligatoria.',
             'cuantity.numeric'          => 'La cantidad debe ser un número.',
             'cuantity.lte'              => 'La cantidad no puede ser mayor que la cantidad disponible. Disponibles: ' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available,
-            'borrowerId.required'       => 'El prestatario es obligatorio',
             'deliveryDate.required'     => 'El campo fecha de entrega es obligatorio',
             'deliveryDate.after'        => 'La fecha de entrega debe ser posterior a la fecha actual',
         ];
