@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\AuthorController;
-use App\Http\Controllers\BorrowersController;
-use App\Http\Controllers\CabinetsController;
-use App\Http\Controllers\DrawersController;
-use App\Http\Controllers\GenderController;
-use App\Http\Controllers\LoanCartController;
-use App\Http\Controllers\LoansController;
-use App\Http\Controllers\MusicSheetController;
-use App\Http\Controllers\MusicSheetFileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoansController;
+use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\GenderController;
+use App\Http\Controllers\DrawersController;
+use App\Http\Controllers\CabinetsController;
+use App\Http\Controllers\LoanCartController;
+use App\Http\Controllers\BorrowersController;
+use App\Http\Controllers\MusicSheetController;
+use App\Http\Controllers\MusicSheetFileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,13 +38,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow authors search 
      */
     Route::get('/authors/search', [AuthorController::class, 'search'])->name('authors.search');
+    /** Route that allows to get all authors */
+    Route::get('/all-authors', [AuthorController::class, 'getAuthors'])->name('all-authors');
     /**
      * Routes that allow authors management
      */
     Route::resource('/authors', AuthorController::class,  ['except' => ['create', 'edit']]);
 
-    /** Route that allows to get all authors */
-    Route::get('/all-authors', [AuthorController::class, 'getAuthors'])->name('all-authors');
 
 
     /**
@@ -89,22 +90,32 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/cabinets', [CabinetsController::class, 'index'])->name('cabinets');
 
     /**
+     * Route that gets all users
+     */
+    Route::get('/users', [UserController::class, 'index'])->name('users');
+
+    /**
+     * Route that gets users with active loans management
+     */
+    Route::get('/users-with-active-loans', [UserController::class, 'getUsersWithActiveLoans'])->name('usersWithActiveLoans.get');
+
+    /**
      * Routes that allow loans management
      */
-    Route::get('/get-borrowers', [BorrowersController::class, 'getBorrowers'])->name('borrowersWithLoans.get');
+    // Route::get('/get-borrowers', [BorrowersController::class, 'getBorrowers'])->name('borrowersWithLoans.get');
 
     /** 
      * Routes that allow borrowers search 
      */
-    Route::get('/borrowers/search', [BorrowersController::class, 'search'])->name('borrowers.search');
+    // Route::get('/borrowers/search', [BorrowersController::class, 'search'])->name('borrowers.search');
 
     /** Route that allow get loans for a borrower */
-    Route::get('/get-borrower-loans/{id}', [LoansController::class, 'getBorrowerLoans'])->name('borrowersLoans.get');
+    // Route::get('/get-borrower-loans/{id}', [LoansController::class, 'getBorrowerLoans'])->name('borrowersLoans.get');
 
     /**
      * Routes that allow borrowers management
      */
-    Route::resource('/borrowers', BorrowersController::class, ['except' => ['create', 'edit']]);
+    // Route::resource('/borrowers', BorrowersController::class, ['except' => ['create', 'edit']]);
 
     /**
      * Routes that allow loans management

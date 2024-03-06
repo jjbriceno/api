@@ -70,9 +70,9 @@ class Loan extends Model
      *
      * @return void
      */
-    public function borrower()
+    public function user()
     {
-        return $this->belongsTo(Borrower::class);
+        return $this->belongsTo(User::class);
     }
 
     public function scopeFiltered($query)

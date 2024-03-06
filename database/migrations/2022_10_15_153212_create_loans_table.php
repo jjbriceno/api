@@ -15,12 +15,12 @@ class CreateLoansTable extends Migration
     {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('borrower_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->enum('status', ['open', 'closed'])->default('open')->nullable()->comment('Estado de la entrega');
             $table->date('loan_date')->nullable()->comment('Fecha de préstamo');
             $table->date('delivery_date')->nullable()->comment('Fecha de entrega');
-            // $table->jsonb('music_sheets_borrowed_amount')->comment('Objeto de pares de {id, cantidad} de partituras prestadas');
-            $table->integer('cuantity')->comment('Cantidad de partituras prestadas');
+            $table->integer('quantity')->nullable()->comment('Cantidad de partituras prestadas');
+            $table->enum('type', ['digital', 'physical'])->nullable()->comment('Tipo de préstamo [digital, físico]');
             $table->softDeletes();
             $table->timestamps();
         });
