@@ -24,8 +24,8 @@ class RoleAndPermissionSeeder extends Seeder
         Permission::create(['name' => 'borrow-music-sheet']);
         Permission::create(['name' => 'history-music-sheet']);
 
-        $adminRole = Role::create(['name' => 'Admin']);
-        $userRole = Role::create(['name' => 'User']);
+        $adminRole = Role::create(['name' => 'admin']);
+        $userRole = Role::create(['name' => 'user']);
 
         $adminRole->givePermissionTo([
             'create-music-sheet',

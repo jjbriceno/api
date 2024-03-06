@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Borrower;
 
-use App\Http\Resources\Loan\LoanResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BorrowerResource extends JsonResource

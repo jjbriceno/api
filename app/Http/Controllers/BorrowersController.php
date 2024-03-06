@@ -59,7 +59,6 @@ class BorrowersController extends Controller
     {
         $borrowers = Borrower::paginate(10);
 
-        // dd($borrowers);
         return new BorrowerCollection($borrowers);
     }
 
@@ -75,16 +74,6 @@ class BorrowersController extends Controller
         })->with('loans')->paginate(10);
 
         return new BorrowerCollection($borrowers);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -126,17 +115,6 @@ class BorrowersController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Borrower  $Borrower
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Request $request)
-    {
-        //
     }
 
     /**
