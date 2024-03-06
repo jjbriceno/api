@@ -33,12 +33,18 @@ class UsersTableSeeder extends Seeder
                 'remember_token' => Str::random(10),
             ],
         ];
-        DB::transaction(function () use ($users){
+        DB::transaction(function () use ($users) {
             foreach ($users as $user) {
-                $adminUser = User::create($user);
-    
-                if ($adminUser) {
-                    $adminUser->assignRole("admin");
+                $user = User::create($user);
+                $user->profile()->create([
+                    'first_name' => explode(" ", $user['name'])[0],
+                    'last_name'  => explode(" ", $user['name'])[1],
+                    'address'    => fake()->address(),
+                    'phone'      => fake()->phoneNumber(),
+                ]);
+
+                if ($user) {
+                    $user->assignRole("admin");
                 }
             }
         });

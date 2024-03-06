@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Listeners\Profile\UserProfile;
 
 class RegisteredUserController extends Controller
 {
@@ -26,13 +27,13 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        if($user) {
+        if ($user) {
             $user->assignRole("user");
+
+            $user["last_name"] = $request->last_name;
         }
 
         event(new Registered($user));
-
-        // Auth::login($user);
 
         $user->tokens()->delete();
 
