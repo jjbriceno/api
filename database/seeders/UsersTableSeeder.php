@@ -38,7 +38,7 @@ class UsersTableSeeder extends Seeder
                 $adminUser = User::create($user);
     
                 if ($adminUser) {
-                    $adminUser->assignRole("Admin");
+                    $adminUser->assignRole("admin");
                 }
             }
         });
