@@ -19,9 +19,12 @@ class CreateLoanMusicSheet extends Migration
             $table->unsignedBiginteger('loan_id')->unsigned();
             
             $table->foreign('music_sheet_id')->references('id')
-                 ->on('music_sheets')->onDelete('cascade');
+                ->on('music_sheets')->onDelete('cascade');
             $table->foreign('loan_id')->references('id')
                 ->on('loans')->onDelete('cascade');
+
+            $table->integer('quantity')->nullable()
+                ->comment('Cantidad de partituras');
             $table->timestamps();
         });
     }
