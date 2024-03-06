@@ -22,11 +22,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = $request->user();
+        $user = $request->user()->load('roles.permissions');
 
-        return response()->json([
-            'user' => new UserResource($user),
-        ], 200);
+        return new UserResource($user);
     }
 
     /**
