@@ -36,10 +36,10 @@ class LoanCartController extends Controller
                 $cart[$validated["musicSheetId"]]["cuantity"] = $validated["cuantity"];
             } else {
                 $cart[$validated["musicSheetId"]] = [
+                    'id' => $validated["musicSheetId"],
                     'title' => $musicSheet->title,
                     'author' => $musicSheet->author->full_name,
                     'cuantity' => $validated["cuantity"],
-                    'deliveryDate' => Carbon::parse($validated["deliveryDate"])->locale('es_ES')->isoFormat('LL'),
                 ];
             }
             event(new NewLoanRegisterEvent($musicSheet, $validated["cuantity"]));
@@ -87,5 +87,12 @@ class LoanCartController extends Controller
             DB::rollBack();
             throw $th;
         }
+    }
+
+    public function deleteCartItems(Request $request)
+    {
+        $request->session()->forget('cart');
+
+        return response()->json(['message' => 'success'], Response::HTTP_OK);
     }
 }

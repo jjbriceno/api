@@ -122,6 +122,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::post('/loan/restore-cart-items', [LoanCartController::class, 'restoreCartItems'])->name('loans.restoreCartItems');
 
+    Route::post('/loan/delete-cart-items', [LoanCartController::class, 'deleteCartItems'])->name('loans.deleteCartItems');
+
     Route::post('/loan/validate-add-to-cart', [LoanCartController::class, 'addToCart'])->name('loans.addToCart');
 
     Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');

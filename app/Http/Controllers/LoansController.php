@@ -45,32 +45,32 @@ class LoansController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $loan = Loan::query()->create([
-                'user_id' => $request->userId,
-                'status' => 'open',
-                'loan_date' => \Carbon\Carbon::now('utc'),
-                'delivery_date' => $request->deliveryDate,
-                'quantity' => 0,
-                'type' => $request->type
-            ]);
+        // try {
+        $loan = Loan::query()->create([
+            'user_id' => $request->userId,
+            'status' => 'open',
+            'loan_date' => \Carbon\Carbon::now('utc'),
+            'delivery_date' => $request->deliveryDate,
+            'quantity' => 0,
+            'type' => 'physical',
+        ]);
 
-            $cuantity = 0;
-            foreach ($request->musicSheet as $sheet) {
-                $loan->musicSheets()->attach($sheet->id, ['quantity' => $sheet->cuantity]);
-                $cuantity += $sheet->cuantity;
-            }
-
-            $loan->cuantity = $cuantity;
-            $loan->save();
-
-    
-            // TODO return json ok
-            return response()->json(['message' => 'success'], Response::HTTP_OK);
-
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        $cuantity = 0;
+        foreach ($request->items as $musicSheet) {
+            $loan->musicSheets()->attach($musicSheet["id"], ['quantity' => $musicSheet["cuantity"]]);
+            $cuantity += $musicSheet["cuantity"];
         }
+
+        $loan->quantity = $cuantity;
+        $loan->save();
+
+
+        // TODO return json ok
+        return response()->json(['message' => 'success'], Response::HTTP_OK);
+
+        // } catch (\Throwable $th) {
+        //     return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 
     /**
