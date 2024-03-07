@@ -29,13 +29,6 @@ class Loan extends Model
      *
      * @var array
      */
-    protected $appends = ['loan_info'];
-
-    /**
-     * Undocumented variable
-     *
-     * @var array
-     */
     protected $fillable = [
         'user_id',
         'status',
@@ -50,19 +43,6 @@ class Loan extends Model
      */
     public function musicSheets() {
         return $this->belongsToMany(MusicSheet::class);
-    }
-
-    /**
-     * Accesor to get author name for this loan
-     *
-     * @return void
-     */
-    public function getLoanInfoAttribute()
-    {
-        // TODO: Corregir para procesar n partituras
-        $musicSheet = $this->musicSheets()->with("author")->get()[0];
-
-        return ['author' => $musicSheet->author->full_name, 'title' => $musicSheet->title];
     }
 
     /**

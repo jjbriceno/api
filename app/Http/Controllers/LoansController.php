@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Models\Loan;
 use App\Models\User;
-use App\Models\Borrower;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Loan\LoanRequest;
-use App\Events\Loan\NewLoanRegisterEvent;
-use App\Http\Resources\Loan\LoanResource;
-use App\Http\Resources\MusicSheetResource;
-use App\Http\Requests\Loan\AddToCartRequest;
+use App\Http\Resources\Loan\LoanCollection;
+use App\Http\Resources\User\UserCollection;
 use App\Http\Resources\Borrower\BorrowerCollection;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
@@ -28,10 +22,10 @@ class LoansController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $borrowers = User::query()->whereHas('loans', function ($query) {
-            $query->whereHas('musicSheets');
+        $borrowers = User::query()->whereHas('loans', function($query) {            
+            $query->where('status', 'open');
         })->paginate(10);
 
         return new BorrowerCollection($borrowers);
@@ -43,7 +37,7 @@ class LoansController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(LoanRequest $request)
     {
         // try {
         $loan = Loan::query()->create([
@@ -162,8 +156,8 @@ class LoansController extends Controller
 
     public function getBorrowerLoans($id)
     {
-        // $loans = Loan::where('borrower_id', $id)->get();
+        $loans = Loan::where('user_id', $id)->where('status', 'open')->get();
 
-        // return LoanResource::collection($loans);
+        return new LoanCollection($loans);
     }
 }

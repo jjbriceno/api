@@ -23,19 +23,9 @@ class BorrowerResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "first_name" => $this->first_name,
-            "last_name" => $this->last_name,
-            "phone" => $this->phone,
-            "email" => $this->email,
-            "address" => $this->address,
-            "full_name" => $this->first_name . " " . $this->last_name,
+            "full_name" => $this->profile->first_name . " " . $this->profile->last_name,
             "loans_count" => $this->loans->count() ?? 0,
-            "total_music_sheets" => $this->calculateTotalMusicSheets()
+            "total_music_sheets" => $this->loans->pluck('quantity')->sum()
         ];
-    }
-
-    private function calculateTotalMusicSheets()
-    {
-        return $this->loans->sum('cuantity');
     }
 }

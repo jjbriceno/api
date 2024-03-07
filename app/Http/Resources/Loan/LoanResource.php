@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Loan;
 
+use App\Http\Resources\MusicSheetCollection;
+use App\Http\Resources\MusicSheetResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class LoanResource extends JsonResource
@@ -22,13 +24,9 @@ class LoanResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'borrower_id' => $this->borrower_id,
-            'status' => $this->status,
-            'loan_date' => $this->loan_date->locale('es_ES')->isoFormat('LL'),
-            'delivery_date' => $this->delivery_date->locale('es_ES')->isoFormat('LL'),
-            'cuantity' => $this->cuantity,
-            'loan_info' => $this->getLoanInfoAttribute(),
-            'music_sheets_ids' => $this->musicSheets()->pluck('music_sheet_id')->toArray(),
+            'loan_date' => $this->loan_date?->locale('es_ES')->isoFormat('LL'),
+            'delivery_date' => $this->delivery_date?->locale('es_ES')->isoFormat('LL'),
+            'quantity' => $this->quantity,
         ];
     }
 }
