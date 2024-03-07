@@ -7,10 +7,13 @@ use App\Models\User;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Loan\LoanRequest;
 use App\Http\Resources\Loan\LoanCollection;
 use App\Http\Resources\User\UserCollection;
+use App\Http\Resources\MusicSheetCollection;
 use App\Http\Resources\Borrower\BorrowerCollection;
+use App\Http\Resources\MusicSheet\LoanMusicSheetCollection;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class LoansController extends Controller
@@ -49,13 +52,13 @@ class LoansController extends Controller
             'type' => 'physical',
         ]);
 
-        $cuantity = 0;
+        $quantity = 0;
         foreach ($request->items as $musicSheet) {
             $loan->musicSheets()->attach($musicSheet["id"], ['quantity' => $musicSheet["cuantity"]]);
-            $cuantity += $musicSheet["cuantity"];
+            $quantity += $musicSheet["cuantity"];
         }
 
-        $loan->quantity = $cuantity;
+        $loan->quantity = $quantity;
         $loan->save();
 
 
@@ -111,15 +114,25 @@ class LoansController extends Controller
      */
     public function returnLoan(Request $request)
     {
-        // TODO: refactor cuando las devoluciones tiene 1 prestamo con n partiruras
-        $musicSheets = MusicSheet::whereIn('id', $request->musicSheetIds)->get();
-        $musicSheets->each(function ($musicSheet) use ($request) {
-            $musicSheet->available += $request->cuantity;
-            $musicSheet->save();
-        });
-        Loan::find($request->loanId)->delete();
+        // TODO: agregar en la solicitud el id del usuario.
+        try {
+            $loan = Loan::findOrFail($request->loanId);
 
-        return $this->getBorrowerLoans($request->borrowerId);
+            DB::transaction(function () use ($loan) {
+                $loan->musicSheets()->each(function ($musicSheet) {
+                    $musicSheet->available += $musicSheet->pivot->quantity;
+                    $musicSheet->save();
+                });
+    
+                $loan->status = 'closed';
+                $loan->save();
+            });
+
+            return response(['loan' => $this->getBorrowerLoans($request->borrowerId)], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -159,5 +172,15 @@ class LoansController extends Controller
         $loans = Loan::where('user_id', $id)->where('status', 'open')->get();
 
         return new LoanCollection($loans);
+    }
+
+    public function getLoanMusicSheets($loanId)
+    {
+
+        $loan = Loan::find($loanId);
+
+        $musicSheets = $loan->musicSheets;
+        
+        return new LoanMusicSheetCollection($musicSheets);
     }
 }
