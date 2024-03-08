@@ -33,7 +33,7 @@ class MusicSheetSeeder extends Seeder
             while (($data = fgetcsv($csvFile, 0, ",")) !== false) {
                 $title = Str::title(trim($data[0], " "));
                 $author_name = Str::title(trim($data[1], " "));
-                $cuantity = trim($data[2], " ");
+                $quantity = trim($data[2], " ");
                 $gender_name = Str::title(trim($data[3], " "));
                 list($cabinet_name, $drawer_name) = explode('-', str_replace(' ', '', $data[4]));
 
@@ -52,8 +52,8 @@ class MusicSheetSeeder extends Seeder
                     'gender_id'     => $genders_id,
                     'location_id'  => $lacation->id,
                     'title'         => $title,
-                    'cuantity'      => $cuantity,
-                    'available'     => $cuantity
+                    'quantity'      => $quantity,
+                    'available'     => $quantity
                 ]);
             }
         });
