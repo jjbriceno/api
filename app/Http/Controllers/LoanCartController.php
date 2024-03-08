@@ -33,20 +33,20 @@ class LoanCartController extends Controller
             $cart = $request->session()->get('cart', []);
 
             if (isset($cart[$validated["musicSheetId"]])) {
-                $cart[$validated["musicSheetId"]]["cuantity"] = $validated["cuantity"];
+                $cart[$validated["musicSheetId"]]["quantity"] = $validated["quantity"];
             } else {
                 $cart[$validated["musicSheetId"]] = [
                     'id' => $validated["musicSheetId"],
                     'title' => $musicSheet->title,
                     'author' => $musicSheet->author->full_name,
-                    'cuantity' => $validated["cuantity"],
+                    'quantity' => $validated["quantity"],
                 ];
             }
-            event(new NewLoanRegisterEvent($musicSheet, $validated["cuantity"]));
+            event(new NewLoanRegisterEvent($musicSheet, $validated["quantity"]));
 
             $request->session()->put('cart', $cart);
 
-            $totalCartMusicSheets = collect($request->session()->get('cart', $cart))->sum('cuantity');
+            $totalCartMusicSheets = collect($request->session()->get('cart', $cart))->sum('quantity');
 
             DB::commit();
 
@@ -72,7 +72,7 @@ class LoanCartController extends Controller
                 $musicSheetsIds = array_keys($cart);
                 $musicSheets = MusicSheet::sharedLock()->whereIn('id', $musicSheetsIds)->get();
                 $musicSheets->each(function ($musicSheet) use ($cart) {
-                    $musicSheet->available += $cart[$musicSheet->id]['cuantity'];
+                    $musicSheet->available += $cart[$musicSheet->id]['quantity'];
                     $musicSheet->save();
                 });
                 $request->session()->forget('cart');
