@@ -54,8 +54,8 @@ class LoansController extends Controller
 
         $quantity = 0;
         foreach ($request->items as $musicSheet) {
-            $loan->musicSheets()->attach($musicSheet["id"], ['quantity' => $musicSheet["cuantity"]]);
-            $quantity += $musicSheet["cuantity"];
+            $loan->musicSheets()->attach($musicSheet["id"], ['quantity' => $musicSheet["quantity"]]);
+            $quantity += $musicSheet["quantity"];
         }
 
         $loan->quantity = $quantity;
