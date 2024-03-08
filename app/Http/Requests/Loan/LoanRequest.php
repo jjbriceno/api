@@ -24,16 +24,18 @@ class LoanRequest extends FormRequest
     public function rules()
     {
         return [
-            'userId'    => ['required'],
-            'items'     => ['required'],   
+            'userId'            => ['required'],
+            'delivery_date'     => ['required'],
+            'items'             => ['required'],   
         ];
     }
 
     public function messages()
     {
         return [
-            'userId'    => 'El prestatario es obligatorio.',
-            'items'     => 'Las partirturas son obligatorias.',
+            'userId'            => 'El prestatario es obligatorio.',
+            'delivery_date'     => 'La fecha de entrega es obligatoria.',
+            'items'             => 'Las partirturas son obligatorias.',
         ];
     }
 }
