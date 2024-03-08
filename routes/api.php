@@ -7,6 +7,7 @@ use App\Http\Controllers\LoansController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\DrawersController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CabinetsController;
 use App\Http\Controllers\LoanCartController;
 use App\Http\Controllers\BorrowersController;
@@ -45,7 +46,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::resource('/authors', AuthorController::class,  ['except' => ['create', 'edit']]);
 
-
+    Route::resource('profiles', ProfileController::class, ['except' => ['create', 'store', 'destroy', 'edit']]);
 
     /**
      * Routes that allow music sheets management
