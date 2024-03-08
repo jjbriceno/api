@@ -48,7 +48,7 @@ class MusicSheetUpdateRequest extends FormRequest
             'cabinetId.required'        => "El 'Estante' es obligatoria",
             'quantity.required'         => "La 'Cantidad de partiruras' debe ser de al menos uno",
             'quantity.min'              => "La 'Cantidad de partiruras' debe ser de al menos uno",
-            'quantity.gt'               => "La 'Cantidad de partiruras' debe ser mayor o igual a " . $this->getMinQuantityLoanedMusicSheets(),
+            'quantity.gte'               => "La 'Cantidad de partiruras' debe ser mayor o igual a " . $this->getMinQuantityLoanedMusicSheets(),
             'file.required'             => "El Archivo es obligatorio",
             'file.mimes'                => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
             'file.max'                  => "El tamaño maximo del archivo es de 2 MB",

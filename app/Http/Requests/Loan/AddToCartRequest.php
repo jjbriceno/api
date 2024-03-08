@@ -24,7 +24,7 @@ class AddToCartRequest extends FormRequest
     {
         return [
             'musicSheetId'  => ['required'],
-            'quantity'      => ['required', 'numeric', 'lte:' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available],
+            'quantity'      => ['required', 'numeric', 'gt:0', 'lte:' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available],
         ];
     }
 
@@ -34,6 +34,7 @@ class AddToCartRequest extends FormRequest
             'musicSheetId.required'     => 'La partitura es obligatoria.',
             'quantity.required'         => 'La cantidad es obligatoria.',
             'quantity.numeric'          => 'La cantidad debe ser un número.',
+            'quantity.gt'               => 'La cantidad debe ser mayor o igual a 1.',
             'quantity.lte'              => 'La cantidad no puede ser mayor que la cantidad disponible. Disponibles: ' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available,
         ];
     }
