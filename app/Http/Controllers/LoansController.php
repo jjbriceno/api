@@ -25,7 +25,7 @@ class LoansController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
         $borrowers = User::query()->whereHas('loans', function($query) {            
             $query->where('status', 'open');
@@ -42,7 +42,7 @@ class LoansController extends Controller
      */
     public function store(LoanRequest $request)
     {
-        // try {
+        try {
         $loan = Loan::query()->create([
             'user_id' => $request->userId,
             'status' => 'open',
@@ -65,9 +65,9 @@ class LoansController extends Controller
         // TODO return json ok
         return response()->json(['message' => 'success'], Response::HTTP_OK);
 
-        // } catch (\Throwable $th) {
-        //     return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        // }
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -188,6 +188,16 @@ class LoansController extends Controller
             return new LoanMusicSheetCollection($musicSheets);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function search()
+    {
+        if (request('search')) {
+            $borrowers = User::search()->paginate(10);
+            return new BorrowerCollection($borrowers);
+        } else {
+            return $this->index();
         }
     }
 }

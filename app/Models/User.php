@@ -70,4 +70,29 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->attributes['email'] = Str::lower($value);
     }
+
+    public function scopeFiltered($query)
+    {
+        $query->select('*');
+
+        $query->orderBy("id", "asc");
+
+        return $query;
+    }
+
+    public function scopeSearch($query)
+    {
+        $search = request('search');
+
+        $query->when($search, function ($query) use ($search) {
+            $query->whereHas('profile', function ($query) use ($search) {
+                $query->where('first_name', 'ilike', $search . '%')
+                    ->orWhere('last_name', 'ilike', $search . '%');
+            });
+        });
+
+        $query->orderBy("id", "asc");
+
+        return $query;
+    }
 }

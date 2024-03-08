@@ -23,4 +23,14 @@ class Profile extends Model
     public function profilePicture(){
         return $this->belongsTo(ProfilePicture::class);
     }
+
+    public function setFirstNameAttribute($value)
+    {
+        $this->attributes['first_name'] = Str::title($value);
+    }
+
+    public function setLastNameAttribute($value)
+    {
+        $this->attributes['last_name'] = Str::title($value);
+    }
 }
