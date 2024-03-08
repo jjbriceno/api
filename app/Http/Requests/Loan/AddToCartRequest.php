@@ -23,7 +23,6 @@ class AddToCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'userId'        => ['required'],
             'musicSheetId'  => ['required'],
             'quantity'      => ['required', 'numeric', 'lte:' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available],
         ];
@@ -32,7 +31,6 @@ class AddToCartRequest extends FormRequest
     public function messages()
     {
         return [
-            'userId.required'           => 'El prestatario es obligatorio.',
             'musicSheetId.required'     => 'La partitura es obligatoria.',
             'quantity.required'         => 'La cantidad es obligatoria.',
             'quantity.numeric'          => 'La cantidad debe ser un número.',
