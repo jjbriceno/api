@@ -32,7 +32,7 @@ class LoanRequest extends FormRequest
     public function messages()
     {
         return [
-            'userId'    => 'El usuario es obligatorio.',
+            'userId'    => 'El prestatario es obligatorio.',
             'items'     => 'Las partirturas son obligatorias.',
         ];
     }
