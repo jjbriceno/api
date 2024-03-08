@@ -32,7 +32,7 @@ class MusicSheetUpdateRequest extends FormRequest
             'genderId'          => ['required'],
             'drawerId'          => ['required'],
             'cabinetId'         => ['required'],
-            'quantity'          => ['required', 'min:1', 'gt:' . $this->getMinQuantityLoanedMusicSheets()],
+            'quantity'          => ['required', 'min:1', 'gte:' . $this->getMinQuantityLoanedMusicSheets()],
             'file'              => ['sometimes', 'required', 'mimes:jpeg,png,pdf', 'max:2048'],
         ];
     }

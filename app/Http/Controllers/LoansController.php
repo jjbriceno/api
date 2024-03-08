@@ -169,18 +169,25 @@ class LoansController extends Controller
 
     public function getBorrowerLoans($id)
     {
-        $loans = Loan::where('user_id', $id)->where('status', 'open')->get();
+        try {
+            $loans = Loan::query()->where('user_id', $id)->where('status', 'open')->get();
 
-        return new LoanCollection($loans);
+            return new LoanCollection($loans);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function getLoanMusicSheets($loanId)
     {
+        try {
+            $loan = Loan::query()->findOrFail($loanId);
 
-        $loan = Loan::find($loanId);
+            $musicSheets = $loan->musicSheets;
 
-        $musicSheets = $loan->musicSheets;
-        
-        return new LoanMusicSheetCollection($musicSheets);
+            return new LoanMusicSheetCollection($musicSheets);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
