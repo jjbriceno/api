@@ -30,7 +30,7 @@ class MusicSheetRequest extends FormRequest
             'genderId'          => ['required'],
             'drawerId'          => ['required'],
             'cabinetId'         => ['required'],
-            'cuantity'          => ['required'],
+            'quantity'          => ['required', 'min:1'],
             'file'              => ['sometimes', 'required', 'mimes:jpeg,png,pdf', 'max:2048'],
         ];
     }
@@ -44,7 +44,8 @@ class MusicSheetRequest extends FormRequest
             'genderId.required'         => "El 'Género musical' es obligatorio",
             'drawerId.required'         => "La 'Gaveta' es obligatorio",
             'cabinetId.required'        => "El 'Estante' es obligatoria",
-            'cuantity.required'         => "La 'Cantidad de partiruras' debe ser de al menos uno",
+            'quantity.required'         => "La 'Cantidad de partiruras' debe ser de al menos uno",
+            'quantity.min'              => "La 'Cantidad de partiruras' debe ser de al menos uno",
             'file.required'             => "El Archivo es obligatorio",
             'file.mimes'                => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
             'file.max'                  => "El tamaño maximo del archivo es de 2 MB",

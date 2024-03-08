@@ -25,7 +25,7 @@ class MusicSheetResource extends JsonResource
             'id'                        => $this->id,
             'title'                     => $this->title,
             'available'                 => $this->available,
-            'cuantity'                  => $this->cuantity,
+            'quantity'                  => $this->quantity,
             'author'                    => $this->author,
             'gender'                    => $this->gender,
             'location'                  => $this->location,

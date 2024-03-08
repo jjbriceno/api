@@ -4,6 +4,7 @@ namespace App\Http\Requests\MusicSheet;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\MusicSheet;
 
 class MusicSheetUpdateRequest extends FormRequest
 {
@@ -31,7 +32,7 @@ class MusicSheetUpdateRequest extends FormRequest
             'genderId'          => ['required'],
             'drawerId'          => ['required'],
             'cabinetId'         => ['required'],
-            'cuantity'          => ['required'],
+            'quantity'          => ['required', 'min:1', 'gt:' . $this->getMinQuantityLoanedMusicSheets()],
             'file'              => ['sometimes', 'required', 'mimes:jpeg,png,pdf', 'max:2048'],
         ];
     }
@@ -45,10 +46,23 @@ class MusicSheetUpdateRequest extends FormRequest
             'genderId.required'         => "El 'Género musical' es obligatorio",
             'drawerId.required'         => "La 'Gaveta' es obligatorio",
             'cabinetId.required'        => "El 'Estante' es obligatoria",
-            'cuantity.required'         => "La 'Cantidad de partiruras' debe ser de al menos uno",
+            'quantity.required'         => "La 'Cantidad de partiruras' debe ser de al menos uno",
+            'quantity.min'              => "La 'Cantidad de partiruras' debe ser de al menos uno",
+            'quantity.gt'               => "La 'Cantidad de partiruras' debe ser mayor o igual a " . $this->getMinQuantityLoanedMusicSheets(),
             'file.required'             => "El Archivo es obligatorio",
             'file.mimes'                => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
             'file.max'                  => "El tamaño maximo del archivo es de 2 MB",
         ];
+    }
+
+    /**
+     * Retrieve the minimum quantity of loaned music sheets.
+     *
+     * @return int
+     */
+    private function getMinQuantityLoanedMusicSheets(): int
+    {
+        $musicSheet = MusicSheet::lockForUpdate()->find($this->id);
+        return $musicSheet->quantity - $musicSheet->available;
     }
 }

@@ -24,17 +24,17 @@ class AddToCartRequest extends FormRequest
     {
         return [
             'musicSheetId'  => ['required'],
-            'cuantity'      => ['required', 'numeric', 'lte:' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available],
+            'quantity'      => ['required', 'numeric', 'lte:' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available],
         ];
     }
 
     public function messages()
     {
         return [
-            'musicSheetId.required'     => 'La pista es obligatoria.',
-            'cuantity.required'         => 'La cantidad es obligatoria.',
-            'cuantity.numeric'          => 'La cantidad debe ser un número.',
-            'cuantity.lte'              => 'La cantidad no puede ser mayor que la cantidad disponible. Disponibles: ' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available,
+            'musicSheetId.required'     => 'La partitura es obligatoria.',
+            'quantity.required'         => 'La cantidad es obligatoria.',
+            'quantity.numeric'          => 'La cantidad debe ser un número.',
+            'quantity.lte'              => 'La cantidad no puede ser mayor que la cantidad disponible. Disponibles: ' . MusicSheet::lockForUpdate()->find($this->musicSheetId)->available,
         ];
     }
 }

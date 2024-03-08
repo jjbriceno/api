@@ -54,8 +54,8 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
                 $musicSheet->title = $request->title;
                 $musicSheet->author_id = $author->id;
                 $musicSheet->gender_id = $gender->id;
-                $musicSheet->cuantity = $request->cuantity;
-                $musicSheet->available = $request->cuantity;
+                $musicSheet->quantity = $request->quantity;
+                $musicSheet->available = $request->quantity;
 
                 $location->cabinet_id = $request->cabinetId;
                 $location->drawer_id = $request->drawerId;
@@ -85,7 +85,11 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
                 $musicSheet->title = $request->title;
                 $musicSheet->author_id = $author->id;
                 $musicSheet->gender_id = $gender->id;
-                $musicSheet->cuantity = $request->cuantity;
+
+                // Se obtiene la cantidad de partiuras que se han prestado
+                $quantity_loaned = $musicSheet->quantity - $musicSheet->available;
+                $musicSheet->available = $request->quantity - $quantity_loaned;
+                $musicSheet->quantity = $request->quantity;
 
                 if ($request->hasFile('file')) {
                     $title = $author ?

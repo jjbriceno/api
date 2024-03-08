@@ -23,7 +23,7 @@ class MusicSheet extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['author_id', 'gender_id', 'location_id', 'title', 'available', 'music_sheet_file_id'];
+    protected $fillable = ['author_id', 'gender_id', 'location_id', 'title', 'quantity', 'available', 'music_sheet_file_id'];
 
     /**
      * Attributes to be hidden from arrays
