@@ -25,7 +25,7 @@ class LoanRequest extends FormRequest
     {
         return [
             'userId'            => ['required'],
-            'deliveryDate'     => ['required', 'date', 'after:today'],
+            'deliveryDate'      => ['required', 'date', 'after:today'],
             'items'             => ['required'],   
         ];
     }
@@ -33,9 +33,11 @@ class LoanRequest extends FormRequest
     public function messages()
     {
         return [
-            'userId'            => 'El prestatario es obligatorio.',
-            'deliveryDate'     => 'La fecha de entrega es obligatoria.',
-            'items'             => 'Las partirturas son obligatorias.',
+            'userId.required'            => 'El prestatario es obligatorio.',
+            'deliveryDate.required'      => 'La fecha de entrega es obligatoria.',
+            'deliveryDate.date'          => 'La fecha de entrega debe ser una fecha.',
+            'deliveryDate.after'         => 'La fecha de entrega debe ser posterior a la fecha actual.',
+            'items.required'             => 'No tiene partituras en el carrito.',
         ];
     }
 }
