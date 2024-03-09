@@ -128,7 +128,9 @@ class LoansController extends Controller
                 $loan->save();
             });
 
-            return response(['loan' => $this->getBorrowerLoans($request->borrowerId)], Response::HTTP_OK);
+            return $this->getBorrowerLoans($request->borrowerId);
+
+            // return response(['loan' => $this->getBorrowerLoans($request->borrowerId)], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

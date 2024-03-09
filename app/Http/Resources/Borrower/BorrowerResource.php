@@ -24,8 +24,8 @@ class BorrowerResource extends JsonResource
         return [
             "id" => $this->id,
             "full_name" => $this->profile->first_name . " " . $this->profile->last_name,
-            "loans_count" => $this->loans->count() ?? 0,
-            "total_music_sheets" => $this->loans->pluck('quantity')->sum()
+            "loans_count" => $this->loans->where('status', 'open')->count() ?? 0,
+            "total_music_sheets" => $this->loans->where('status', 'open')->pluck('quantity')->sum()
         ];
     }
 }

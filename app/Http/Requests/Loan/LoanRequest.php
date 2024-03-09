@@ -25,7 +25,7 @@ class LoanRequest extends FormRequest
     {
         return [
             'userId'            => ['required'],
-            'delivery_date'     => ['required'],
+            'deliveryDate'     => ['required', 'date', 'after:today'],
             'items'             => ['required'],   
         ];
     }
@@ -34,7 +34,7 @@ class LoanRequest extends FormRequest
     {
         return [
             'userId'            => 'El prestatario es obligatorio.',
-            'delivery_date'     => 'La fecha de entrega es obligatoria.',
+            'deliveryDate'     => 'La fecha de entrega es obligatoria.',
             'items'             => 'Las partirturas son obligatorias.',
         ];
     }
