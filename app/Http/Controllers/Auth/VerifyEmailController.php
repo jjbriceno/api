@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
 use App\Http\Requests\EmailVerification\EmailVerificationRequest;
-
+use App\Http\Resources\User\UserResource;
 
 class VerifyEmailController extends Controller
 {
@@ -21,13 +21,13 @@ class VerifyEmailController extends Controller
         $user = User::find($request->route('id'));
 
         if ($user->hasVerifiedEmail()) {
-            return response()->json(["path" => '/dashboard', "user" => $user], 200);
+            return response()->json(["path" => '/dashboard', "user" => new UserResource($user->load('roles.permissions'))], 200);
         }
 
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
 
-        return response()->json(["path" => '/dashboard', "user" => $user], 200);
+        return response()->json(["path" => '/dashboard', "user" => new UserResource($user->load('roles.permissions'))], 200);
     }
 }

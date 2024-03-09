@@ -24,17 +24,18 @@ class ProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            'id'                        => ['required'],
+            'profileId'                 => ['required'],
             'userId'                    => ['required'],
             'firstName'                 => ['required'],
             'lastName'                  => ['required'],
-            'email'                     => ['required' , $this->user_id ? 'unique:users,email,' . $this->user_id : 'unique:users,email'],
+            'email'                     => ['required' , $this->userId ? 'unique:users,email,' . $this->userId : 'unique:users,email'],
             'profilePictureId'          => ['sometimes', 'required', 'mimes:jpeg,png', 'max:2048'],
         ];
     }
 
     public function messages()  {
         return [
+            'profileId.required'        => "El 'Perfil' es obligatorio",
             'userId.required'           => "El 'Usuario' es obligatorio",
             'firstName.required'        => "El 'Nombre' es obligatorio",
             'lastName.required'         => "El 'Apellido' es obligatorio",

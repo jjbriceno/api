@@ -59,7 +59,8 @@ class ProfileController extends Controller
     {
         try {
             $profile = Profile::query()->where('user_id', $id)->firstOrFail();
-            return response(['profile' => new ProfileResource($profile)], Response::HTTP_OK);
+
+            return new ProfileResource($profile);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

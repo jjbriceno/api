@@ -10,7 +10,6 @@ use App\Http\Controllers\DrawersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CabinetsController;
 use App\Http\Controllers\LoanCartController;
-use App\Http\Controllers\BorrowersController;
 use App\Http\Controllers\MusicSheetController;
 use App\Http\Controllers\MusicSheetFileController;
 
@@ -39,6 +38,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Routes that allow authors search 
      */
     Route::get('/authors/search', [AuthorController::class, 'search'])->name('authors.search');
+
     /** Route that allows to get all authors */
     Route::get('/all-authors', [AuthorController::class, 'getAuthors'])->name('all-authors');
     /**
@@ -46,6 +46,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::resource('/authors', AuthorController::class,  ['except' => ['create', 'edit']]);
 
+    /**
+     * Routes that allow profile management
+     */
     Route::resource('profiles', ProfileController::class, ['except' => ['create', 'store', 'destroy', 'edit']]);
 
     /**
