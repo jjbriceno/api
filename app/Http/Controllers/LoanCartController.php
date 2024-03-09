@@ -33,7 +33,7 @@ class LoanCartController extends Controller
             $cart = $request->session()->get('cart', []);
 
             if (isset($cart[$validated["musicSheetId"]])) {
-                $cart[$validated["musicSheetId"]]["quantity"] = $validated["quantity"];
+                $cart[$validated["musicSheetId"]]["quantity"] += $validated["quantity"];
             } else {
                 $cart[$validated["musicSheetId"]] = [
                     'id' => $validated["musicSheetId"],
