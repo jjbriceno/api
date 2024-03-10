@@ -89,6 +89,27 @@ class LoanCartController extends Controller
         }
     }
 
+    public function deleteCartItem(Request $request, $id)
+    {
+        $cart = $request->session()->get('cart', []);
+
+        $loanMusicSheet = $cart[$id];
+
+        $musicSheet = MusicSheet::find($loanMusicSheet['id']);
+
+        $musicSheet->update(['available' => $musicSheet->available + $loanMusicSheet['quantity']]);
+
+        unset($cart[$id]);
+
+        $request->session()->put('cart', $cart);
+
+        $cart = $request->session()->get('cart');
+
+        $totalCartMusicSheets = collect($cart)->sum('quantity');
+
+        return response()->json(['cart' => $cart, 'total' => $totalCartMusicSheets, 'music_sheet' => $musicSheet], Response::HTTP_OK);
+    }
+
     public function deleteCartItems(Request $request)
     {
         $request->session()->forget('cart');
