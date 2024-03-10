@@ -99,6 +99,7 @@ class ProfileController extends Controller
                 }
 
                 $user->email = $request->email;
+                $user->name = $request->firstName;
                 $user->save();
 
                 if (!$user->hasVerifiedEmail()) {
@@ -129,9 +130,9 @@ class ProfileController extends Controller
                 ]);
             });
 
-            $user = User::findOrFail($request->user()->id);
+            $user = User::query()->with('profile')->findOrFail($request->user()->id);
 
-            return new UserResource($user->load('roles.permissions'));
+            return response()->json(['profile' => new ProfileResource($user->profile), 'user' => new UserResource($user)], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
