@@ -22,7 +22,7 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->profile?->first_name . ' ' . $this->profile?->last_name,
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
             'profile_picture_url' => config('app.url') . '/storage/profile-pictures/' . $this->profile?->profilePicture?->file_name,

@@ -18,7 +18,7 @@ class VerifyEmailController extends Controller
      */
     public function __invoke(EmailVerificationRequest $request)
     {
-        $user = User::find($request->route('id'));
+        $user = User::find($request->user()->id);
 
         if ($user->hasVerifiedEmail()) {
             return response()->json(["path" => '/dashboard', "user" => new UserResource($user->load('roles.permissions'))], 200);

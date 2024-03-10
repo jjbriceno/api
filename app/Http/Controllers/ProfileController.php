@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Profile\ProfileRequest;
 use App\Http\Resources\Profile\ProfileResource;
 use App\Http\Resources\Profile\ProfileCollection;
+use App\Http\Resources\User\UserResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class ProfileController extends Controller
@@ -89,60 +90,62 @@ class ProfileController extends Controller
     public function update(ProfileRequest $request, $id)
     {
         try {
-            //Se busca el usuario  de este perfil
-            $user = User::query()->findOrFail($request->user()->id);
-
-            DB::transaction(function () use ($user, $request) {
-                //Se se buscar el perfil de usuario que se actualizará
+            DB::transaction(function () use ($request) {
+                $user = $request->user();
                 $profile = $user->profile;
-                // Sí el email que se actualiza es nuevo se marca como no verificado
+
                 if ($user->email != $request->email) {
                     $user->email_verified_at = null;
                 }
-                $user->email    = $request->email;
+
+                $user->email = $request->email;
                 $user->save();
 
-                if ($request->hasFile('profilePicture')) {
-                    $file_nanme     = $user->name ?? $request->file('profilePicture')->getClientOriginalName();
-                    $file_format    = $request->file('profilePicture')->getClientOriginalExtension();
-
-                    if ($profile->profile_picture_id) {
-                        $profilePicture = ProfilePicture::query()->findOrFail($profile->profile_picture_id);
-                    } else {
-                        $profilePicture = new ProfilePicture();
-                    }
-
-                    $profilePicture->file_name      = $file_nanme;
-                    $profilePicture->file_format    = $file_format;
-                    $profilePicture->binary_file    = base64_encode($request->file('profilePicture')->get());
-                    $profilePicture->save();
-                    $profile->profile_picture_id    = $profilePicture->id;
+                if (!$user->hasVerifiedEmail()) {
+                    $user->sendEmailVerificationNotification();
                 }
 
-                $profile->first_name    = $request->firstName;
-                $profile->last_name     = $request->lastName;
-                $profile->phone         = $request->phone;
-                $profile->address       = $request->address;
-                $profile->user_id       = $user->id;
-                $profile->save();
+                if ($request->hasFile('profilePicture')) {
+                    $fileName = $user->name ?? $request->file('profilePicture')->getClientOriginalName();
+                    $fileFormat = $request->file('profilePicture')->getClientOriginalExtension();
+
+                    $profilePicture = $profile->profile_picture_id
+                        ? ProfilePicture::findOrFail($profile->profile_picture_id)
+                        : new ProfilePicture();
+
+                    $profilePicture->file_name = $fileName;
+                    $profilePicture->file_format = $fileFormat;
+                    $profilePicture->binary_file = base64_encode($request->file('profilePicture')->get());
+                    $profilePicture->save();
+                    $profile->profile_picture_id = $profilePicture->id;
+                }
+
+                $profile->update([
+                    'first_name' => $request->firstName,
+                    'last_name' => $request->lastName,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                    'user_id' => $user->id,
+                ]);
             });
 
-            $profile = User::query()->with('profile')->findOrFail($request->user()->id)->profile;
+            $user = User::findOrFail($request->user()->id);
 
-            return response(['profile' => new ProfileResource($profile)], Response::HTTP_OK);
+            return new UserResource($user->load('roles.permissions'));
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-
+    /**
+     * Update the profile picture in storage.
+     */
     public function updateUserProfilePicture(Request $request)
     {
         $file = $request->file('profile_picture');
 
         // Validate file type and size (optional, can be done on frontend too)
         $allowedExtensions = ['jpg', 'jpeg', 'png'];
-
         $extension = $file->getClientOriginalExtension();
 
         if (!in_array($extension, $allowedExtensions)) {
@@ -150,27 +153,35 @@ class ProfileController extends Controller
         }
 
         $fileName = uniqid() . '.' . $extension;
+        $filePath = 'profile-pictures/' . $fileName;
 
-        Storage::disk('public')->put('profile-pictures/' . $fileName, $file->getContent());
+        // Store the file
+        Storage::disk('public')->put($filePath, $file->getContent());
 
-        if ($request->user()->profile->profile_picture_id) {
-            $profilePicture = ProfilePicture::query()->findOrFail($request->user()->profile->profile_picture_id);
-            $previousFilePictureName = $profilePicture->file_name;
-            Storage::disk('public')->delete('profile-pictures/' . $previousFilePictureName);
-            $profilePicture->file_name = $fileName;
-            $profilePicture->save();
+        $user = $request->user();
+        $profile = $user->profile;
+
+        if ($profile->profile_picture_id) {
+            // Delete previous profile picture
+            $profilePicture = ProfilePicture::findOrFail($profile->profile_picture_id);
+            Storage::disk('public')->delete('profile-pictures/' . $profilePicture->file_name);
+
+            // Update existing profile picture
+            $profilePicture->update(['file_name' => $fileName]);
         } else {
-            $profilePicture                 = new ProfilePicture();
-            $profilePicture->file_name      = $fileName;
-            $profilePicture->file_format    = $extension;
-            $profilePicture->binary_file    = base64_encode($file->get());
-            $profilePicture->save();
-            $request->user()->profile->profile_picture_id = $profilePicture->id;
-            $request->user()->profile->save();
+            // Create a new profile picture
+            $profilePicture = ProfilePicture::create([
+                'file_name' => $fileName,
+                'file_format' => $extension,
+                'binary_file' => base64_encode($file->get()),
+            ]);
+
+            // Update user profile with the new profile picture ID
+            $profile->update(['profile_picture_id' => $profilePicture->id]);
         }
 
-        $baseUrl = config('app.url'); // Or get it from environment variables
-        $profilePictureUrl = $baseUrl . '/storage/profile-pictures/' . $fileName; // Construct the URL
+        $baseUrl = config('app.url');
+        $profilePictureUrl = $baseUrl . '/storage/' . $filePath;
 
         return response()->json(['profile_picture_url' => $profilePictureUrl]);
     }
