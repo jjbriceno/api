@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Profile\ProfileRequest;
-use App\Http\Resources\Profile\ProfileCollection;
-use App\Http\Resources\Profile\ProfileResource;
-use App\Models\Profile;
-use App\Models\ProfilePicture;
 use App\Models\User;
+use App\Models\Profile;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Models\ProfilePicture;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Profile\ProfileRequest;
+use App\Http\Resources\Profile\ProfileResource;
+use App\Http\Resources\Profile\ProfileCollection;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class ProfileController extends Controller
 {
@@ -131,6 +133,39 @@ class ProfileController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    public function updateUserProfilePicture(Request $request)
+    {
+        $file = $request->file('profile_picture');
+
+        // Validate file type and size (optional, can be done on frontend too)
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+        $extension = $file->getClientOriginalExtension();
+
+        if (!in_array($extension, $allowedExtensions)) {
+            return response()->json(['error' => 'Invalid file type'], 422);
+        }
+
+        $fileName = uniqid() . '.' . $extension;
+
+        Storage::disk('public')->put('profile-pictures/' . $fileName, $file->getContent());
+
+        // Update user's profile picture in database with the filename
+        $profilePicture                 = new ProfilePicture();
+        $profilePicture->file_name      = $fileName;
+        $profilePicture->file_format    = $extension;
+        $profilePicture->binary_file    = base64_encode($file->get());
+        $profilePicture->save();
+        $request->user()->profile->profile_picture_id = $profilePicture->id;
+        $request->user()->profile->save();
+
+        $baseUrl = config('app.url'); // Or get it from environment variables
+        $profilePictureUrl = $baseUrl . '/storage/profile-pictures/' . $fileName; // Construct the URL
+
+        return response()->json(['profile_picture_url' => $profilePictureUrl]);
     }
 
     /**

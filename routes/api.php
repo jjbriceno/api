@@ -47,6 +47,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource('/authors', AuthorController::class,  ['except' => ['create', 'edit']]);
 
     /**
+     * Route that allow profile picture update
+     */
+    Route::post('/profiles/update-picture', [ProfileController::class, 'updateUserProfilePicture'])->name('profiles.update-picture');
+
+    /**
      * Routes that allow profile management
      */
     Route::resource('profiles', ProfileController::class, ['except' => ['create', 'store', 'destroy', 'edit']]);
