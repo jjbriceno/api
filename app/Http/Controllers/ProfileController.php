@@ -153,14 +153,21 @@ class ProfileController extends Controller
 
         Storage::disk('public')->put('profile-pictures/' . $fileName, $file->getContent());
 
-        // Update user's profile picture in database with the filename
-        $profilePicture                 = new ProfilePicture();
-        $profilePicture->file_name      = $fileName;
-        $profilePicture->file_format    = $extension;
-        $profilePicture->binary_file    = base64_encode($file->get());
-        $profilePicture->save();
-        $request->user()->profile->profile_picture_id = $profilePicture->id;
-        $request->user()->profile->save();
+        if ($request->user()->profile->profile_picture_id) {
+            $profilePicture = ProfilePicture::query()->findOrFail($request->user()->profile->profile_picture_id);
+            $previousFilePictureName = $profilePicture->file_name;
+            Storage::disk('public')->delete('profile-pictures/' . $previousFilePictureName);
+            $profilePicture->file_name = $fileName;
+            $profilePicture->save();
+        } else {
+            $profilePicture                 = new ProfilePicture();
+            $profilePicture->file_name      = $fileName;
+            $profilePicture->file_format    = $extension;
+            $profilePicture->binary_file    = base64_encode($file->get());
+            $profilePicture->save();
+            $request->user()->profile->profile_picture_id = $profilePicture->id;
+            $request->user()->profile->save();
+        }
 
         $baseUrl = config('app.url'); // Or get it from environment variables
         $profilePictureUrl = $baseUrl . '/storage/profile-pictures/' . $fileName; // Construct the URL
