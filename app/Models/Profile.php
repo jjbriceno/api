@@ -33,4 +33,20 @@ class Profile extends Model
     {
         $this->attributes['last_name'] = Str::title($value);
     }
+
+    /**
+     * Mutator to format and store the phone number.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setPhoneAttribute($value)
+    {
+        // Remove any formatting characters from the phone number
+        // e.g., convert (123) 456-7890 to 1234567890
+        $formattedPhoneNumber = preg_replace('/[^0-9]/', '', $value);
+
+        // Format the phone number as 0000 - 000 00 00
+        $this->attributes['phone'] = preg_replace('/^(\d{4})(\d{3})(\d{2})(\d{2})$/', '($1) $2 $3 $4', $formattedPhoneNumber);
+    }
 }
