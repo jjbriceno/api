@@ -135,6 +135,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::delete('/loan/delete-cart-item/{id}', [LoanCartController::class, 'deleteCartItem'])->name('loans.deleteCartItem');
 
+    Route::post('/loan/validate-music-sheet-quantity', [LoanCartController::class, 'validateMusicSheetQuantity'])->name('loans.validateMusicSheetQuantity');
+
+    Route::get('loan/get-available-quantity-for-music-sheet/{id}', [LoanCartController::class, 'getAvailableQuantityForMusicSheet'])->name('loans.getAvailableQuantityForMusicSheet');
+
     Route::post('/loan/delete-cart-items', [LoanCartController::class, 'deleteCartItems'])->name('loans.deleteCartItems');
 
     Route::post('/loan/validate-add-to-cart', [LoanCartController::class, 'addToCart'])->name('loans.addToCart');

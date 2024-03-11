@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\MusicSheet;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Events\Loan\NewLoanRegisterEvent;
 use App\Http\Resources\MusicSheetResource;
 use App\Http\Requests\Loan\AddToCartRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\Loan\ValidateMusicSheetQuantityRequest;
 
 class LoanCartController extends Controller
 {
@@ -87,6 +88,49 @@ class LoanCartController extends Controller
             DB::rollBack();
             throw $th;
         }
+    }
+
+    public function validateMusicSheetQuantity(Request $request)
+    {
+        dd($request->all());
+        $musicSheet = MusicSheet::lockForUpdate()->find($request->id);
+
+        $available = $musicSheet->available;
+
+        $quantity = $musicSheet->quantity;
+
+        $currentQuantity = $request->quantity;
+
+        if ($quantity < $currentQuantity - $available) {
+            return response()->json([
+                'errors' =>
+                ['quantity' => ['No hay suficientes partituras disponibles. Disponibles: ' . $available]],
+                'available' => $available
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } else {
+            return response()->json(['message' => 'success', 'available' => $available], Response::HTTP_OK);
+        }
+        // $request->validate([
+        //     'id'        => ['required', 'exists:music_sheets,id'],
+        //     'quantity'  => ['required', 'numeric', 'gt:0', 'lte:' . $available]
+        // ], [
+        //     'id.exists' => 'La paritura no ha sido encontrada o no existe en nuestros registros.',
+        //     'quantity.gt' => 'La cantidad debe ser igual o mayor a 1.',
+        //     'quantity.lte' => $available > 0 ? 'La cantidad no puede ser mayor que la cantidad disponible. Disponibles: ' . $available : 'No hay suficientes partituras disponibles.',
+        // ]);
+
+        $cart = $request->session()->get('cart', []);
+
+        $musicSheet = MusicSheet::find($request->id);
+
+        dd($musicSheet);
+    }
+
+    public function getAvailableQuantityForMusicSheet($id)
+    {
+        $musicSheet = MusicSheet::lockForUpdate()->find($id);
+
+        return response()->json(['available' => $musicSheet->available], Response::HTTP_OK);
     }
 
     public function deleteCartItem(Request $request, $id)
