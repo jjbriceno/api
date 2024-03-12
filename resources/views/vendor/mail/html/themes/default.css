@@ -11,12 +11,13 @@ body *:not(html):not(style):not(br):not(tr):not(code) {
 body {
     -webkit-text-size-adjust: none;
     background-color: #ffffff;
-    color: #718096;
+    color: #ffffff;
     height: 100%;
     line-height: 1.4;
-    margin: 0;
+    margin-left: 25%;
+    margin-right: 25%;
     padding: 0;
-    width: 100% !important;
+    width: 50% !important;
 }
 
 p,
@@ -28,17 +29,17 @@ blockquote {
 }
 
 a {
-    color: #3869d4;
+    color: #ea09aa;
 }
 
 a img {
-    border: none;
+    border-radius: 100%;
 }
 
 /* Typography */
 
 h1 {
-    color: #3d4852;
+    color: #ffffff;
     font-size: 18px;
     font-weight: bold;
     margin-top: 0;
@@ -100,10 +101,13 @@ img {
 .header {
     padding: 25px 0;
     text-align: center;
+    background-color: #393c5f;
+    width: 40%;
+    border-radius: 25px 25px 0 0;
 }
 
 .header a {
-    color: #3d4852;
+    color: #f3f4f6;
     font-size: 19px;
     font-weight: bold;
     text-decoration: none;
@@ -123,7 +127,7 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #edf2f7;
+    background-color: #4c4e7e;
     border-bottom: 1px solid #edf2f7;
     border-top: 1px solid #edf2f7;
     margin: 0;
@@ -135,7 +139,8 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 570px;
-    background-color: #ffffff;
+    color: #ffffff;
+    background-color: #4c4e7e;
     border-color: #e8e5ef;
     border-radius: 2px;
     border-width: 1px;
@@ -148,13 +153,13 @@ img {
 /* Subcopy */
 
 .subcopy {
-    border-top: 1px solid #e8e5ef;
+    border-top: 1px solid;
     margin-top: 25px;
     padding-top: 25px;
 }
 
 .subcopy p {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 /* Footer */
@@ -163,10 +168,13 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 570px;
+    background-color: #393c5f;
+    color: #f0f1f3;
     margin: 0 auto;
     padding: 0;
     text-align: center;
-    width: 570px;
+    width: 100%;
+    border-radius: 0 0 25px 25px;
 }
 
 .footer p {
@@ -232,11 +240,11 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #2d3748;
-    border-bottom: 8px solid #2d3748;
-    border-left: 18px solid #2d3748;
-    border-right: 18px solid #2d3748;
-    border-top: 8px solid #2d3748;
+    background-color: #393c5f;
+    border-bottom: 8px solid #393c5f;
+    border-left: 18px solid #393c5f;
+    border-right: 18px solid #393c5f;
+    border-top: 8px solid #393c5f;
 }
 
 .button-green,

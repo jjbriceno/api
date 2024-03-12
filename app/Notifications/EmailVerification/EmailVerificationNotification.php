@@ -2,6 +2,7 @@
 
 namespace App\Notifications\EmailVerification;
 
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -42,9 +43,11 @@ class EmailVerificationNotification extends VerifyEmail
     {
         $prefix = env('FRONTEND_URL') . '/verify-email?url=';
         $verificationUrl = $this->verificationUrl($notifiable);
+        $full_name = Str::title($notifiable->name . ' ' . $notifiable->last_name);
         
         return (new MailMessage)
             ->subject(Lang::get('Verify Email Address'))
+            ->greeting(Lang::get('Hello!') . ' '  . $full_name)
             ->line(Lang::get('Please click the button below to verify your email address.'))
             ->action(Lang::get('Verify Email Address'), $prefix . urlencode($verificationUrl))
             ->line(Lang::get('If you did not create an account, no further action is required.'));
