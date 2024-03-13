@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Events\Loan\NewLoanRegisterEvent;
 use App\Http\Resources\MusicSheetResource;
 use App\Http\Requests\Loan\AddToCartRequest;
+use App\Http\Requests\Loan\updateCartItemRequest;
 use App\Http\Requests\Loan\ValidateMusicSheetQuantityRequest;
 
 class LoanCartController extends Controller
@@ -152,6 +153,31 @@ class LoanCartController extends Controller
         $totalCartMusicSheets = collect($cart)->sum('quantity');
 
         return response()->json(['cart' => $cart, 'total' => $totalCartMusicSheets, 'music_sheet' => $musicSheet], Response::HTTP_OK);
+    }
+
+    public function updateCartItem(updateCartItemRequest $request)
+    {
+        $cart = $request->session()->get('cart', []);
+
+        $itemToEdit = $cart[$request->id];
+
+        $musicSheet = MusicSheet::find($itemToEdit['id']);
+
+        $difference = $musicSheet->available + $itemToEdit['quantity'] - $request->quantity;
+
+        $musicSheet->update(['available' => $difference]);
+
+        $cart[$request->id]['quantity'] = $request->quantity;
+
+        $request->session()->put('cart', $cart);
+
+        $totalCartMusicSheets = collect($request->session()->get('cart', $cart))->sum('quantity');
+
+        return response()->json([
+                'music_sheet' => new MusicSheetResource(MusicSheet::find($request->id)),
+                'total' => $totalCartMusicSheets,
+                'cart' => $request->session()->get('cart'),
+            ]);
     }
 
     public function deleteCartItems(Request $request)
