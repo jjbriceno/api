@@ -94,7 +94,8 @@ class ProfileController extends Controller
                 $user = $request->user();
                 $profile = $user->profile;
 
-                if ($user->email != $request->email) {
+                $is_user_email_equal = $user->email == $request->email; 
+                if (!$is_user_email_equal) {
                     $user->email_verified_at = null;
                 }
 
@@ -102,7 +103,7 @@ class ProfileController extends Controller
                 $user->name = $request->firstName;
                 $user->save();
 
-                if (!$user->hasVerifiedEmail()) {
+                if (!$user->hasVerifiedEmail() && !$is_user_email_equal) {
                     $user->sendEmailVerificationNotification();
                 }
 
