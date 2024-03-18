@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Loan;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\LoanReturnReminderEmail;
 
 class SendLoanReturnReminder extends Command
 {
