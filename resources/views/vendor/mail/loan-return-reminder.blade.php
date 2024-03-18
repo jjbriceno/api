@@ -20,4 +20,4 @@ Thank you for your business!
 
 Sincerely,
 
-The [Your Company Name] Team
+The [Your Company Name] Teamp
