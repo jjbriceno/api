@@ -12,6 +12,7 @@ use App\Http\Controllers\CabinetsController;
 use App\Http\Controllers\LoanCartController;
 use App\Http\Controllers\MusicSheetController;
 use App\Http\Controllers\MusicSheetFileController;
+use App\Http\Requests\NewPassword\NewPasswordResquest;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
      * Route that allow profile picture update
      */
     Route::post('/profiles/update-picture', [ProfileController::class, 'updateUserProfilePicture'])->name('profiles.update-picture');
+
+    /**
+     * Route that allow password update
+     */
+    Route::put('/update-password', [UserController::class, 'updatePassword'])->name('user.update-password');
 
     /**
      * Routes that allow profile management
