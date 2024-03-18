@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->command('custom:send-reminder')->dailyAt('00:00');
+        $schedule->command('loan:send-loan-return-reminder')->dailyAt('00:00');
     }
 
     /**
