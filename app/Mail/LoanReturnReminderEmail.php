@@ -11,7 +11,6 @@ use Illuminate\Queue\SerializesModels;
 
 class LoanReturnReminderEmail extends Mailable
 {
-   
     use Queueable, SerializesModels;
 
     public $loanDetails;
@@ -44,6 +43,6 @@ class LoanReturnReminderEmail extends Mailable
     public function build()
     {
         return $this->subject('Recordatorio: Pronto debe devolver su préstamo (ID: ' . $this->loanDetails['id'] . ')')
-                    ->markdown('emails.loan-return-reminder', $this->loanDetails);
+                    ->markdown('vendor.notifications.email', $this->loanDetails);
     }
 }
