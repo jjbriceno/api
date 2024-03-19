@@ -130,8 +130,6 @@ class LoansController extends Controller
 
             return $this->getBorrowerLoans($request->borrowerId);
 
-            // return response(['loan' => $this->getBorrowerLoans($request->borrowerId)], Response::HTTP_OK);
-
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -145,28 +143,26 @@ class LoansController extends Controller
      */
     public function destroy($id)
     {
+        try {
+            $loan = Loan::findOrFail($id);
 
-        // $loans = Loan::where('borrower_id', $id);
+            DB::transaction(function () use ($loan) {
+                $loan->musicSheets()->each(function ($musicSheet) {
+                    $musicSheet->available += $musicSheet->pivot->quantity;
+                    $musicSheet->save();
+                });
+                $loan->musicSheets()->detach();
+                $loan->status = 'closed';
+                $loan->save();
+                $loan->delete();
+            });
 
-        // $loansArray = $loans->get()->all();
+            return $this->getBorrowerLoans($loan->user_id);
 
-        // if ($loansArray) {
-        //     $musicSheetsJson = array_map('json_decode', array_column($loansArray, 'music_sheets_borrowed_amount'));
-        //     foreach ($musicSheetsJson as $key) {
-        //         $keyArray = (array) $key;
-        //         foreach ($keyArray as $id => $cuantity) {
-        //             $musicSheet = MusicSheet::find($id);
-        //             $musicSheet->available += $cuantity;
-        //             $musicSheet->save();
-        //         }
-        //     }
-        // }
-
-        // $loans->delete();
-
-        // $borrowers = Borrower::with('loans')->whereHas('loans')->get();
-
-        // return response(['loans' => $borrowers->jsonSerialize()], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        
     }
 
     public function getBorrowerLoans($id)
