@@ -43,7 +43,7 @@ class MusicSheetController extends Controller
     {
         try {
             $musicSheet = MusicSheet::findOrFail($id);
-            return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_OK);
+            return new MusicSheetResource($musicSheet);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_NOT_FOUND);
         }
