@@ -41,12 +41,7 @@ class MusicSheetController extends Controller
      */
     public function show($id)
     {
-        try {
-            $musicSheet = MusicSheet::findOrFail($id);
-            return response()->json(['item' => new MusicSheetResource($musicSheet), 'message' => 'success'], Response::HTTP_OK);
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], Response::HTTP_NOT_FOUND);
-        }
+        return $this->musicSheetRepository->show($id);
     }
 
     /**
@@ -80,23 +75,7 @@ class MusicSheetController extends Controller
      */
     public function destroy($id)
     {
-        try{
-            $musicSheet = MusicSheet::findOrFail($id);
-            $musicSheetDeleted = DB::transaction(function () use ($musicSheet) {
-                $location = Locations::findOrFail($musicSheet->location_id);
-                $musicSheet->delete();
-                $location->delete();
-                if ($musicSheet->music_sheet_file_id) {
-                    $musicSheetFile = MusicSheetFile::findOrFail($musicSheet->music_sheet_file_id);
-                    $musicSheetFile->delete();
-                }
-                return $musicSheet;
-            });
-            return response()->json(['item' => new MusicSheetResource($musicSheetDeleted), 'message' => 'success'], Response::HTTP_OK);
-    
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return $this->musicSheetRepository->destroy($id);
     }
 
     public function index()

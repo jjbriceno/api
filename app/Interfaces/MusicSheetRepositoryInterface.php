@@ -12,4 +12,6 @@ interface MusicSheetRepositoryInterface
     public function update(MusicSheetUpdateRequest $request, $id);
     public function index();
     public function search();
+    public function show($id);
+    public function destroy($id);
 }
