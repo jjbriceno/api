@@ -43,27 +43,27 @@ class LoansController extends Controller
     public function store(LoanRequest $request)
     {
         try {
-        $loan = Loan::query()->create([
-            'user_id' => $request->userId,
-            'status' => 'open',
-            'loan_date' => \Carbon\Carbon::now('utc'),
-            'delivery_date' => $request->deliveryDate,
-            'quantity' => 0,
-            'type' => 'physical',
-        ]);
+            $loan = Loan::query()->create([
+                'user_id' => $request->userId,
+                'loan_date' => \Carbon\Carbon::now('utc'),
+                'delivery_date' => $request->deliveryDate ?? null,
+                'quantity' => 0,
+                'status' => $request->type == 'digital' ? 'requested' : 'open',
+                'type' => $request->type
+            ]);
 
-        $quantity = 0;
-        foreach ($request->items as $musicSheet) {
-            $loan->musicSheets()->attach($musicSheet["id"], ['quantity' => $musicSheet["quantity"]]);
-            $quantity += $musicSheet["quantity"];
-        }
+            $quantity = 0;
+            foreach ($request->items as $musicSheet) {
+                $loan->musicSheets()->attach($musicSheet["id"], ['quantity' => $musicSheet["quantity"]]);
+                $quantity += $musicSheet["quantity"];
+            }
 
-        $loan->quantity = $quantity;
-        $loan->save();
+            $loan->quantity = $quantity;
+            $loan->save();
 
 
-        // TODO return json ok
-        return response()->json(['message' => 'success'], Response::HTTP_OK);
+            // TODO return json ok
+            return response()->json(['message' => 'success'], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
