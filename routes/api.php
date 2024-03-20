@@ -153,5 +153,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');
 
+    Route::post('/loan/get-loan-for-status', [LoansController::class, 'getLoans'])->name('loans.getLoansForStatus');
+
+    Route::post('/loan/change-status-loan', [LoansController::class, 'cahngeStatusLoan'])->name('loans.changeStatusLoan');
+
     Route::resource('/loans', LoansController::class, ['except' => ['create', 'edit']]);
 });

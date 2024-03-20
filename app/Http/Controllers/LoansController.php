@@ -189,6 +189,51 @@ class LoansController extends Controller
         }
     }
 
+    /**
+     * Retrieves loans based on the user's role and optional status filter.
+     *
+     * @param Request $request The HTTP request containing optional status filter
+     * @return LoanCollection Collection of loans based on user's role and status filter
+     * @throws \Throwable When an internal server error occurs
+     */
+    public function getLoans(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $loans = Loan::query()->where('status', $request->status)->where('type', $request->type);
+
+            if ($user->role('admin')) {
+                $loans = $loans->get();
+            } elseif ($user->role('user')) {
+                $loans = $loans->where('user_id', $user->id)->get();
+            }
+
+            return new LoanCollection($loans);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    function cahngeStatusLoan(Request $request)
+    {
+        try {
+            $loan = Loan::query()->where('id', $request->loanId)->where('type', 'digital')->firstOrFail();
+            DB::transaction(function () use ($loan, $request) {
+                $loan->status = $request->status;
+                $loan->save();
+                //TODO: Enviar notificación por email con ele estus del prestamo.
+                /**
+                 * TODO: Dar los permisos temporales para descargar las partituras dentro del présstamo digital
+                 * si este ha sido aprobado
+                 */
+            });
+
+            return $this->getBorrowerLoans($loan->user_id);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function search()
     {
         if (request('search')) {
