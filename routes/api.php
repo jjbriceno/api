@@ -110,9 +110,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.get');
 
     /**
+     * Route that deletes one user
+     */
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    /**
+     * Route that gets all users
+     */
+    Route::get('/get-all-users', [UserController::class, 'getUsers'])->name('users.get-all');
+
+    Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
+
+    /**
      * Route that gets users with active loans management
      */
-    Route::get('/users-with-active-loans', [UserController::class, 'getUsersWithActiveLoans'])->name('usersWithActiveLoans.get');
+    // Route::get('/users-with-active-loans', [UserController::class, 'getUsersWithActiveLoans'])->name('usersWithActiveLoans.get');
 
     /**
      * Routes that allow loans management

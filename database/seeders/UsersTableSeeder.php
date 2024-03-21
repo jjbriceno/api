@@ -18,7 +18,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $users = [
+        $users_adim = [
             [
                 'name' => "José Briceño",
                 'email' => "bricenoj9@gmail.com",
@@ -34,44 +34,36 @@ class UsersTableSeeder extends Seeder
                 'remember_token' => Str::random(10),
             ],
         ];
-        DB::transaction(function () use ($users) {
-            foreach ($users as $user) {
-                $user = User::create($user);
-                $user->profile()->create([
+        DB::transaction(function () use ($users_adim) {
+            foreach ($users_adim as $user) {
+                $user_admin = User::create($user);
+                $user_admin->profile()->create([
                     'first_name' => explode(" ", $user['name'])[0],
                     'last_name'  => explode(" ", $user['name'])[1],
                     'address'    => fake()->address(),
                     'phone'      => fake()->phoneNumber(),
                 ]);
 
-                if ($user) {
-                    $user->assignRole("admin");
+                if ($user_admin) {
+                    $user_admin->assignRole("admin");
                 }
             }
         });
 
         $faker = Faker::create();
 
-        for ($i = 0; $i < 100; $i++) {
-            DB::table('users')->insert([
-                'name' => $faker->name,
-                'email' => $faker->unique()->safeEmail,
-                'email_verified_at' => now(),
-                'password' => bcrypt('password'),
-                'remember_token' => Str::random(10),
-            ]);
-        }
-
-        $users = DB::table('users')->pluck('id');
-
-        foreach ($users as $userId) {
-            DB::table('profiles')->insert([
-                'user_id' => $userId,
-                'first_name' => $faker->firstName,
-                'last_name' => $faker->lastName,
-                'address' => $faker->address,
-                'phone' => $faker->phoneNumber,
-            ]);
-        }
+        // Add 100 fake users
+        DB::transaction(function () use ($faker) {
+            $users = User::factory(100)->create();
+            foreach ($users as $user) {
+                $user->profile()->create([
+                    'first_name' => $user->name,
+                    'last_name'  => $faker->lastName,
+                    'address'    => $faker->address,
+                    'phone'      => $faker->phoneNumber,
+                ]);
+                $user->assignRole("user");
+            }
+        });
     }
 }

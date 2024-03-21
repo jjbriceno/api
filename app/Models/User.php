@@ -88,7 +88,9 @@ class User extends Authenticatable implements MustVerifyEmail
             $query->whereHas('profile', function ($query) use ($search) {
                 $query->where('first_name', 'ilike', $search . '%')
                     ->orWhere('last_name', 'ilike', $search . '%');
-            });
+            })->orWhereHas('roles', function ($query) use ($search) {
+                $query->whereIn('name', [Str::lower($search)]);
+            })->orWhere('email', 'ilike', $search . '%');
         });
 
         $query->orderBy("id", "asc");

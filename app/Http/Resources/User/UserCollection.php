@@ -11,7 +11,7 @@ class UserCollection extends ResourceCollection
      *
      * @var string
      */
-    public static $wrap = 'borrowers';
+    public static $wrap = 'users';
     /**
      * Transform the resource collection into an array.
      *
