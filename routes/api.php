@@ -119,22 +119,31 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::get('/get-all-users', [UserController::class, 'getUsers'])->name('users.get-all');
 
+    /**
+     * Route that gets users by search query
+     */
     Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
+
+    /**
+     * Route that changes user role (Admin or User)
+     */
+    Route::post('/users/change-user-role', [UserController::class, 'changeUserRole'])->name('users.change-user-role');
+
 
     /**
      * Route that gets users with active loans management
      */
-    // Route::get('/users-with-active-loans', [UserController::class, 'getUsersWithActiveLoans'])->name('usersWithActiveLoans.get');
-
-    /**
-     * Routes that allow loans management
-     */
-    Route::get('/get-borrowers', [LoansController::class, 'index'])->name('index.get');
-
+    Route::get('/users-with-active-loans', [UserController::class, 'getUsersWithActiveLoans'])->name('users.usersWithActiveLoans');
+   
     /** 
      * Routes that allow borrowers search 
      */
-    Route::get('/borrowers/search', [LoansController::class, 'search'])->name('borrowers.search');
+    Route::get('/users-with-active-loans/search', [UserController::class, 'searchUsersWithActiveLoans'])->name('users.searchUsersWithActiveLoans');
+    
+    /**
+     * Routes that allow loans management
+     */
+    Route::get('/loans', [LoansController::class, 'index'])->name('index.get');
 
     /** Route that allow get loans for a borrower */
     Route::get('/get-borrower-loans/{id}', [LoansController::class, 'getBorrowerLoans'])->name('borrowersLoans.get');

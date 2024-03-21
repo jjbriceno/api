@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
 use App\Http\Resources\User\UserResource;
 use App\Http\Resources\User\UserCollection;
+use App\Http\Resources\Borrower\BorrowerCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
@@ -32,14 +33,47 @@ class UserController extends Controller
         return new UserCollection($users);
     }
 
-    // public function getUsersWithActiveLoans()
-    // {
-    //     $users = User::query()->whereHas('loans', function($query) {
-    //         $query->whereHas('musicSheets')->with('musicSheets');
-    //     })->with('loans')->paginate(10);
-        
-    //     return new UserCollection($users);
-    // }
+    public function getUsersWithActiveLoans()
+    {
+        $borrowers = User::query()->whereHas('loans', function($query) {            
+            $query->where('status', 'open');
+        })->paginate(10);
+
+        return new BorrowerCollection($borrowers);
+    }
+
+    public function getUsersWithLoans(Request $request)
+    {
+        try {
+            $user = User::query()->query()->whereHas('loans', function($query) use ($request) {         
+                $query->where('status', $query->status)
+                    ->where('type', $query->type);
+            });
+
+            if ($request->user()->hasRole('admin')) {
+                $borrowers = $user->get();
+            }
+            return new BorrowerCollection($borrowers);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        $borrowers = User::query()->whereHas('loans', function($query) {            
+            $query->where('status', 'open');
+        })->paginate(10);
+    }
+    public function changeUserRole(Request $request)
+    {
+        try {
+            $user = User::query()->findOrFail($request->id);
+
+            $user->syncRoles($user->hasRole('admin') ? ['user'] : ['admin']);
+
+            return new UserResource($user);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['errors' => [Lang::get($th->getMessage())]], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function updatePassword(Request $request)
     {
@@ -89,6 +123,16 @@ class UserController extends Controller
             return new UserCollection($users);
         } else {
             return $this->index();
+        }
+    }
+
+    public function searchUsersWithActiveLoans()
+    {
+        if (request('search')) {
+            $borrowers = User::SearchUsersWithActiveLoans()->paginate(10);
+            return new BorrowerCollection($borrowers);
+        } else {
+            return $this->getUsersWithActiveLoans();
         }
     }
 }

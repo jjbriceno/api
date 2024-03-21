@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Loan;
 use App\Models\User;
-use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Loan\LoanRequest;
 use App\Http\Resources\Loan\LoanCollection;
-use App\Http\Resources\User\UserCollection;
-use App\Http\Resources\MusicSheetCollection;
 use App\Http\Resources\Borrower\BorrowerCollection;
 use App\Http\Resources\MusicSheet\LoanMusicSheetCollection;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -27,11 +24,10 @@ class LoansController extends Controller
      */
     public function index()
     {
-        $borrowers = User::query()->whereHas('loans', function($query) {            
-            $query->where('status', 'open');
-        })->paginate(10);
+        $user = auth()->user();
+        $loans = User::query()->where('id', $user->id)->paginate(10);
 
-        return new BorrowerCollection($borrowers);
+        return new LoanCollection($loans);
     }
 
     /**
@@ -217,7 +213,12 @@ class LoansController extends Controller
     function changeStatusLoan(Request $request)
     {
         try {
-            $loan = Loan::query()->where('id', $request->loanId)->where('type', 'digital')->firstOrFail();
+            $loan = Loan::query()
+                ->where('id', $request->loanId)
+                ->where('type', 'digital')
+                ->where('status', 'requested')
+                ->firstOrFail();
+
             DB::transaction(function () use ($loan, $request) {
                 $loan->status = $request->status;
                 $loan->save();
@@ -237,7 +238,7 @@ class LoansController extends Controller
     public function search()
     {
         if (request('search')) {
-            $borrowers = User::search()->paginate(10);
+            $borrowers = User::SearchUsersWithActiveLoans()->paginate(10);
             return new BorrowerCollection($borrowers);
         } else {
             return $this->index();

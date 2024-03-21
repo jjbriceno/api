@@ -97,4 +97,22 @@ class User extends Authenticatable implements MustVerifyEmail
 
         return $query;
     }
+
+    public function scopeSearchUsersWithActiveLoans($query)
+    {
+        $search = request('search');
+
+        $query->when($search, function ($query) use ($search) {
+            $query->whereHas('profile', function ($query) use ($search) {
+                $query->where('first_name', 'ilike', $search . '%')
+                    ->orWhere('last_name', 'ilike', $search . '%');
+            })->whereHas('loans', function ($query) {
+                $query->where('status', 'open');
+            });
+        });
+
+        $query->orderBy("id", "asc");
+
+        return $query;
+    }
 }
