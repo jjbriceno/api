@@ -221,7 +221,7 @@ class LoansController extends Controller
             DB::transaction(function () use ($loan, $request) {
                 $loan->status = $request->status;
                 $loan->save();
-                //TODO: Enviar notificación por email con ele estus del prestamo.
+                //TODO: Enviar notificación por email con el estatus del prestamo.
                 /**
                  * TODO: Dar los permisos temporales para descargar las partituras dentro del présstamo digital
                  * si este ha sido aprobado
