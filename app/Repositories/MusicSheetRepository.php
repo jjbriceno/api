@@ -164,7 +164,7 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
             // Check if the music sheet is loaned
             if ($musicSheet->loans()->count() > 0) {
                 return response()
-                    ->json(['error' => 'La partitura no se puede eliminar, debido a que está vinculada a un préstamo.'],
+                    ->json(['errors' => ['La partitura no se puede eliminar, debido a que está vinculada a un préstamo.']],
                     Response::HTTP_FORBIDDEN);
             }
             $musicSheetDeleted = DB::transaction(function () use ($musicSheet) {
