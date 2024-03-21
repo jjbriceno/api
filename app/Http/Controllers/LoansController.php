@@ -202,9 +202,9 @@ class LoansController extends Controller
             $user = auth()->user();
             $loans = Loan::query()->where('status', $request->status)->where('type', $request->type);
 
-            if ($user->role('admin')) {
+            if ($user->hasRole('admin')) {
                 $loans = $loans->get();
-            } elseif ($user->role('user')) {
+            } elseif ($user->hasRole('user')) {
                 $loans = $loans->where('user_id', $user->id)->get();
             }
 
@@ -214,7 +214,7 @@ class LoansController extends Controller
         }
     }
 
-    function cahngeStatusLoan(Request $request)
+    function changeStatusLoan(Request $request)
     {
         try {
             $loan = Loan::query()->where('id', $request->loanId)->where('type', 'digital')->firstOrFail();
