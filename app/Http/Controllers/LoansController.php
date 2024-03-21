@@ -238,8 +238,8 @@ class LoansController extends Controller
     public function search()
     {
         if (request('search')) {
-            $borrowers = User::SearchUsersWithActiveLoans()->paginate(10);
-            return new BorrowerCollection($borrowers);
+            $loans = Loan::search()->paginate(10);
+            return new LoanCollection($loans);
         } else {
             return $this->index();
         }
