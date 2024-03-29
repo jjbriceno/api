@@ -26,7 +26,8 @@ class UserController extends Controller
         return new UserCollection($users);
     }
 
-    public function getUsers() {
+    public function getUsers()
+    {
 
         $users = User::query()->get();
 
@@ -35,7 +36,7 @@ class UserController extends Controller
 
     public function getUsersWithActiveLoans()
     {
-        $borrowers = User::query()->whereHas('loans', function($query) {            
+        $borrowers = User::query()->whereHas('loans', function ($query) {
             $query->where('status', 'open');
         })->paginate(10);
 
@@ -45,7 +46,7 @@ class UserController extends Controller
     public function getUsersWithLoans(Request $request)
     {
         try {
-            $user = User::query()->query()->whereHas('loans', function($query) use ($request) {         
+            $user = User::query()->query()->whereHas('loans', function ($query) use ($request) {
                 $query->where('status', $query->status)
                     ->where('type', $query->type);
             });
@@ -57,7 +58,7 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $borrowers = User::query()->whereHas('loans', function($query) {            
+        $borrowers = User::query()->whereHas('loans', function ($query) {
             $query->where('status', 'open');
         })->paginate(10);
     }
@@ -68,7 +69,7 @@ class UserController extends Controller
 
             $user->syncRoles($user->hasRole('admin') ? ['user'] : ['admin']);
 
-            return new UserResource($user);
+            return new UserResource($user->load('roles'));
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['errors' => [Lang::get($th->getMessage())]], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -79,8 +80,8 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'password' => ['required', 'confirmed', 'min:8'],
-        ]); 
-        
+        ]);
+
         $user = $request->user();
 
         $user->forceFill([
@@ -93,27 +94,30 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        try{
+        try {
             $user = User::query()->findOrFail($id);
             // Check if the user has loans
             if ($user->loans()->count() > 0) {
                 return response()
-                    ->json(['errors' => ['Este usuario no se puede eliminar, debido a que posee prestamos asociados.']],
-                    Response::HTTP_FORBIDDEN);
+                    ->json(
+                        ['errors' => ['deleteError' => ['Este usuario no se puede eliminar, debido a que posee prestamos asociados.']]],
+                        422
+                    );
             }
             DB::transaction(function () use ($user) {
                 $user->delete();
             });
             return response()->json(['message' => 'success'], Response::HTTP_OK);
-    
         } catch (\Throwable $th) {
 
             if ($th instanceof ModelNotFoundException) {
-                return response()->json(['errors' => ['No se encontró el usuario que intenta eliminar']],
-                    Response::HTTP_INTERNAL_SERVER_ERROR);
+                return response()->json(
+                    ['errors' => ['No se encontró el usuario que intenta eliminar']],
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
             }
             return response()->json(['errors' => [Lang::get($th->getMessage())]], Response::HTTP_INTERNAL_SERVER_ERROR);
-        } 
+        }
     }
 
     public function search()

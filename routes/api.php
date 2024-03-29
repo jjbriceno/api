@@ -127,7 +127,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     /**
      * Route that changes user role (Admin or User)
      */
-    Route::post('/users/change-user-role', [UserController::class, 'changeUserRole'])->name('users.change-user-role');
+    Route::post('/users/change-user-role/{id}', [UserController::class, 'changeUserRole'])->name('users.change-user-role');
 
 
     /**
