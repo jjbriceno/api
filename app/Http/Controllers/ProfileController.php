@@ -32,27 +32,6 @@ class ProfileController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(ProfileRequest $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  \App\Models\Profile  $profile
@@ -69,15 +48,40 @@ class ProfileController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Profile  $profile
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Profile $profile)
+    public function updateUserProfile(Request $request)
     {
-        //
+        $request->validate([
+            'firstName' => 'required',
+            'lastName' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request) {
+                $user = User::where('id', $request->userId)->first();
+                $userProfile = Profile::where('user_id', $request->userId)->first();
+        
+                if ($user->email != $request->email) {
+                    $user->email_verified_at = null;
+                    $user->sendEmailVerificationNotification();
+                }
+                $user->email = $request->email;
+                $user->name = $request->firstName;
+                $user->save();
+        
+                $userProfile->first_name = $request->firstName;
+                $userProfile->last_name = $request->lastName;
+                $userProfile->phone = $request->phone;
+                $userProfile->address = $request->address;
+                $userProfile->save();
+            });
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $user = User::where('id', $request->userId)->first();
+
+        return new UserResource($user->load('profile'));
     }
 
     /**
@@ -94,7 +98,7 @@ class ProfileController extends Controller
                 $user = $request->user();
                 $profile = $user->profile;
 
-                $is_user_email_equal = $user->email == $request->email; 
+                $is_user_email_equal = $user->email == $request->email;
                 if (!$is_user_email_equal) {
                     $user->email_verified_at = null;
                 }
@@ -186,16 +190,5 @@ class ProfileController extends Controller
         $profilePictureUrl = $baseUrl . '/storage/' . $filePath;
 
         return response()->json(['profile_picture_url' => $profilePictureUrl]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Loan  $loans
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

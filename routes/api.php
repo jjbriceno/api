@@ -110,6 +110,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.get');
 
     /**
+     * Route that updates one user profile
+     */
+    Route::put('/users/update-profile/{id}', [ProfileController::class, 'updateUserProfile'])->name('users.update-profile');
+
+    /**
      * Route that deletes one user
      */
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');

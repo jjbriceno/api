@@ -26,6 +26,8 @@ class UserResource extends JsonResource
             'first_name' => $this->profile?->first_name,
             'last_name' => $this->profile?->last_name,
             'email' => $this->email,
+            'phone' => $this->profile?->phone,
+            'address' => $this->profile?->address,
             'email_verified_at' => $this->email_verified_at,
             'profile_picture_url' => config('app.url') . '/storage/profile-pictures/' . $this->profile?->profilePicture?->file_name,
             'roles' => $this->whenLoaded('roles'),
