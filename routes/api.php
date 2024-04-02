@@ -12,7 +12,6 @@ use App\Http\Controllers\CabinetsController;
 use App\Http\Controllers\LoanCartController;
 use App\Http\Controllers\MusicSheetController;
 use App\Http\Controllers\MusicSheetFileController;
-use App\Http\Requests\NewPassword\NewPasswordResquest;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,14 +33,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return auth()->user();
     });
 
-
-    /** 
-     * Routes that allow authors search 
+    /**
+     * Routes that allow authors search
      */
     Route::get('/authors/search', [AuthorController::class, 'search'])->name('authors.search');
 
-    /** Route that allows to get all authors */
+    /**
+     * Route that allows to get all authors
+     */
     Route::get('/all-authors', [AuthorController::class, 'getAuthors'])->name('all-authors');
+
     /**
      * Routes that allow authors management
      */
@@ -77,21 +78,34 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::post('/sheet-file/store', [MusicSheetFileController::class, 'store'])->name('music-sheet-file.store');
 
+    /**
+     * Route to update music sheet file
+     */
     Route::post('/sheet-file/update', [MusicSheetFileController::class, 'update'])->name('music-sheet-file.update');
 
+    /**
+     * Route to destroy music sheet file
+     */
     Route::delete('/sheet-file/destroy/{id}', [MusicSheetFileController::class, 'destroy'])->name('music-sheet-file.destroy');
 
+    /**
+     * Route to download music sheet file
+     */
     Route::get('/sheet-file/download/{id}', [MusicSheetFileController::class, 'download'])->name('music-sheet-file.download');
 
-    /** 
-     * Routes that allow authors search 
+    /**
+     * Routes that allow authors search
      */
     Route::get('/genders/search', [GenderController::class, 'search'])->name('genders.search');
+    
     /**
      * Routes that allow gender management
      */
     Route::resource('/genders', GenderController::class, ['except' => ['create', 'edit']]);
 
+    /**
+     * Route that allows to get all genders
+     */
     Route::get('/all-genders', [GenderController::class, 'getGenders'])->name('all-genders');
 
     /**
@@ -134,54 +148,78 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::post('/users/change-user-role/{id}', [UserController::class, 'changeUserRole'])->name('users.change-user-role');
 
-
     /**
      * Route that gets users with active loans management
      */
     Route::get('/users-with-active-loans', [UserController::class, 'getUsersWithActiveLoans'])->name('users.usersWithActiveLoans');
-   
-    /** 
-     * Routes that allow borrowers search 
+
+    /**
+     * Routes that allow borrowers search
      */
     Route::get('/users-with-active-loans/search', [UserController::class, 'searchUsersWithActiveLoans'])->name('users.searchUsersWithActiveLoans');
-    
-    /**
-     * Routes that allow loans management
-     */
-    Route::get('/loans', [LoansController::class, 'index'])->name('index.get');
 
-    /** Route that allow get loans for a borrower */
+    /** 
+     * Route that allow get loans for a borrower 
+     */
     Route::get('/get-borrower-loans/{id}', [LoansController::class, 'getBorrowerLoans'])->name('borrowersLoans.get');
-
-    /**
-     * Routes that allow borrowers management
-     */
-    // Route::resource('/borrowers', BorrowersController::class, ['except' => ['create', 'edit']]);
 
     /**
      * Routes that allow loans management
      */
     Route::get('/loan/get-music-sheets/{loanId}', [LoansController::class, 'getLoanMusicSheets'])->name('loans.getMusicSheets');
 
+    /**
+     * Route that allows to restore cart items
+     */
     Route::post('/loan/restore-cart-items', [LoanCartController::class, 'restoreCartItems'])->name('loans.restoreCartItems');
 
+    /**
+     * Route that allows to update cart item
+     */
     Route::post('/loan/update-cart-item', [LoanCartController::class, 'updateCartItem'])->name('loans.updateCartItem');
 
+    /**
+     * Route that allows to delete cart item
+     */
     Route::delete('/loan/delete-cart-item/{id}', [LoanCartController::class, 'deleteCartItem'])->name('loans.deleteCartItem');
 
+    /**
+     * Route that allows to validate music sheet quantity
+     */
     Route::post('/loan/validate-music-sheet-quantity', [LoanCartController::class, 'validateMusicSheetQuantity'])->name('loans.validateMusicSheetQuantity');
 
+    /**
+     * Route that allows to get available quantity for music sheet
+     */
     Route::get('loan/get-available-quantity-for-music-sheet/{id}', [LoanCartController::class, 'getAvailableQuantityForMusicSheet'])->name('loans.getAvailableQuantityForMusicSheet');
 
+    /**
+     * Route that allows to delete cart items
+     */
     Route::post('/loan/delete-cart-items', [LoanCartController::class, 'deleteCartItems'])->name('loans.deleteCartItems');
 
+    /**
+     * Route that allows to add to cart
+     */
     Route::post('/loan/validate-add-to-cart', [LoanCartController::class, 'addToCart'])->name('loans.addToCart');
 
+    /**
+     * Route that allows to return loan
+     */
     Route::post('/loan/return', [LoansController::class, 'returnLoan'])->name('loans.return');
 
+    /**
+     * Route that allows to get loans for status
+     */
     Route::post('/loan/get-loan-for-status', [LoansController::class, 'getLoans'])->name('loans.getLoansForStatus');
 
-    Route::post('/loan/change-status-loan', [LoansController::class, 'changeStatusLoan'])->name('loans.changeStatusLoan');
+    /**
+     * Route that allows to change loan status
+     */
+    Route::post('/loan/change-status-loan', [LoansController::class, 'changeLoanStatus'])->name('loans.changeLoanStatus');
 
+    /**
+     * Routes that allow loans management
+     */
     Route::resource('/loans', LoansController::class, ['except' => ['create', 'edit']]);
 });

@@ -74,6 +74,7 @@ class MusicSheetRepository implements MusicSheetRepositoryInterface
 
     public function update(MusicSheetUpdateRequest $request, $id)
     {
+        dd($request->all());
         try {
             $musicSheet = MusicSheet::findOrFail($id);
             DB::transaction(function () use ($request, $musicSheet) {

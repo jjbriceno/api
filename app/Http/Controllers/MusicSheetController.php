@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Locations;
 use App\Models\MusicSheet;
-use Illuminate\Http\Request;
-use App\Models\MusicSheetFile;
 use App\Http\Requests\MusicSheet\MusicSheetRequest;
 use App\Http\Requests\MusicSheet\MusicSheetUpdateRequest;
-use App\Http\Resources\MusicSheetCollection;
 use App\Http\Resources\MusicSheetResource;
 use App\Interfaces\MusicSheetRepositoryInterface;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 
 class MusicSheetController extends Controller
 {

@@ -9,7 +9,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Loan\LoanRequest;
 use App\Http\Resources\Loan\LoanCollection;
-use App\Http\Resources\Borrower\BorrowerCollection;
 use App\Http\Resources\MusicSheet\LoanMusicSheetCollection;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
@@ -210,7 +209,7 @@ class LoansController extends Controller
         }
     }
 
-    function changeStatusLoan(Request $request)
+    function changeLoanStatus(Request $request)
     {
         try {
             $loan = Loan::query()
