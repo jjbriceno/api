@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Models\MusicSheet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,10 +11,12 @@ use App\Events\Loan\NewLoanRegisterEvent;
 use App\Http\Resources\MusicSheetResource;
 use App\Http\Requests\Loan\AddToCartRequest;
 use App\Http\Requests\Loan\updateCartItemRequest;
-use App\Http\Requests\Loan\ValidateMusicSheetQuantityRequest;
 
 class LoanCartController extends Controller
 {
+    /**
+     * Add item to cart
+     */
     public function addToCart(AddToCartRequest $request): JsonResponse
     {
         DB::beginTransaction();
@@ -63,6 +64,9 @@ class LoanCartController extends Controller
         }
     }
 
+    /**
+     * Return all items in the cart
+     */
     public function restoreCartItems(Request $request)
     {
         DB::beginTransaction();
@@ -90,43 +94,7 @@ class LoanCartController extends Controller
             throw $th;
         }
     }
-
-    public function validateMusicSheetQuantity(Request $request)
-    {
-        dd($request->all());
-        $musicSheet = MusicSheet::lockForUpdate()->find($request->id);
-
-        $available = $musicSheet->available;
-
-        $quantity = $musicSheet->quantity;
-
-        $currentQuantity = $request->quantity;
-
-        if ($quantity < $currentQuantity - $available) {
-            return response()->json([
-                'errors' =>
-                ['quantity' => ['No hay suficientes partituras disponibles. Disponibles: ' . $available]],
-                'available' => $available
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        } else {
-            return response()->json(['message' => 'success', 'available' => $available], Response::HTTP_OK);
-        }
-        // $request->validate([
-        //     'id'        => ['required', 'exists:music_sheets,id'],
-        //     'quantity'  => ['required', 'numeric', 'gt:0', 'lte:' . $available]
-        // ], [
-        //     'id.exists' => 'La paritura no ha sido encontrada o no existe en nuestros registros.',
-        //     'quantity.gt' => 'La cantidad debe ser igual o mayor a 1.',
-        //     'quantity.lte' => $available > 0 ? 'La cantidad no puede ser mayor que la cantidad disponible. Disponibles: ' . $available : 'No hay suficientes partituras disponibles.',
-        // ]);
-
-        $cart = $request->session()->get('cart', []);
-
-        $musicSheet = MusicSheet::find($request->id);
-
-        dd($musicSheet);
-    }
-
+   
     public function getAvailableQuantityForMusicSheet($id)
     {
         $musicSheet = MusicSheet::lockForUpdate()->find($id);
@@ -134,6 +102,9 @@ class LoanCartController extends Controller
         return response()->json(['available' => $musicSheet->available], Response::HTTP_OK);
     }
 
+    /**
+     * Delete an item from the cart
+     */
     public function deleteCartItem(Request $request, $id)
     {
         $cart = $request->session()->get('cart', []);
@@ -155,6 +126,9 @@ class LoanCartController extends Controller
         return response()->json(['cart' => $cart, 'total' => $totalCartMusicSheets, 'music_sheet' => $musicSheet], Response::HTTP_OK);
     }
 
+    /**
+     * Update an item in the cart
+     */
     public function updateCartItem(updateCartItemRequest $request)
     {
         $cart = $request->session()->get('cart', []);
@@ -180,6 +154,9 @@ class LoanCartController extends Controller
             ]);
     }
 
+    /**
+     * Delete all items from cart
+     */
     public function deleteCartItems(Request $request)
     {
         $request->session()->forget('cart');

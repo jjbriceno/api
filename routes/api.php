@@ -184,11 +184,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/loan/delete-cart-item/{id}', [LoanCartController::class, 'deleteCartItem'])->name('loans.deleteCartItem');
 
     /**
-     * Route that allows to validate music sheet quantity
-     */
-    Route::post('/loan/validate-music-sheet-quantity', [LoanCartController::class, 'validateMusicSheetQuantity'])->name('loans.validateMusicSheetQuantity');
-
-    /**
      * Route that allows to get available quantity for music sheet
      */
     Route::get('loan/get-available-quantity-for-music-sheet/{id}', [LoanCartController::class, 'getAvailableQuantityForMusicSheet'])->name('loans.getAvailableQuantityForMusicSheet');

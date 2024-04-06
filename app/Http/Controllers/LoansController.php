@@ -24,6 +24,7 @@ class LoansController extends Controller
     public function index()
     {
         $user = auth()->user();
+
         $loans = User::query()->where('id', $user->id)->paginate(10);
 
         return new LoanCollection($loans);

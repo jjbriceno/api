@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\MusicSheetFile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 
 class MusicSheetFileController extends Controller
 {
@@ -23,25 +22,6 @@ class MusicSheetFileController extends Controller
             'musicSheetFile.mimes'      => "Sólo se aceptan los formatos de archivo jpeg, png o pdf",
             'musicSheetFile.max'        => "El tamaño maximo del archivo es de 2 MB",
         ];
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -71,29 +51,6 @@ class MusicSheetFileController extends Controller
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\musicSheetFile  $musicSheetFile
-     * @return \Illuminate\Http\Response
-     */
-    public function show(musicSheetFile $musicSheetFile)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\musicSheetFile  $musicSheetFile
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(musicSheetFile $musicSheetFile)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *
