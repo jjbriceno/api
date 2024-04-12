@@ -41,9 +41,9 @@ class EmailVerificationNotification extends VerifyEmail
      */
     public function toMail($notifiable)
     {
-        $prefix = env('FRONTEND_URL') . '/verify-email?url=';
-        $verificationUrl = $this->verificationUrl($notifiable);
-        $full_name = Str::title($notifiable->name . ' ' . $notifiable->last_name);
+        $prefix             = env('FRONTEND_URL') . '/verify-email?url=';
+        $verificationUrl    = $this->verificationUrl($notifiable);
+        $full_name          = Str::title($notifiable->name . ' ' . $notifiable->last_name);
         
         return (new MailMessage)
             ->subject(Lang::get('Verify Email Address'))

@@ -2,10 +2,10 @@
 
 namespace App\Notifications\RoleChange;
 
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class RoleChangeNotification extends Notification
 {
@@ -34,9 +34,17 @@ class RoleChangeNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $full_name  = Str::title($notifiable->name . ' ' . $notifiable->last_name);
+        $role       = $notifiable->getRoleNames()->first() == 'admin' ? 'Administrador' : 'Usuario';
+
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->line('Thank you for using our application!');
+            ->subject('Cambio de rol')
+            ->greeting('Hola ' . $full_name)
+            ->line('Este correo electrónico es para informarle que un administrador cambió su rol en la plataforma ' . env('APP_NAME'))
+            ->line('Su nuevo rol es: ' . $role)
+            ->line('Si tiene alguna pregunta o inquietud sobre este cambio, no dude en comunicarse con nosotros en ' . env('MAIL_FROM_ADDRESS'))
+            ->line('Gracias')
+            ->salutation('Atentamente, ' . env('APP_NAME'));
     }
 
     /**
