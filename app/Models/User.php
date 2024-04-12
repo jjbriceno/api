@@ -10,8 +10,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Notifications\EmailVerification\EmailVerificationNotification;
 use App\Notifications\RoleChange\RoleChangeNotification;
+use App\Notifications\DeletedUser\DeletedUserNotification;
+use App\Notifications\EmailVerification\EmailVerificationNotification;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -61,6 +62,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendRoleChangeNotification()
     {
         $this->notify(new RoleChangeNotification());
+    }
+
+    public function sendDeletedUserNotification()
+    {
+        $this->notify(new DeletedUserNotification());
     }
 
     public function loans()

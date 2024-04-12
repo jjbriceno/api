@@ -106,9 +106,13 @@ class UserController extends Controller
                         422
                     );
             }
+            
             DB::transaction(function () use ($user) {
                 $user->delete();
             });
+            
+            $user->sendDeletedUserNotification();
+            
             return response()->json(['message' => 'success'], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
