@@ -14,6 +14,7 @@ use App\Http\Resources\Profile\ProfileResource;
 use App\Http\Resources\Profile\ProfileCollection;
 use App\Http\Resources\User\UserResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -152,10 +153,12 @@ class ProfileController extends Controller
 
         // Validate file type and size (optional, can be done on frontend too)
         $allowedExtensions = ['jpg', 'jpeg', 'png'];
-        $extension = $file->getClientOriginalExtension();
+        $extension = Str::lower($file->getClientOriginalExtension());
 
         if (!in_array($extension, $allowedExtensions)) {
-            return response()->json(['error' => 'Invalid file type'], 422);
+            return response()->json(['errors' => [
+                'profilePicture' => ['Tipo de archivo no válido. Solo se aceptan los formatos de archivo jpg, jpeg o png'],
+            ]], 422);
         }
 
         $fileName = uniqid() . '.' . $extension;
