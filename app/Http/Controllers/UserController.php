@@ -69,6 +69,8 @@ class UserController extends Controller
 
             $user->syncRoles($user->hasRole('admin') ? ['user'] : ['admin']);
 
+            $user->sendRoleChangeNotification();
+
             return new UserResource($user->load('roles'));
         } catch (\Throwable $th) {
             //throw $th;

@@ -11,6 +11,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\EmailVerification\EmailVerificationNotification;
+use App\Notifications\RoleChange\RoleChangeNotification;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -55,6 +56,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         // We override the default notification and will use our own
         $this->notify(new EmailVerificationNotification());
+    }
+
+    public function sendRoleChangeNotification()
+    {
+        $this->notify(new RoleChangeNotification());
     }
 
     public function loans()
