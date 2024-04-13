@@ -4,17 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Profile;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\ProfilePicture;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\User\UserResource;
 use App\Http\Requests\Profile\ProfileRequest;
 use App\Http\Resources\Profile\ProfileResource;
 use App\Http\Resources\Profile\ProfileCollection;
-use App\Http\Resources\User\UserResource;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -51,17 +52,34 @@ class ProfileController extends Controller
 
     public function updateUserProfile(Request $request)
     {
-        $request->validate([
-            'firstName' => 'required',
-            'lastName' => 'required',
-            'email' => 'required|email',
-        ]);
+        $request->validate(
+            [
+                'firstName' => ['required', 'string', 'max:255'],
+                'lastName' => ['required', 'string', 'max:255'],
+                'email' => [
+                    'required',
+                    'string',
+                    'email',
+                    'max:255', Rule::unique('users', 'email')->where('email', $request->email)->ignore($request->userId)
+                ],
+            ],
+            [
+                'firstName.required' => 'El nombre es requerido',
+                'firstName.max' => 'El nombre no debe ser mayor a 255 caracteres',
+                'lastName.required' => 'El apellido es requerido',
+                'lastName.max' => 'El apellido no debe ser mayor a 255 caracteres',
+                'email.required' => 'El correo es requerido',
+                'email.unique' => 'El correo ya existe',
+                'email.email' => 'El correo es inválido',
+
+            ]
+        );
 
         try {
             DB::transaction(function () use ($request) {
                 $user = User::where('id', $request->userId)->first();
                 $userProfile = Profile::where('user_id', $request->userId)->first();
-        
+
                 if ($user->email != $request->email) {
                     $user->email_verified_at = null;
                     $user->sendEmailVerificationNotification();
@@ -69,7 +87,7 @@ class ProfileController extends Controller
                 $user->email = $request->email;
                 $user->name = $request->firstName;
                 $user->save();
-        
+
                 $userProfile->first_name = $request->firstName;
                 $userProfile->last_name = $request->lastName;
                 $userProfile->phone = $request->phone;

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\RoleChange\RoleChangeNotification;
 use App\Notifications\DeletedUser\DeletedUserNotification;
+use App\Notifications\TemporalPassword\TemporalPasswordNotification;
 use App\Notifications\EmailVerification\EmailVerificationNotification;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -67,6 +68,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendDeletedUserNotification()
     {
         $this->notify(new DeletedUserNotification());
+    }
+
+    public function sendTemporalPasswordNotification(string $password)
+    {
+        $this->notify(new TemporalPasswordNotification($password));
     }
 
     public function loans()

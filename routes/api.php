@@ -124,6 +124,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.get');
 
     /**
+     * Route that creates a new user
+     */
+    Route::post('/users/create-new-user', [UserController::class, 'createNewUser'])->name('users.create.new');
+
+    /**
      * Route that updates one user profile
      */
     Route::put('/users/update-profile/{id}', [ProfileController::class, 'updateUserProfile'])->name('users.update-profile');

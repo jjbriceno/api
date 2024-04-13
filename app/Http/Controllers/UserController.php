@@ -34,6 +34,51 @@ class UserController extends Controller
         return new UserCollection($users);
     }
 
+    public function createNewUser(Request $request)
+    {
+        $request->validate([
+            'firstName' => ['required', 'string', 'max:255'],
+            'lastName' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        ], [
+            'firstName.required' => 'El nombre es requerido',
+            'firstName.max' => 'El nombre no debe ser mayor a 255 caracteres',
+            'lastName.required' => 'El apellido es requerido',
+            'lastName.max' => 'El apellido no debe ser mayor a 255 caracteres',
+            'email.required' => 'El correo es requerido',
+            'email.unique' => 'El correo ya existe',
+            'email.email' => 'El correo es inválido',
+        ]);
+
+        $temporalPassword = Str::random(10);
+
+        try {
+            DB::beginTransaction();
+            $user = new User();
+            $user->name = $request->firstName;
+            $user->email = $request->email;
+            $user->email_verified_at = null;
+            $user->password = Hash::make($temporalPassword );
+            $user->remember_token = Str::random(10);
+            $user->save();
+            $user->profile()->create([
+                'first_name' => $request->firstName,
+                'last_name' => $request->lastName,
+                'address' => $request->address,
+                'phone' => $request->phone,
+            ]);
+
+            $user->assignRole('user');
+            $user->sendEmailVerificationNotification();
+            $user->sendTemporalPasswordNotification($temporalPassword);
+            DB::commit();
+
+            return new UserResource($user);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function getUsersWithActiveLoans()
     {
         $borrowers = User::query()->whereHas('loans', function ($query) {
@@ -106,13 +151,13 @@ class UserController extends Controller
                         422
                     );
             }
-            
+
             DB::transaction(function () use ($user) {
                 $user->delete();
             });
-            
+
             $user->sendDeletedUserNotification();
-            
+
             return response()->json(['message' => 'success'], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
