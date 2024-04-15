@@ -21,7 +21,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::query()->with('roles')->paginate(10);
+        $users = User::query()->where('id', '!=', auth()->user()->id)->with('roles')->paginate(10);
 
         return new UserCollection($users);
     }
@@ -174,7 +174,7 @@ class UserController extends Controller
     public function search()
     {
         if (request('search')) {
-            $users = User::search()->with('roles')->paginate(10);
+            $users = User::search()->where('id', '!=', auth()->user()->id)->with('roles')->paginate(10);
             return new UserCollection($users);
         } else {
             return $this->index();
