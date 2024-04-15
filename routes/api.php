@@ -219,7 +219,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/loan/change-status-loan', [LoansController::class, 'changeLoanStatus'])->name('loans.changeLoanStatus');
 
     /**
+     * Route that allows to get all active loans
+     */
+    Route::get('/loans/get-all-active-loans', [LoansController::class, 'getAllActiveLoans'])->name('loans.getAllActiveLoans');
+
+    /**
      * Routes that allow loans management
      */
-    Route::resource('/loans', LoansController::class, ['except' => ['create', 'edit']]);
+    Route::resource('/loans', LoansController::class, ['except' => ['create', 'edit', 'show']]);
 });

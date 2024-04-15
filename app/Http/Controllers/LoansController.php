@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Loan\LoanRequest;
+use App\Http\Resources\Calendar\CalendarResourceCollection;
 use App\Http\Resources\Loan\LoanCollection;
 use App\Http\Resources\MusicSheet\LoanMusicSheetCollection;
+use Carbon\Carbon;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class LoansController extends Controller
@@ -60,7 +62,6 @@ class LoansController extends Controller
 
             // TODO return json ok
             return response()->json(['message' => 'success'], Response::HTTP_OK);
-
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -72,9 +73,16 @@ class LoansController extends Controller
      * @param  \App\Models\Loan  $loans
      * @return \Illuminate\Http\Response
      */
-    public function show(Loan $loans)
+    public function getAllActiveLoans(Request $request)
     {
-        return response(['loan' => $loans->jsonSerialize()], Response::HTTP_OK);
+        $loans = Loan::query()
+        ->where('status', 'open')
+        ->whereBetween('delivery_date', [$request->start, $request->end])
+        ->leftJoin('profiles', 'profiles.id', '=', 'loans.user_id')
+        ->select('loans.*', 'profiles.first_name', 'profiles.last_name')
+        ->get();
+
+        return new CalendarResourceCollection($loans);
     }
 
     /**
@@ -119,13 +127,12 @@ class LoansController extends Controller
                     $musicSheet->available += $musicSheet->pivot->quantity;
                     $musicSheet->save();
                 });
-    
+
                 $loan->status = 'closed';
                 $loan->save();
             });
 
             return $this->getBorrowerLoans($request->borrowerId);
-
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -154,11 +161,9 @@ class LoansController extends Controller
             });
 
             return $this->getBorrowerLoans($loan->user_id);
-
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        
     }
 
     public function getBorrowerLoans($id)
