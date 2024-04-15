@@ -86,31 +86,6 @@ class LoansController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Loan  $loans
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Loan $loans)
-    {
-
-        $loans->lender_id = $request->lender_id;
-        $loans->status = $request->status;
-        $loans->loan_date = $request->loan_date;
-        $loans->delivery_date = $request->delivery_date;
-        $loans->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
-        $loans->cuantity = $request->cuantity;
-        $loans->status = $request->status;
-        $loans->loan_date = $request->loan_date;
-        $loans->delivery_date = $request->delivery_date;
-        $loans->music_sheets_borrowed_amount = $request->music_sheets_borrowed_amount;
-        $loans->save();
-
-        return response($loans, Response::HTTP_OK);
-    }
-
-    /**
      * Undocumented function
      *
      * @param Request $request
