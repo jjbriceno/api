@@ -107,8 +107,15 @@ class GenderController extends Controller
     public function destroy($id)
     {
         try {
-            MusicSheet::where('gender_id', $id)->delete();
             $gender = Gender::findOrFail($id);
+            // Check if the gender has music sheets
+            if ($gender->musicSheets()->count() > 0) {
+                return response()
+                ->json(
+                    ['errors' => ['deleteError' => ['Este género musical no se puede eliminar, debido a que posee partituras asociadas.']]],
+                    422
+                );
+            }
             $gender->delete();
 
             return response()->json(['gender' => $gender->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
