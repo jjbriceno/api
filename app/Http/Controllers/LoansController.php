@@ -76,12 +76,13 @@ class LoansController extends Controller
     public function getAllActiveLoans(Request $request)
     {
         $loans = Loan::query()
+        ->with('musicSheets')
         ->where('status', 'open')
         ->whereBetween('delivery_date', [$request->start, $request->end])
         ->leftJoin('profiles', 'profiles.id', '=', 'loans.user_id')
         ->select('loans.*', 'profiles.first_name', 'profiles.last_name')
         ->get();
-
+        // dd($loans);
         return new CalendarResourceCollection($loans);
     }
 

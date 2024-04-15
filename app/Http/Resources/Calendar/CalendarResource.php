@@ -20,6 +20,13 @@ class CalendarResource extends JsonResource
             'end' => $this->delivery_date->format('Y-m-d\T23:59:59'),
             'color' => 'green',
             'timed' => false,
+            'details' => $this->musicSheets->map(function ($musicSheet) {
+                return [
+                    'title' => $musicSheet->title,
+                    'author' => $musicSheet->author->full_name,
+                    'quantity' => $musicSheet->pivot->quantity
+                ];
+            })
         ];
     }
 }
