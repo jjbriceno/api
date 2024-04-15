@@ -112,8 +112,17 @@ class AuthorController extends Controller
     public function destroy($id)
     {
         try {
-            MusicSheet::where('author_id', $id)->delete();
             $author = Author::findOrFail($id);
+            
+            // Check if the authos has music sheets
+            if ($author->musicSheets()->count() > 0) {
+                return response()
+                ->json(
+                    ['errors' => ['deleteError' => ['Este Autor no se puede eliminar, debido a que posee partituras asociadas.']]],
+                    422
+                );
+            }
+
             $author->delete();
 
             return response()->json(['author' => $author->jsonSerialize(), 'message' => 'success'], Response::HTTP_OK);
