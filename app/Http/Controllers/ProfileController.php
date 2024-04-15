@@ -80,13 +80,15 @@ class ProfileController extends Controller
                 $user = User::where('id', $request->userId)->first();
                 $userProfile = Profile::where('user_id', $request->userId)->first();
 
-                if ($user->email != $request->email) {
+                $emailChanged = $user->email != $request->email;
+
+                if ($emailChanged) {
                     $user->email_verified_at = null;
-                    $user->sendEmailVerificationNotification();
                 }
                 $user->email = $request->email;
                 $user->name = $request->firstName;
                 $user->save();
+                $emailChanged && $user->sendEmailVerificationNotification();
 
                 $userProfile->first_name = $request->firstName;
                 $userProfile->last_name = $request->lastName;

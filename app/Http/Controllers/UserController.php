@@ -37,17 +37,17 @@ class UserController extends Controller
     public function createNewUser(Request $request)
     {
         $request->validate([
-            'firstName' => ['required', 'string', 'max:255'],
-            'lastName' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'firstName'     => ['required', 'string', 'max:255'],
+            'lastName'      => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'email', 'max:255', 'unique:users'],
         ], [
-            'firstName.required' => 'El nombre es requerido',
-            'firstName.max' => 'El nombre no debe ser mayor a 255 caracteres',
-            'lastName.required' => 'El apellido es requerido',
-            'lastName.max' => 'El apellido no debe ser mayor a 255 caracteres',
-            'email.required' => 'El correo es requerido',
-            'email.unique' => 'El correo ya existe',
-            'email.email' => 'El correo es inválido',
+            'firstName.required'    => 'El nombre es requerido',
+            'firstName.max'         => 'El nombre no debe ser mayor a 255 caracteres',
+            'lastName.required'     => 'El apellido es requerido',
+            'lastName.max'          => 'El apellido no debe ser mayor a 255 caracteres',
+            'email.required'        => 'El correo es requerido',
+            'email.unique'          => 'El correo ya existe',
+            'email.email'           => 'El correo es inválido',
         ]);
 
         $temporalPassword = Str::random(10);
