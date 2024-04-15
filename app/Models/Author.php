@@ -38,7 +38,7 @@ class Author extends Model
         $search = request('search');
 
         $query->when($search, function ($query) use ($search) {
-            $query->where('full_name', 'ilike', $search . '%');
+            $query->where('full_name', 'ilike', '%' . $search . '%');
         });
 
         $query->orderBy("full_name", "asc");

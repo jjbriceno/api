@@ -78,8 +78,8 @@ class Loan extends Model
         $query->when($search, function ($query) use ($search) {
             $query->whereHas('user', function ($query) use ($search) {
                 $query->whereHas('profile', function ($query) use ($search) {
-                    $query->where('first_name', 'ilike', $search . '%')
-                        ->orWhere('last_name', 'ilike', $search . '%');
+                    $query->where('first_name', 'ilike', '%' . $search . '%')
+                        ->orWhere('last_name', 'ilike', '%' . $search . '%');
                 });
             });
         });

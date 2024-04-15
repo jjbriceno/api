@@ -105,11 +105,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $query->when($search, function ($query) use ($search) {
             $query->whereHas('profile', function ($query) use ($search) {
-                $query->where('first_name', 'ilike', $search . '%')
-                    ->orWhere('last_name', 'ilike', $search . '%');
+                $query->where('first_name', 'ilike', '%' . $search . '%')
+                    ->orWhere('last_name', 'ilike', '%' . $search . '%');
             })->orWhereHas('roles', function ($query) use ($search) {
                 $query->whereIn('name', [Str::lower($search)]);
-            })->orWhere('email', 'ilike', $search . '%');
+            })->orWhere('email', 'ilike', '%' . $search . '%');
         });
 
         $query->orderBy("id", "asc");
@@ -123,8 +123,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $query->when($search, function ($query) use ($search) {
             $query->whereHas('profile', function ($query) use ($search) {
-                $query->where('first_name', 'ilike', $search . '%')
-                    ->orWhere('last_name', 'ilike', $search . '%');
+                $query->where('first_name', 'ilike','%' . $search . '%')
+                    ->orWhere('last_name', 'ilike', '%' . $search . '%');
             })->whereHas('loans', function ($query) {
                 $query->where('status', 'open');
             });

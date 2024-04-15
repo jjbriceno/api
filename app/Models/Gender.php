@@ -47,7 +47,7 @@ class Gender extends Model
         $search = request('search');
 
         $query->when($search, function ($query) use ($search) {
-            $query->where('name', 'ilike', $search . '%');
+            $query->where('name', 'ilike', '%' . $search . '%');
         });
 
         $query->orderBy("name", "asc");

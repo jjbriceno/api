@@ -18,7 +18,8 @@ class LoanMusicSheetResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'author' => $this->author->full_name,
-            'quantity' => $this->pivot->quantity
+            'quantity' => $this->pivot->quantity,
+            'music_sheet_file_id' => $this->music_sheet_file_id
         ];
     }
 }
